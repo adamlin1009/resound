@@ -11,8 +11,8 @@ import "../styles/globals.css";
 import getCurrentUser from "./actions/getCurrentUser";
 
 export const metadata = {
-  title: "Airbnb Clone",
-  description: "Airbnb Clone",
+  title: "InstruRent - Musical Instrument Lending Platform",
+  description: "Rent musical instruments from fellow musicians in your area",
   icons: "https://www.seekpng.com/png/full/957-9571167_airbnb-png.png",
 };
 

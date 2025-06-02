@@ -25,7 +25,7 @@ function TripsClient({ reservations, currentUser }: Props) {
       axios
         .delete(`/api/reservations/${id}`)
         .then(() => {
-          toast.info("Reservation cancelled");
+          toast.info("Rental cancelled");
           router.refresh();
         })
         .catch((error) => {
@@ -41,8 +41,8 @@ function TripsClient({ reservations, currentUser }: Props) {
   return (
     <Container>
       <Heading
-        title="Trips"
-        subtitle="Where you've been and where you're going"
+        title="My Rentals"
+        subtitle="Instruments you've rented and upcoming rentals"
       />
       <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
         {reservations.map((reservation) => (
@@ -53,7 +53,7 @@ function TripsClient({ reservations, currentUser }: Props) {
             actionId={reservation.id}
             onAction={onCancel}
             disabled={deletingId === reservation.id}
-            actionLabel="Cancel reservation"
+            actionLabel="Cancel rental"
             currentUser={currentUser}
           />
         ))}

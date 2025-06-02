@@ -1,99 +1,89 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import { BsSnow } from "react-icons/bs";
-import { FaSkiing } from "react-icons/fa";
-import {
-  GiBarn,
-  GiBoatFishing,
-  GiCactus,
-  GiCastle,
-  GiCaveEntrance,
-  GiForestCamp,
-  GiIsland,
-  GiWindmill,
-} from "react-icons/gi";
-import { IoDiamond } from "react-icons/io5";
-import { MdOutlineVilla } from "react-icons/md";
-import { TbBeach, TbMountain, TbPool } from "react-icons/tb";
+import { FaGuitar, FaDrum, FaMusic } from "react-icons/fa";
+import { GiPianoKeys, GiSaxophone, GiViolin, GiTrumpet, GiFlute, GiMicrophone, GiSoundWaves } from "react-icons/gi";
+import { TbMusic } from "react-icons/tb";
+import { MdPiano } from "react-icons/md";
+import { BsMusicNote, BsSpeaker } from "react-icons/bs";
 import CategoryBox from "../CategoryBox";
 import Container from "../Container";
 
 export const categories = [
   {
-    label: "Beach",
-    icon: TbBeach,
-    description: "This property is close to the beach!",
+    label: "Guitar",
+    icon: FaGuitar,
+    description: "Acoustic and electric guitars available!",
   },
   {
-    label: "Windmills",
-    icon: GiWindmill,
-    description: "This property is has windmills!",
+    label: "Piano",
+    icon: GiPianoKeys,
+    description: "Grand, upright, and digital pianos!",
   },
   {
-    label: "Modern",
-    icon: MdOutlineVilla,
-    description: "This property is modern!",
+    label: "Drums",
+    icon: FaDrum,
+    description: "Full drum kits and percussion instruments!",
   },
   {
-    label: "Countryside",
-    icon: TbMountain,
-    description: "This property is in the countryside!",
+    label: "Violin",
+    icon: GiViolin,
+    description: "String instruments including violins and violas!",
   },
   {
-    label: "Pools",
-    icon: TbPool,
-    description: "This is property has a beautiful pool!",
+    label: "Saxophone",
+    icon: GiSaxophone,
+    description: "Saxophones and other woodwind instruments!",
   },
   {
-    label: "Islands",
-    icon: GiIsland,
-    description: "This property is on an island!",
+    label: "Trumpet",
+    icon: GiTrumpet,
+    description: "Brass instruments including trumpets and trombones!",
   },
   {
-    label: "Lake",
-    icon: GiBoatFishing,
-    description: "This property is near a lake!",
+    label: "Keyboard",
+    icon: MdPiano,
+    description: "Synthesizers and electronic keyboards!",
   },
   {
-    label: "Skiing",
-    icon: FaSkiing,
-    description: "This property has skiing activies!",
+    label: "Bass",
+    icon: FaMusic,
+    description: "Electric and acoustic bass guitars!",
   },
   {
-    label: "Castles",
-    icon: GiCastle,
-    description: "This property is an ancient castle!",
+    label: "Flute",
+    icon: GiFlute,
+    description: "Flutes and other wind instruments!",
   },
   {
-    label: "Caves",
-    icon: GiCaveEntrance,
-    description: "This property is in a spooky cave!",
+    label: "Microphone",
+    icon: GiMicrophone,
+    description: "Professional microphones and recording equipment!",
   },
   {
-    label: "Camping",
-    icon: GiForestCamp,
-    description: "This property offers camping activities!",
+    label: "DJ Equipment",
+    icon: GiSoundWaves,
+    description: "Turntables, mixers, and DJ controllers!",
   },
   {
-    label: "Arctic",
-    icon: BsSnow,
-    description: "This property is in arctic environment!",
+    label: "Audio Interface",
+    icon: BsSpeaker,
+    description: "Recording interfaces and studio equipment!",
   },
   {
-    label: "Desert",
-    icon: GiCactus,
-    description: "This property is in the desert!",
+    label: "Ukulele",
+    icon: BsMusicNote,
+    description: "Ukuleles and other small string instruments!",
   },
   {
-    label: "Barns",
-    icon: GiBarn,
-    description: "This property is in a barn!",
+    label: "Amplifier",
+    icon: BsSpeaker,
+    description: "Guitar and bass amplifiers!",
   },
   {
-    label: "Lux",
-    icon: IoDiamond,
-    description: "This property is brand new and luxurious!",
+    label: "Other",
+    icon: FaMusic,
+    description: "Other musical instruments and equipment!",
   },
 ];
 

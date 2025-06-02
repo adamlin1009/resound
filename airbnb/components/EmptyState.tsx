@@ -13,8 +13,8 @@ type Props = {
 };
 
 function EmptyState({
-  title = "No exact matches",
-  subtitle = "Try changing or removing some of your filters.",
+  title = "No instruments found",
+  subtitle = "Try adjusting your search filters or location.",
   showReset,
 }: Props) {
   const router = useRouter();

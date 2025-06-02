@@ -1,4 +1,4 @@
-"user client"
+"use client"
 
 import { motion } from "framer-motion";
 
@@ -8,10 +8,10 @@ type Props = {
   };
 
 function FooterColumn({ index, data }: Props) {
-    const columnItems = data.map((item, index) => 
-        index === 0 
-        ? <h5 className="font-bold">{item}</h5>
-        : <p>{item}</p>);
+    const columnItems = data.map((item, itemIndex) => 
+        itemIndex === 0 
+        ? <h5 key={itemIndex} className="font-bold">{item}</h5>
+        : <p key={itemIndex}>{item}</p>);
 
     return (<motion.div
         initial={{

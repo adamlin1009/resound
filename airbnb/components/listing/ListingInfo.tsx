@@ -46,13 +46,13 @@ function ListingInfo({
     <div className="col-span-4 flex flex-col gap-8">
       <div className="flex flex-col gap-2">
         <div className=" text-xl font-semibold flex flex-row items-center gap-2">
-          <div>Hosted by {user?.name}</div>
+          <div>Lent by {user?.name}</div>
           <Avatar src={user?.image} userName={user?.name} />
         </div>
         <div className="flex flex-row items-center gap-4 font-light text-neutral-500">
-          <p>{guestCount} guests</p>
-          <p>{roomCount} rooms</p>
-          <p>{bathroomCount} bathrooms</p>
+          <p>{guestCount} musicians max</p>
+          <p>Condition: {roomCount}/10</p>
+          <p>Level: {bathroomCount === 1 ? 'Beginner' : bathroomCount === 2 ? 'Intermediate' : bathroomCount === 3 ? 'Advanced' : bathroomCount === 4 ? 'Expert' : 'Professional'}</p>
         </div>
       </div>
       <hr />
@@ -66,11 +66,11 @@ function ListingInfo({
       <hr />
       <div className="flex flex-col">
         <p className="text-4xl font-bold text-[#FF5A5F]">
-          air<span className="text-black">cover</span>
+          instrument<span className="text-black">protect</span>
         </p>
         <p className="text-neutral-500 pt-3">
-          Every booking includes free protection from Host cancellations,
-          listing inaccuracies, and other issues like trouble checking in.
+          Every rental includes protection from lender cancellations,
+          listing inaccuracies, and other issues like instrument damage coverage.
         </p>
         <p className="text-black font-bold underline pt-3 cursor-pointer">
           Learn more
@@ -79,11 +79,7 @@ function ListingInfo({
       <hr />
       <p className="text-lg font-light text-neutral-500">{description}</p>
       <hr />
-      <Sleep />
-      <hr />
-      <Offers />
-      <hr />
-      <p className="text-xl font-semibold">{`Where you’ll be`}</p>
+      <p className="text-xl font-semibold">{`Pickup location`}</p>
       <Map center={coordinates} locationValue={locationValue} />
     </div>
   );

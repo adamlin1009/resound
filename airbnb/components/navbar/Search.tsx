@@ -45,11 +45,11 @@ function Search({}: Props) {
 
   const guessLabel = useMemo(() => {
     if (guestCount) {
-      return `${guestCount} Guests`;
+      return `${guestCount} Musicians`;
     }
 
-    return "Add Guests";
-  }, []);
+    return "Add Musicians";
+  }, [guestCount]);
 
   return (
     <div

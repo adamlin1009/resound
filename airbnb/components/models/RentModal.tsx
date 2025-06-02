@@ -129,7 +129,7 @@ function RentModal({}: Props) {
   let bodyContent = (
     <div className="flex flex-col gap-8">
       <Heading
-        title="Which of these best describes your place?"
+        title="Which type of instrument are you lending?"
         subtitle="Pick a category"
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto scrollbar-thin scrollbar-thumb-[#FF5A5F]">
@@ -151,8 +151,8 @@ function RentModal({}: Props) {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Where is your place located?"
-          subtitle="Help guests find you!"
+          title="Where is your instrument located?"
+          subtitle="Help musicians find you!"
         />
         <CountrySelect
           value={location}
@@ -167,26 +167,26 @@ function RentModal({}: Props) {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Share some basics about your place"
-          subtitle="What amenities do you have?"
+          title="Share some details about your instrument"
+          subtitle="What features does it have?"
         />
         <Counter
-          title="Guests"
-          subtitle="How many guest do you allow?"
+          title="Users"
+          subtitle="How many people can use it at once?"
           value={guestCount}
           onChange={(value) => setCustomValue("guestCount", value)}
         />
         <hr />
         <Counter
-          title="Rooms"
-          subtitle="How many rooms do you have?"
+          title="Condition"
+          subtitle="Rate the condition (1-10, 10 being perfect)"
           value={roomCount}
           onChange={(value) => setCustomValue("roomCount", value)}
         />
         <hr />
         <Counter
-          title="Bathrooms"
-          subtitle="How many Bathrooms do you have?"
+          title="Experience Level"
+          subtitle="Suitable for what skill level? (1=Beginner, 5=Professional)"
           value={bathroomCount}
           onChange={(value) => setCustomValue("bathroomCount", value)}
         />
@@ -198,8 +198,8 @@ function RentModal({}: Props) {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Add a photo of your place"
-          subtitle="Show guests what your place looks like!"
+          title="Add photos of your instrument"
+          subtitle="Show musicians what your instrument looks like!"
         />
         <ImageUpload
           onChange={(value) => setCustomValue("imageSrc", value)}
@@ -213,8 +213,8 @@ function RentModal({}: Props) {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Now, set your price"
-          subtitle="How much do you charge per night?"
+          title="Describe your instrument"
+          subtitle="What makes it special?"
         />
         <Input
           id="title"
@@ -241,8 +241,8 @@ function RentModal({}: Props) {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Now, set your price"
-          subtitle="How much do you charge per night?"
+          title="Now, set your rental price"
+          subtitle="How much do you charge per day?"
         />
         <Input
           id="price"
@@ -262,7 +262,7 @@ function RentModal({}: Props) {
     <Modal
       disabled={isLoading}
       isOpen={rentModel.isOpen}
-      title="Airbnb your home!"
+      title="Lend your instrument!"
       actionLabel={actionLabel}
       onSubmit={handleSubmit(onSubmit)}
       secondaryActionLabel={secondActionLabel}
