@@ -17,7 +17,6 @@ function Search({}: Props) {
   const locationValue = params?.get("locationValue");
   const startDate = params?.get("startDate");
   const endDate = params?.get("endDate");
-  const guestCount = params?.get("guestCount");
 
   const locationLabel = useMemo(() => {
     if (locationValue) {
@@ -43,14 +42,6 @@ function Search({}: Props) {
     return "Any Week";
   }, [startDate, endDate]);
 
-  const guessLabel = useMemo(() => {
-    if (guestCount) {
-      return `${guestCount} Musicians`;
-    }
-
-    return "Add Musicians";
-  }, [guestCount]);
-
   return (
     <div
       onClick={searchModel.onOpen}
@@ -58,14 +49,11 @@ function Search({}: Props) {
     >
       <div className="flex flex-row items-center justify-between">
         <div className="text-sm font-semibold px-6">{locationLabel}</div>
-        <div className="hidden sm:block text-losm font-semibold px-6 border-x-[1px] flex-1 text-center">
+        <div className="hidden sm:block text-sm font-semibold px-6 border-x-[1px] flex-1 text-center">
           {durationLabel}
         </div>
-        <div className="text-sm pl-6 pr-2 text-gray-600 flex flex-row items-center gap-3">
-          <div className="hidden sm:block text-center">{guessLabel}</div>
-          <div className="p-2 bg-rose-500 rounded-full text-white">
-            <BiSearch size={18} />
-          </div>
+        <div className="p-2 ml-auto mr-2 bg-amber-700 rounded-full text-white">
+          <BiSearch size={18} />
         </div>
       </div>
     </div>

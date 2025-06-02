@@ -1,4 +1,4 @@
-# InstruRent Setup Instructions
+# Resound Setup Instructions
 
 ## Environment Variables
 
@@ -38,7 +38,7 @@ NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=
 
 2. **Local MongoDB**:
    - Install MongoDB locally
-   - Use connection string: `mongodb://localhost:27017/instrurent`
+   - Use connection string: `mongodb://localhost:27017/resound`
 
 3. **Initialize Prisma**:
    ```bash

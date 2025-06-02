@@ -9,10 +9,10 @@ type Props = {};
 
 function Footer({}: Props) {
   const itemData = [
-    ["ABOUT", "How InstruRent works", "Newsroom", "Investors", "Careers", "Trust & Safety"],
-    ["SUPPORT", "Help Center", "InstruProtect", "Cancellation options", "Safety information", "Report a listing"],
-    ["LENDING", "Start lending instruments", "InstruProtect for Lenders", "Lending resources", "Community forum", "Responsible lending"],
-    ["COMMUNITY", "Musician stories", "Meet local musicians", "Instrument care tips", "Music events", "Refer a friend"],
+    ["ABOUT", "How Resound works", "Newsroom", "Investors", "Careers", "Trust & Safety"],
+    ["SUPPORT", "Help Center", "ResoundProtect", "Cancellation options", "Safety information", "Report a listing"],
+    ["LENDING", "List your instrument", "ResoundProtect for Lenders", "Lending resources", "Community forum", "Responsible lending"],
+    ["DISCOVER", "Featured instruments", "Violin rentals", "Piano rentals", "Cello rentals", "Wind instruments"],
   ];
 
   const footerColumns = itemData.map((item, index) => (
@@ -21,7 +21,7 @@ function Footer({}: Props) {
 
   return (
     <ClientOnly>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-y-10 px-32 py-14 bg-gray-100 text-gray-600">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-y-10 px-32 py-14 bg-amber-50 text-amber-900">
         {footerColumns}
       </div>
     </ClientOnly>

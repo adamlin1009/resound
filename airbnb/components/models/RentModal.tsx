@@ -45,7 +45,6 @@ function RentModal({}: Props) {
     defaultValues: {
       category: "",
       location: null,
-      guestCount: 1,
       roomCount: 1,
       bathroomCount: 1,
       imageSrc: "",
@@ -57,7 +56,6 @@ function RentModal({}: Props) {
 
   const category = watch("category");
   const location = watch("location");
-  const guestCount = watch("guestCount");
   const roomCount = watch("roomCount");
   const bathroomCount = watch("bathroomCount");
   const imageSrc = watch("imageSrc");
@@ -170,13 +168,6 @@ function RentModal({}: Props) {
           title="Share some details about your instrument"
           subtitle="What features does it have?"
         />
-        <Counter
-          title="Users"
-          subtitle="How many people can use it at once?"
-          value={guestCount}
-          onChange={(value) => setCustomValue("guestCount", value)}
-        />
-        <hr />
         <Counter
           title="Condition"
           subtitle="Rate the condition (1-10, 10 being perfect)"

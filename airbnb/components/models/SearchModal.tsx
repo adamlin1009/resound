@@ -17,7 +17,6 @@ import Modal from "./Modal";
 enum STEPS {
   LOCATION = 0,
   DATE = 1,
-  INFO = 2,
 }
 
 type Props = {};
@@ -29,7 +28,6 @@ function SearchModal({}: Props) {
 
   const [location, setLocation] = useState<CountrySelectValue>();
   const [step, setStep] = useState(STEPS.LOCATION);
-  const [guestCount, setGuestCount] = useState(1);
   const [roomCount, setRoomCount] = useState(1);
   const [bathroomCount, setBathroomCount] = useState(1);
   const [dateRange, setDateRange] = useState<Range>({
@@ -55,7 +53,7 @@ function SearchModal({}: Props) {
   };
 
   const onSubmit = useCallback(async () => {
-    if (step !== STEPS.INFO) {
+    if (step !== STEPS.DATE) {
       return onNext();
     }
 
@@ -68,7 +66,6 @@ function SearchModal({}: Props) {
     const updatedQuery: any = {
       ...currentQuery,
       locationValue: location?.value,
-      guestCount,
       roomCount,
       bathroomCount,
     };
@@ -98,7 +95,6 @@ function SearchModal({}: Props) {
     searchModel,
     location,
     router,
-    guestCount,
     roomCount,
     bathroomCount,
     dateRange,
@@ -107,7 +103,7 @@ function SearchModal({}: Props) {
   ]);
 
   const actionLabel = useMemo(() => {
-    if (step === STEPS.INFO) {
+    if (step === STEPS.DATE) {
       return "Search";
     }
 
@@ -148,36 +144,23 @@ function SearchModal({}: Props) {
           onChange={(value) => setDateRange(value.selection)}
           value={dateRange}
         />
-      </div>
-    );
-  }
-
-  if (step === STEPS.INFO) {
-    bodyContent = (
-      <div className="flex flex-col gap-8">
-        <Heading title="More information" subtitle="Find your perfect instrument!" />
-        <Counter
-          onChange={(value) => setGuestCount(value)}
-          value={guestCount}
-          title="Musicians"
-          subtitle="How many people will use it?"
-        />
         <hr />
-        <Counter
-          onChange={(value) => setRoomCount(value)}
-          value={roomCount}
-          title="Condition"
-          subtitle="Minimum condition rating (1-10)?"
-        />
-        <hr />
-        <Counter
-          onChange={(value) => {
-            setBathroomCount(value);
-          }}
-          value={bathroomCount}
-          title="Experience Level"
-          subtitle="What skill level? (1=Beginner, 5=Pro)"
-        />
+        <div className="flex flex-col gap-4">
+          <Counter
+            onChange={(value) => setRoomCount(value)}
+            value={roomCount}
+            title="Condition"
+            subtitle="Minimum condition rating (1-10)?"
+          />
+          <Counter
+            onChange={(value) => {
+              setBathroomCount(value);
+            }}
+            value={bathroomCount}
+            title="Experience Level"
+            subtitle="What skill level? (1=Beginner, 5=Pro)"
+          />
+        </div>
       </div>
     );
   }

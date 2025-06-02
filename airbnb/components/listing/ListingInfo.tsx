@@ -17,7 +17,6 @@ const Map = dynamic(() => import("../Map"), {
 type Props = {
   user: SafeUser;
   description: string;
-  guestCount: number;
   roomCount: number;
   bathroomCount: number;
   category:
@@ -33,7 +32,6 @@ type Props = {
 function ListingInfo({
   user,
   description,
-  guestCount,
   roomCount,
   bathroomCount,
   category,
@@ -50,7 +48,6 @@ function ListingInfo({
           <Avatar src={user?.image} userName={user?.name} />
         </div>
         <div className="flex flex-row items-center gap-4 font-light text-neutral-500">
-          <p>{guestCount} musicians max</p>
           <p>Condition: {roomCount}/10</p>
           <p>Level: {bathroomCount === 1 ? 'Beginner' : bathroomCount === 2 ? 'Intermediate' : bathroomCount === 3 ? 'Advanced' : bathroomCount === 4 ? 'Expert' : 'Professional'}</p>
         </div>
@@ -65,14 +62,14 @@ function ListingInfo({
       )}
       <hr />
       <div className="flex flex-col">
-        <p className="text-4xl font-bold text-[#FF5A5F]">
-          instrument<span className="text-black">protect</span>
+        <p className="text-4xl font-serif font-bold text-amber-700">
+          resound<span className="text-amber-900">protect</span>
         </p>
         <p className="text-neutral-500 pt-3">
           Every rental includes protection from lender cancellations,
-          listing inaccuracies, and other issues like instrument damage coverage.
+          listing inaccuracies, and instrument damage coverage.
         </p>
-        <p className="text-black font-bold underline pt-3 cursor-pointer">
+        <p className="text-amber-900 font-bold underline pt-3 cursor-pointer">
           Learn more
         </p>
       </div>

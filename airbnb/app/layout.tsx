@@ -11,8 +11,8 @@ import "../styles/globals.css";
 import getCurrentUser from "./actions/getCurrentUser";
 
 export const metadata = {
-  title: "InstruRent - Musical Instrument Lending Platform",
-  description: "Rent musical instruments from fellow musicians in your area",
+  title: "Resound - Classical Instrument Rentals",
+  description: "Rent premium musical instruments from trusted lenders in your area",
   icons: "https://www.seekpng.com/png/full/957-9571167_airbnb-png.png",
 };
 
