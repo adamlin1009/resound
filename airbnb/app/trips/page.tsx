@@ -5,6 +5,8 @@ import getCurrentUser from "../actions/getCurrentUser";
 import getReservation from "../actions/getReservations";
 import TripsClient from "./TripsClient";
 
+export const dynamic = 'force-dynamic';
+
 type Props = {};
 
 const TripsPage = async (props: Props) => {
