@@ -114,8 +114,8 @@ function ListingClient({ reservations = [], listing, currentUser }: Props) {
               user={listing.user}
               category={category}
               description={listing.description}
-              roomCount={listing.roomCount}
-              bathroomCount={listing.bathroomCount}
+              conditionRating={listing.conditionRating}
+              experienceLevel={listing.experienceLevel}
               locationValue={listing.locationValue}
             />
             <div className="order-first mb-10 md:order-last md:col-span-3">

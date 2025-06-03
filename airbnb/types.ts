@@ -1,7 +1,12 @@
 import { Listing, Reservation, User } from "@prisma/client";
 
-export type safeListing = Omit<Listing, "createdAt"> & {
+// Remove roomCount, bathroomCount, guestCount from the base Listing type for safeListing
+export type CoreListingData = Omit<Listing, "createdAt" | "roomCount" | "bathroomCount" | "guestCount">;
+
+export type safeListing = CoreListingData & {
   createdAt: string;
+  conditionRating: number;
+  experienceLevel: number;
 };
 
 export type SafeReservation = Omit<

@@ -45,8 +45,8 @@ function RentModal({}: Props) {
     defaultValues: {
       category: "",
       location: null,
-      roomCount: 1,
-      bathroomCount: 1,
+      conditionRating: 1,
+      experienceLevel: 1,
       imageSrc: "",
       price: 1,
       title: "",
@@ -56,8 +56,8 @@ function RentModal({}: Props) {
 
   const category = watch("category");
   const location = watch("location");
-  const roomCount = watch("roomCount");
-  const bathroomCount = watch("bathroomCount");
+  const conditionRating = watch("conditionRating");
+  const experienceLevel = watch("experienceLevel");
   const imageSrc = watch("imageSrc");
 
   const Map = useMemo(
@@ -171,15 +171,15 @@ function RentModal({}: Props) {
         <Counter
           title="Condition"
           subtitle="Rate the condition (1-10, 10 being perfect)"
-          value={roomCount}
-          onChange={(value) => setCustomValue("roomCount", value)}
+          value={conditionRating}
+          onChange={(value) => setCustomValue("conditionRating", value)}
         />
         <hr />
         <Counter
           title="Experience Level"
           subtitle="Suitable for what skill level? (1=Beginner, 5=Professional)"
-          value={bathroomCount}
-          onChange={(value) => setCustomValue("bathroomCount", value)}
+          value={experienceLevel}
+          onChange={(value) => setCustomValue("experienceLevel", value)}
         />
       </div>
     );

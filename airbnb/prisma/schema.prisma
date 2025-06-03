@@ -50,8 +50,8 @@ model Listing {
   imageSrc         String
   createdAt        DateTime      @default(now())
   category         String
-  conditionRating  Int           @map("roomCount")
-  experienceLevel  Int           @map("bathroomCount")
+  conditionRating  Int
+  experienceLevel  Int
   locationValue    String
   userId           String        @db.ObjectId
   price            Int
@@ -70,3 +70,6 @@ model Reservation {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }
+
+// This tells Prisma where to find the seed script
+// (This is just a comment for documentation)

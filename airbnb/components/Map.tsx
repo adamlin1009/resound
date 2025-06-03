@@ -24,8 +24,17 @@ type Props = {
 };
 
 function Map({ center, locationValue }: Props) {
-  return (
+  // Generate a unique key so that React creates a fresh DOM node
+  const mapKey = React.useMemo(() => {
+    if (center && Array.isArray(center)) {
+      return `${locationValue ?? 'default'}-${center.join('-')}`;
+    }
+    return `default-map`;
+  }, [locationValue, center]);
+
+  /* return (
     <MapContainer
+      key={mapKey}
       center={(center as L.LatLngExpression) || [51, -0.09]}
       zoom={center ? 4 : 2}
       scrollWheelZoom={false}
@@ -51,7 +60,7 @@ function Map({ center, locationValue }: Props) {
         <>{center && <Marker position={center as L.LatLngExpression} />}</>
       )}
     </MapContainer>
-  );
+  ); */
 }
 
 export default Map;

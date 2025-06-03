@@ -13,7 +13,7 @@ import getCurrentUser from "./actions/getCurrentUser";
 export const metadata = {
   title: "Resound - Classical Instrument Rentals",
   description: "Rent premium musical instruments from trusted lenders in your area",
-  icons: "https://www.seekpng.com/png/full/957-9571167_airbnb-png.png",
+  icons: "/assets/harp-icon.svg",
 };
 
 const font = Nunito({

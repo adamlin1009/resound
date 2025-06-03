@@ -28,8 +28,8 @@ function SearchModal({}: Props) {
 
   const [location, setLocation] = useState<CountrySelectValue>();
   const [step, setStep] = useState(STEPS.LOCATION);
-  const [roomCount, setRoomCount] = useState(1);
-  const [bathroomCount, setBathroomCount] = useState(1);
+  const [conditionRating, setConditionRating] = useState(1);
+  const [experienceLevel, setExperienceLevel] = useState(1);
   const [dateRange, setDateRange] = useState<Range>({
     startDate: new Date(),
     endDate: new Date(),
@@ -66,8 +66,8 @@ function SearchModal({}: Props) {
     const updatedQuery: any = {
       ...currentQuery,
       locationValue: location?.value,
-      roomCount,
-      bathroomCount,
+      conditionRating,
+      experienceLevel,
     };
 
     if (dateRange.startDate) {
@@ -95,8 +95,8 @@ function SearchModal({}: Props) {
     searchModel,
     location,
     router,
-    roomCount,
-    bathroomCount,
+    conditionRating,
+    experienceLevel,
     dateRange,
     onNext,
     params,
@@ -147,16 +147,16 @@ function SearchModal({}: Props) {
         <hr />
         <div className="flex flex-col gap-4">
           <Counter
-            onChange={(value) => setRoomCount(value)}
-            value={roomCount}
+            onChange={(value) => setConditionRating(value)}
+            value={conditionRating}
             title="Condition"
             subtitle="Minimum condition rating (1-10)?"
           />
           <Counter
             onChange={(value) => {
-              setBathroomCount(value);
+              setExperienceLevel(value);
             }}
-            value={bathroomCount}
+            value={experienceLevel}
             title="Experience Level"
             subtitle="What skill level? (1=Beginner, 5=Pro)"
           />

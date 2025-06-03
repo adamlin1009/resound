@@ -94,6 +94,10 @@ function ListingCard({
         <div className="font-light text-neutral-500">
           {reservationDate || data.category}
         </div>
+        <div className="flex flex-row gap-2 text-sm text-neutral-600">
+          <span>Condition: {data.conditionRating}/10</span>
+          <span>Level: {data.experienceLevel === 1 ? 'Beginner' : data.experienceLevel === 2 ? 'Intermediate' : data.experienceLevel === 3 ? 'Advanced' : data.experienceLevel === 4 ? 'Expert' : 'Professional'}</span>
+        </div>
         <div className="flex flex-row items-center gap-">
           <div className="flex gap-1 font-semibold">
             ${price} {!reservation && <div className="font-light"> Night</div>}

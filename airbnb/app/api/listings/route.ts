@@ -15,11 +15,10 @@ export async function POST(request: Request) {
     description,
     imageSrc,
     category,
-    roomCount,
-    bathroomCount,
-    guestCount,
     location,
     price,
+    conditionRating,
+    experienceLevel,
   } = body;
 
   Object.keys(body).forEach((value: any) => {
@@ -34,13 +33,12 @@ export async function POST(request: Request) {
       description,
       imageSrc,
       category,
-      roomCount,
-      bathroomCount,
-      guestCount,
+      conditionRating,
+      experienceLevel,
       locationValue: location.value,
       price: parseInt(price, 10),
       userId: currentUser.id,
-    },
+    } as any,
   });
 
   return NextResponse.json(listen);

@@ -17,8 +17,8 @@ const Map = dynamic(() => import("../Map"), {
 type Props = {
   user: SafeUser;
   description: string;
-  roomCount: number;
-  bathroomCount: number;
+  conditionRating: number;
+  experienceLevel: number;
   category:
     | {
         icon: IconType;
@@ -32,8 +32,8 @@ type Props = {
 function ListingInfo({
   user,
   description,
-  roomCount,
-  bathroomCount,
+  conditionRating,
+  experienceLevel,
   category,
   locationValue,
 }: Props) {
@@ -48,8 +48,8 @@ function ListingInfo({
           <Avatar src={user?.image} userName={user?.name} />
         </div>
         <div className="flex flex-row items-center gap-4 font-light text-neutral-500">
-          <p>Condition: {roomCount}/10</p>
-          <p>Level: {bathroomCount === 1 ? 'Beginner' : bathroomCount === 2 ? 'Intermediate' : bathroomCount === 3 ? 'Advanced' : bathroomCount === 4 ? 'Expert' : 'Professional'}</p>
+          <p>Condition: {conditionRating}/10</p>
+          <p>Level: {experienceLevel === 1 ? 'Beginner' : experienceLevel === 2 ? 'Intermediate' : experienceLevel === 3 ? 'Advanced' : experienceLevel === 4 ? 'Expert' : 'Professional'}</p>
         </div>
       </div>
       <hr />

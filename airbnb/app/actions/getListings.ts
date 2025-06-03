@@ -1,9 +1,10 @@
 import prisma from "@/lib/prismadb";
+import { safeListing } from "@/types";
 
 export interface IListingsParams {
   userId?: string;
-  roomCount?: number;
-  bathroomCount?: number;
+  conditionRating?: number; // minimum condition rating
+  experienceLevel?: number; // minimum experience level
   startDate?: string;
   endDate?: string;
   locationValue?: string;
@@ -12,54 +13,45 @@ export interface IListingsParams {
 
 export default async function getListings(params: IListingsParams) {
   try {
-    const {
-      userId,
-      roomCount,
-      bathroomCount,
-      locationValue,
-      startDate,
-      endDate,
-      category,
-    } = params;
-
-    let query: any = {};
-
-    if (userId) {
-      query.userId = userId;
+    // Create a new object with only the properties that exist in params
+    const queryParams: any = {};
+    
+    if (params.userId) {
+      queryParams.userId = params.userId;
     }
 
-    if (category) {
-      query.category = category;
+    if (params.category) {
+      queryParams.category = params.category;
     }
 
-    if (roomCount) {
-      query.roomCount = {
-        gte: +roomCount,
+    if (params.conditionRating) {
+      queryParams.conditionRating = {
+        gte: +params.conditionRating,
       };
     }
 
-    if (bathroomCount) {
-      query.bathroomCount = {
-        gte: +bathroomCount,
+    if (params.experienceLevel) {
+      queryParams.experienceLevel = {
+        gte: +params.experienceLevel,
       };
     }
 
-    if (locationValue) {
-      query.locationValue = locationValue;
+    if (params.locationValue) {
+      queryParams.locationValue = params.locationValue;
     }
 
-    if (startDate && endDate) {
-      query.NOT = {
+    if (params.startDate && params.endDate) {
+      queryParams.NOT = {
         reservations: {
           some: {
             OR: [
               {
-                endDate: { gte: startDate },
-                startDate: { lte: startDate },
+                endDate: { gte: params.startDate },
+                startDate: { lte: params.startDate },
               },
               {
-                startDate: { lte: endDate },
-                endDate: { gte: endDate },
+                startDate: { lte: params.endDate },
+                endDate: { gte: params.endDate },
               },
             ],
           },
@@ -67,20 +59,23 @@ export default async function getListings(params: IListingsParams) {
       };
     }
 
-    const listing = await prisma.listing.findMany({
-      where: query,
+    const listings = await prisma.listing.findMany({
+      where: queryParams,
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    const safeListings = listing.map((list) => ({
+    const safeListings: safeListing[] = listings.map((list: any) => ({
       ...list,
       createdAt: list.createdAt.toISOString(),
+      conditionRating: list.conditionRating,
+      experienceLevel: list.experienceLevel,
     }));
 
     return safeListings;
   } catch (error: any) {
+    console.error("Error fetching listings:", error);
     throw new Error(error.message);
   }
 }
