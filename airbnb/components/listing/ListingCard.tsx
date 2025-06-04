@@ -100,7 +100,7 @@ function ListingCard({
         </div>
         <div className="flex flex-row items-center gap-">
           <div className="flex gap-1 font-semibold">
-            ${price} {!reservation && <div className="font-light"> Night</div>}
+            ${price} {!reservation && <div className="font-light"> /Day</div>}
           </div>
         </div>
         {onAction && actionLabel && (
