@@ -41,16 +41,16 @@ function SearchModal({}: Props) {
       dynamic(() => import("../Map"), {
         ssr: false,
       }),
-    [location]
+    []
   );
 
-  const onBack = () => {
+  const onBack = useCallback(() => {
     setStep((value) => value - 1);
-  };
+  }, []);
 
-  const onNext = () => {
+  const onNext = useCallback(() => {
     setStep((value) => value + 1);
-  };
+  }, []);
 
   const onSubmit = useCallback(async () => {
     if (step !== STEPS.DATE) {

@@ -7,6 +7,8 @@ import FavoritesClient from "./FavoritesClient";
 
 type Props = {};
 
+export const dynamic = 'force-dynamic';
+
 const FavoritePage = async (props: Props) => {
   const currentUser = await getCurrentUser();
   const listings = await getFavoriteListings();

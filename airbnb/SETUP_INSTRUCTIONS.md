@@ -2,13 +2,13 @@
 
 ## Environment Variables
 
-Create a `.env.local` file in the root directory with the following variables:
+Create a `.env` file in the root directory with the following variables:
 
 ```bash
 # MongoDB Database URL
 # Get this from MongoDB Atlas or your local MongoDB instance
 # Format: mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority
-DATABASE_URL=mongodb+srv://mengshuzhang1:rXhU8Rp6STOJgXnS@cluster0-free.huxj8fj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0-free
+DATABASE_URL=
 
 # NextAuth Configuration
 # Generate a secret with: openssl rand -base64 32

@@ -65,54 +65,63 @@ function ListingCard({
   }, [reservation]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.5 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{
-        duration: 0.8,
-        delay: 0.5,
-        ease: [0, 0.71, 0.2, 1.01],
-      }}
+    <div
       onClick={() => router.push(`/listings/${data.id}`)}
       className="col-span-1 cursor-pointer group"
     >
-      <div className="flex flex-col gap-2 w-full">
-        <div className="aspect-square w-full relative overflow-hidden rounded-xl">
-          <Image
-            fill
-            className="object-cover h-full w-full group-hover:scale-110 transition"
-            src={data.imageSrc}
-            alt="listing"
-          />
-          <div className="absolute top-3 right-3">
-            <HeartButton listingId={data.id} currentUser={currentUser} />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{
+          duration: 0.8,
+          delay: 0.5,
+          ease: [0, 0.71, 0.2, 1.01],
+        }}
+      >
+        <div className="flex flex-col gap-2 w-full">
+          <div className="aspect-square w-full relative overflow-hidden rounded-xl">
+            {data.imageSrc ? (
+              <Image
+                fill
+                className="object-cover h-full w-full group-hover:scale-110 transition"
+                src={data.imageSrc}
+                alt="listing"
+              />
+            ) : (
+              <div className="aspect-square w-full h-full bg-neutral-100 flex items-center justify-center rounded-xl">
+                <span className="text-neutral-500 text-sm">No image</span>
+              </div>
+            )}
+            <div className="absolute top-3 right-3">
+              <HeartButton listingId={data.id} currentUser={currentUser} />
+            </div>
           </div>
-        </div>
-        <div className="font-semibold text-lg">
-          {location?.region}, {location?.label}
-        </div>
-        <div className="font-light text-neutral-500">
-          {reservationDate || data.category}
-        </div>
-        <div className="flex flex-row gap-2 text-sm text-neutral-600">
-          <span>Condition: {data.conditionRating}/10</span>
-          <span>Level: {data.experienceLevel === 1 ? 'Beginner' : data.experienceLevel === 2 ? 'Intermediate' : data.experienceLevel === 3 ? 'Advanced' : data.experienceLevel === 4 ? 'Expert' : 'Professional'}</span>
-        </div>
-        <div className="flex flex-row items-center gap-">
-          <div className="flex gap-1 font-semibold">
-            ${price} {!reservation && <div className="font-light"> Night</div>}
+          <div className="font-semibold text-lg">
+            {location?.region}, {location?.label}
           </div>
+          <div className="font-light text-neutral-500">
+            {reservationDate || data.category}
+          </div>
+          <div className="flex flex-row gap-2 text-sm text-neutral-600">
+            <span>Condition: {data.conditionRating}/10</span>
+            <span>Level: {data.experienceLevel === 1 ? 'Beginner' : data.experienceLevel === 2 ? 'Intermediate' : data.experienceLevel === 3 ? 'Advanced' : data.experienceLevel === 4 ? 'Expert' : 'Professional'}</span>
+          </div>
+          <div className="flex flex-row items-center gap-">
+            <div className="flex gap-1 font-semibold">
+              ${price} {!reservation && <div className="font-light"> /Day</div>}
+            </div>
+          </div>
+          {onAction && actionLabel && (
+            <Button
+              disabled={disabled}
+              small
+              label={actionLabel}
+              onClick={handleCancel}
+            />
+          )}
         </div>
-        {onAction && actionLabel && (
-          <Button
-            disabled={disabled}
-            small
-            label={actionLabel}
-            onClick={handleCancel}
-          />
-        )}
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }
 

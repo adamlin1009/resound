@@ -25,13 +25,15 @@ function ListingHead({
   const { getByValue } = useCountries();
   const location = getByValue(locationValue);
 
+  const MotionDiv = motion.div as any;
+
   return (
     <>
       <Heading
         title={title}
         subtitle={`${location?.region}, ${location?.label}`}
       />
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{
@@ -50,7 +52,7 @@ function ListingHead({
         <div className="absolute top-5 right-5">
           <HeartButton listingId={id} currentUser={currentUser} />
         </div>
-      </motion.div>
+      </MotionDiv>
     </>
   );
 }

@@ -7,6 +7,8 @@ import ReservationsClient from "./ReservationsClient";
 
 type Props = {};
 
+export const dynamic = 'force-dynamic';
+
 const ReservationsPage = async (props: Props) => {
   const currentUser = await getCurrentUser();
 

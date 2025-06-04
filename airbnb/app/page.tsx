@@ -9,6 +9,8 @@ interface HomeProps {
   searchParams: Promise<URLSearchParams | IListingsParams>;
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home({ searchParams }: HomeProps) {
   // Await searchParams because in Next.js 15 it is provided as a Promise
   const awaitParams: any = await searchParams;
