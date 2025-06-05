@@ -1,6 +1,6 @@
 import { Listing, Reservation, User } from "@prisma/client";
 
-// Remove roomCount, bathroomCount, guestCount from the base Listing type for safeListing
+// Remove unused Airbnb fields from the base Listing type for safeListing
 export type CoreListingData = Omit<Listing, "createdAt" | "roomCount" | "bathroomCount" | "guestCount">;
 
 export type safeListing = CoreListingData & {

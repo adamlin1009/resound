@@ -8,20 +8,25 @@ type Props = {
   subtitle: string;
   value: number;
   onChange: (value: number) => void;
+  min?: number;
+  max?: number;
 };
 
-function Counter({ title, subtitle, value, onChange }: Props) {
+function Counter({ title, subtitle, value, onChange, min = 1, max }: Props) {
   const onAdd = useCallback(() => {
+    if (max && value >= max) {
+      return;
+    }
     onChange(value + 1);
-  }, [onChange, value]);
+  }, [onChange, value, max]);
 
   const onReduce = useCallback(() => {
-    if (value === 1) {
+    if (value <= min) {
       return;
     }
 
     onChange(value - 1);
-  }, [value, onChange]);
+  }, [value, onChange, min]);
 
   return (
     <div className="flex flex-row items-center justify-between">

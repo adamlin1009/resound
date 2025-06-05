@@ -94,7 +94,7 @@ function RentModal({}: Props) {
     axios
       .post("/api/listings", data)
       .then(() => {
-        toast.success("Listing Created!");
+        toast.success("Instrument Listed!");
         router.refresh();
         reset();
         setStep(STEPS.CATEGORY);
@@ -173,6 +173,8 @@ function RentModal({}: Props) {
           subtitle="Rate the condition (1-10, 10 being perfect)"
           value={conditionRating}
           onChange={(value) => setCustomValue("conditionRating", value)}
+          min={1}
+          max={10}
         />
         <hr />
         <Counter
@@ -180,6 +182,8 @@ function RentModal({}: Props) {
           subtitle="Suitable for what skill level? (1=Beginner, 5=Professional)"
           value={experienceLevel}
           onChange={(value) => setCustomValue("experienceLevel", value)}
+          min={1}
+          max={5}
         />
       </div>
     );

@@ -58,7 +58,7 @@
   background: #1e40af !important; /* Blue-700 */
 }
 
-.Toastify__toast--warning {
+.__toast--warning {
   background: #d97706 !important; /* Amber-600 */
 }
 

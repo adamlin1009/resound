@@ -10,7 +10,7 @@ type Props = {};
 function Footer({}: Props) {
   const itemData = [
     ["ABOUT", "How Resound works", "Newsroom", "Investors", "Careers", "Trust & Safety"],
-    ["SUPPORT", "Help Center", "ResoundProtect", "Cancellation options", "Safety information", "Report a listing"],
+    ["SUPPORT", "Help Center", "ResoundProtect", "Cancellation options", "Safety information", "Report an instrument"],
     ["LENDING", "List your instrument", "ResoundProtect for Lenders", "Lending resources", "Community forum", "Responsible lending"],
     ["DISCOVER", "Featured instruments", "Violin rentals", "Piano rentals", "Cello rentals", "Wind instruments"],
   ];

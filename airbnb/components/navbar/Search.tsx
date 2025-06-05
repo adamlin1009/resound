@@ -49,11 +49,14 @@ function Search({}: Props) {
     >
       <div className="flex flex-row items-center justify-between">
         <div className="text-sm font-semibold px-6">{locationLabel}</div>
-        <div className="hidden sm:block text-sm font-semibold px-6 border-x-[1px] flex-1 text-center">
+        <div className="hidden sm:block text-sm font-semibold px-6 border-x-[1px] border-gray-200 flex-1 text-center">
           {durationLabel}
         </div>
-        <div className="p-2 ml-auto mr-2 bg-amber-700 rounded-full text-white">
-          <BiSearch size={18} />
+        <div className="text-sm pl-6 pr-2 text-gray-600 flex items-center gap-3">
+          <div className="hidden sm:block">Add Filters</div>
+          <div className="p-2 bg-amber-700 rounded-full text-white">
+            <BiSearch size={18} />
+          </div>
         </div>
       </div>
     </div>

@@ -80,7 +80,7 @@ const PaymentSuccessPage = () => {
         <div className="pt-24">
           <EmptyState
             title="Payment Successful!"
-            subtitle={`Your instrument rental has been booked. Redirecting to your rentals in ${countdown} seconds...`}
+            subtitle={`Your instrument rental has been confirmed. Redirecting to your rentals in ${countdown} seconds...`}
             showReset={false}
           />
           <div className="flex justify-center mt-4">

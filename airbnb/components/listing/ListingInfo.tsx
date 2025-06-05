@@ -65,7 +65,7 @@ function ListingInfo({
         </p>
         <p className="text-neutral-500 pt-3">
           Every rental includes protection from lender cancellations,
-          listing inaccuracies, and instrument damage coverage.
+          instrument inaccuracies, and instrument damage coverage.
         </p>
         <p className="text-amber-900 font-bold underline pt-3 cursor-pointer">
           Learn more

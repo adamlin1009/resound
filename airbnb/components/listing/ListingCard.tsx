@@ -97,7 +97,7 @@ function ListingCard({
             </div>
           </div>
           <div className="font-semibold text-lg">
-            {location?.region}, {location?.label}
+            {data.title}
           </div>
           <div className="font-light text-neutral-500">
             {reservationDate || data.category}
@@ -105,6 +105,9 @@ function ListingCard({
           <div className="flex flex-row gap-2 text-sm text-neutral-600">
             <span>Condition: {data.conditionRating}/10</span>
             <span>Level: {data.experienceLevel === 1 ? 'Beginner' : data.experienceLevel === 2 ? 'Intermediate' : data.experienceLevel === 3 ? 'Advanced' : data.experienceLevel === 4 ? 'Expert' : 'Professional'}</span>
+          </div>
+          <div className="font-medium text-neutral-700">
+            {location?.label}, {location?.region}
           </div>
           <div className="flex flex-row items-center gap-">
             <div className="flex gap-1 font-semibold">
