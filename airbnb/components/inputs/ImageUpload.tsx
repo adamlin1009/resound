@@ -22,9 +22,6 @@ function ImageUpload({ onChange, value }: Props) {
     [onChange]
   );
 
-  console.log("Cloudinary Cloud Name:", process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME);
-  console.log("Cloudinary Upload Preset:", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
-
   return (
     <CldUploadWidget
       onSuccess={handleCallback}

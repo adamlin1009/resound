@@ -60,24 +60,27 @@ function ListingClient({ reservations = [], listing, currentUser }: Props) {
     setIsLoading(true);
 
     axios
-      .post("/api/reservations", {
+      .post("/api/create-checkout-session", {
         totalPrice,
         startDate: dateRange.startDate,
         endDate: dateRange.endDate,
         listingId: listing?.id,
       })
-      .then(() => {
-        toast.success("Success!");
-        setDateRange(initialDateRange);
-        router.push("/trips");
+      .then((response) => {
+        const { url } = response.data;
+        if (url) {
+          // Redirect to Stripe checkout
+          window.location.href = url;
+        } else {
+          toast.error("Failed to create checkout session");
+          setIsLoading(false);
+        }
       })
       .catch(() => {
-        toast.error("Something Went Wrong");
-      })
-      .finally(() => {
+        toast.error("Something went wrong. Please try again.");
         setIsLoading(false);
       });
-  }, [totalPrice, dateRange, listing?.id, router, currentUser, loginModal]);
+  }, [totalPrice, dateRange, listing?.id, currentUser, loginModal]);
 
   useEffect(() => {
     if (dateRange.startDate && dateRange.endDate) {
