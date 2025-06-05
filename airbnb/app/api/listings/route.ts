@@ -1,6 +1,6 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
-import { geocodeLocation } from "@/lib/geocoding";
+import { geocodeLocation, buildLocationString } from "@/lib/geocoding";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -49,10 +49,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Experience level must be between 1-5' }, { status: 400 });
   }
 
-  // Geocode the address
+  // Geocode the address with fallback options
   let coordinates = null;
   try {
+    // Try exact address first
     coordinates = await geocodeLocation(exactAddress);
+    
+    // If that fails, try city, state, zipCode combination
+    if (!coordinates) {
+      const fallbackAddress = buildLocationString(city, state, zipCode);
+      coordinates = await geocodeLocation(fallbackAddress);
+    }
   } catch (error) {
     console.error('Geocoding failed:', error);
     // Continue without coordinates rather than failing the listing creation

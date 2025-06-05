@@ -4,6 +4,7 @@ import Container from "@/components/Container";
 import Heading from "@/components/Heading";
 import ListingCard from "@/components/listing/ListingCard";
 import { SafeReservation, SafeUser } from "@/types";
+import useConfirmModal from "@/hook/useConfirmModal";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
@@ -16,12 +17,11 @@ type Props = {
 
 function RentalsClient({ reservations, currentUser }: Props) {
   const router = useRouter();
+  const confirmModal = useConfirmModal();
   const [deletingId, setDeletingId] = useState("");
 
-  const onCancel = useCallback(
+  const handleCancelConfirm = useCallback(
     (id: string) => {
-      if (!confirm("Are you sure you want to cancel this rental?")) return;
-      
       setDeletingId(id);
 
       axios
@@ -38,6 +38,18 @@ function RentalsClient({ reservations, currentUser }: Props) {
         });
     },
     [router]
+  );
+
+  const onCancel = useCallback(
+    (id: string) => {
+      confirmModal.onOpen({
+        title: "Cancel Rental",
+        subtitle: "Are you sure you want to cancel this rental? This action cannot be undone and no refund will be processed.",
+        actionLabel: "Cancel Rental",
+        onConfirm: () => handleCancelConfirm(id),
+      });
+    },
+    [confirmModal, handleCancelConfirm]
   );
 
   return (

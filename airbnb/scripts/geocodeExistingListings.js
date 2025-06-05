@@ -44,22 +44,23 @@ function buildLocationString(city, state, zipCode) {
 
 async function geocodeExistingListings() {
   try {
-    // Get all listings without coordinates
-    const listings = await prisma.listing.findMany({
-      where: {
-        OR: [
-          { latitude: null },
-          { longitude: null }
-        ]
-      },
+    // Get all listings
+    const allListings = await prisma.listing.findMany({
       select: {
         id: true,
         city: true,
         state: true,
         zipCode: true,
-        exactAddress: true
+        exactAddress: true,
+        latitude: true,
+        longitude: true
       }
     });
+
+    // Filter for listings without coordinates
+    const listings = allListings.filter(listing => 
+      listing.latitude === null || listing.longitude === null
+    );
 
     console.log(`Found ${listings.length} listings to geocode`);
 

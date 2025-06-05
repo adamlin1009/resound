@@ -43,12 +43,9 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized to cancel this reservation" }, { status: 403 });
     }
 
-    // Check if already canceled
-    if (reservation.status === "CANCELED") {
-      return NextResponse.json({ error: "Reservation already canceled" }, { status: 400 });
-    }
+    // Note: No status check since Reservation model doesn't have status field
 
-    // Update reservation with cancellation details
+    // Update reservation with cancellation details (no refunds)
     const updatedReservation = await prisma.reservation.update({
       where: { id: reservationId },
       data: {
@@ -62,7 +59,7 @@ export async function POST(
     return NextResponse.json({
       success: true,
       reservation: updatedReservation,
-      message: "Reservation canceled successfully."
+      message: "Reservation canceled successfully. No refund will be processed per our no-refunds policy."
     });
 
   } catch (error) {

@@ -5,6 +5,7 @@ import { SafeUser } from "@/types";
 import Container from "@/components/Container";
 import Heading from "@/components/Heading";
 import Button from "@/components/Button";
+import useConfirmModal from "@/hook/useConfirmModal";
 
 interface AdminClientProps {
   currentUser: SafeUser;
@@ -44,6 +45,7 @@ interface Listing {
 }
 
 const AdminClient: React.FC<AdminClientProps> = ({ currentUser }) => {
+  const confirmModal = useConfirmModal();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'listings'>('dashboard');
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [users, setUsers] = useState<User[]>([]);
@@ -115,9 +117,7 @@ const AdminClient: React.FC<AdminClientProps> = ({ currentUser }) => {
     }
   };
 
-  const deleteListing = async (listingId: string) => {
-    if (!confirm('Are you sure you want to delete this listing?')) return;
-    
+  const handleDeleteListing = async (listingId: string) => {
     try {
       const response = await fetch(`/api/admin/listings/${listingId}`, {
         method: 'DELETE',
@@ -129,6 +129,15 @@ const AdminClient: React.FC<AdminClientProps> = ({ currentUser }) => {
     } catch (error) {
       console.error('Error deleting listing:', error);
     }
+  };
+
+  const deleteListing = (listingId: string) => {
+    confirmModal.onOpen({
+      title: "Delete Listing",
+      subtitle: "Are you sure you want to delete this listing? This action cannot be undone.",
+      actionLabel: "Delete",
+      onConfirm: () => handleDeleteListing(listingId),
+    });
   };
 
   return (

@@ -105,17 +105,12 @@ export const emailTemplates = {
   cancellationNotice: (data: {
     userName: string;
     listingTitle: string;
-    refundAmount?: number;
     canceledBy: string;
   }) => `
     <h2>Booking Cancellation Notice</h2>
     <p>Hi ${data.userName},</p>
     <p>Your booking for "${data.listingTitle}" has been canceled by ${data.canceledBy}.</p>
-    ${data.refundAmount ? `
-      <p><strong>Refund:</strong> $${(data.refundAmount / 100).toFixed(2)} will be processed back to your original payment method within 3-5 business days.</p>
-    ` : `
-      <p>No refund is available per our cancellation policy.</p>
-    `}
+    <p><strong>Refund Policy:</strong> As per our no-refunds policy, no refund will be processed for this cancellation.</p>
     <p>Thanks for understanding.</p>
   `
 };

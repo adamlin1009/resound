@@ -23,7 +23,6 @@ export async function DELETE(
     const activeReservations = await prisma.reservation.count({
       where: {
         listingId: listingId,
-        status: "ACTIVE",
         endDate: {
           gte: new Date()
         }
