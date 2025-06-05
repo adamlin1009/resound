@@ -30,7 +30,7 @@ function Search({}: Props) {
       return state;
     }
 
-    return "Anywhere";
+    return "Location";
   }, [formatLocationShort, city, state]);
 
   const durationLabel = useMemo(() => {
@@ -46,7 +46,7 @@ function Search({}: Props) {
       return `${diff} Days`;
     }
 
-    return "Any Week";
+    return "Select dates";
   }, [startDate, endDate]);
 
   return (
@@ -60,7 +60,7 @@ function Search({}: Props) {
           {durationLabel}
         </div>
         <div className="text-sm pl-6 pr-2 text-gray-600 flex items-center gap-3">
-          <div className="hidden sm:block">Add Filters</div>
+          <div className="hidden sm:block">Find instrument</div>
           <div className="p-2 bg-amber-700 rounded-full text-white">
             <BiSearch size={18} />
           </div>

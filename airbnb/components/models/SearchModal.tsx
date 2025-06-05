@@ -153,6 +153,8 @@ function SearchModal({}: Props) {
             value={conditionRating}
             title="Condition"
             subtitle="Minimum condition rating (1-10)?"
+            min={1}
+            max={10}
           />
           <Counter
             onChange={(value) => {
@@ -161,6 +163,8 @@ function SearchModal({}: Props) {
             value={experienceLevel}
             title="Experience Level"
             subtitle="What skill level? (1=Beginner, 5=Pro)"
+            min={1}
+            max={5}
           />
         </div>
       </div>

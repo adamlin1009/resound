@@ -1,9 +1,19 @@
 "use client";
 
 import { USLocationValue } from "@/hook/useUSLocations";
-import { filterLocationOptions, LocationOption } from "@/lib/usCitiesData";
+import { useDebounce } from "@/hook/useDebounce";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FiMapPin, FiChevronDown } from "react-icons/fi";
+import { FiMapPin, FiChevronDown, FiX } from "react-icons/fi";
+
+type Prediction = {
+  placeId: string;
+  displayText: string;
+  city: string;
+  state: string;
+  zipCode?: string;
+  mainText: string;
+  secondaryText: string;
+};
 
 type Props = {
   value?: USLocationValue;
@@ -11,15 +21,25 @@ type Props = {
   placeholder?: string;
 };
 
-export default function AddressInput({ value, onChange, placeholder = "Enter city, state, or zip code" }: Props) {
+export default function AddressInput({ value, onChange, placeholder = "Enter city, state, or address" }: Props) {
   const [input, setInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [suggestions, setSuggestions] = useState<LocationOption[]>([]);
+  const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sessionToken, setSessionToken] = useState<string>("");
   
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  
+  const debouncedInput = useDebounce(input, 300);
+
+  // Generate session token on mount
+  useEffect(() => {
+    setSessionToken(Math.random().toString(36).substring(7));
+  }, []);
 
   // Initialize input from value
   useEffect(() => {
@@ -27,59 +47,111 @@ export default function AddressInput({ value, onChange, placeholder = "Enter cit
       setInput(`${value.city}, ${value.state}`);
     } else if (value?.state && !value?.city) {
       setInput(value.state);
-    } else if (!value?.city && !value?.state) {
-      setInput("");
     }
   }, [value?.city, value?.state]);
 
-  // Handle input changes and filtering
+  // Fetch predictions from Google Places API
+  const fetchPredictions = useCallback(async (searchInput: string) => {
+    // Cancel previous request if exists
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Create new abort controller
+    abortControllerRef.current = new AbortController();
+
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const params = new URLSearchParams({
+        input: searchInput,
+        sessionToken: sessionToken,
+      });
+
+      const response = await fetch(`/api/places/autocomplete?${params}`, {
+        signal: abortControllerRef.current.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch suggestions');
+      }
+
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      setPredictions(data.predictions || []);
+      setIsOpen(data.predictions?.length > 0);
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.error('Error fetching predictions:', err);
+        setError('Unable to load suggestions');
+        setPredictions([]);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [sessionToken]);
+
+  // Handle debounced input changes
+  useEffect(() => {
+    if (debouncedInput.trim().length >= 2) {
+      fetchPredictions(debouncedInput);
+    } else {
+      setPredictions([]);
+      setIsOpen(false);
+    }
+  }, [debouncedInput, fetchPredictions]);
+
+  // Handle input changes
   const handleInputChange = useCallback((inputValue: string) => {
     setInput(inputValue);
     setSelectedIndex(-1);
+    setError(null);
 
     if (!inputValue.trim()) {
-      setSuggestions([]);
+      setPredictions([]);
       setIsOpen(false);
       onChange({ city: "", state: "", zipCode: "" });
-      return;
-    }
-
-    if (inputValue.length >= 2) {
-      setIsLoading(true);
-      const filtered = filterLocationOptions(inputValue);
-      setSuggestions(filtered);
-      setIsOpen(filtered.length > 0);
-      setIsLoading(false);
-    } else {
-      setSuggestions([]);
-      setIsOpen(false);
     }
   }, [onChange]);
 
   // Handle selection from dropdown
-  const handleSelect = useCallback((option: LocationOption) => {
+  const handleSelect = useCallback((prediction: Prediction) => {
+    // Extract state abbreviation from secondary text
+    const stateMatch = prediction.secondaryText.match(/([A-Z]{2})/);
+    const stateAbbr = stateMatch ? stateMatch[1] : "";
+    
     const newValue: USLocationValue = {
-      city: option.city || "",
-      state: option.state,
-      zipCode: option.zipCode || ""
+      city: prediction.city,
+      state: stateAbbr,
+      zipCode: prediction.zipCode || ""
     };
     
     onChange(newValue);
-    setInput(option.displayText);
+    setInput(prediction.displayText);
     setIsOpen(false);
     setSelectedIndex(-1);
+    setPredictions([]);
+    
+    // Generate new session token after selection
+    setSessionToken(Math.random().toString(36).substring(7));
+    
     inputRef.current?.blur();
   }, [onChange]);
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (!isOpen) return;
+    if (!isOpen || predictions.length === 0) return;
 
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
         setSelectedIndex(prev => 
-          prev < suggestions.length - 1 ? prev + 1 : prev
+          prev < predictions.length - 1 ? prev + 1 : prev
         );
         break;
       case 'ArrowUp':
@@ -88,8 +160,8 @@ export default function AddressInput({ value, onChange, placeholder = "Enter cit
         break;
       case 'Enter':
         e.preventDefault();
-        if (selectedIndex >= 0 && suggestions[selectedIndex]) {
-          handleSelect(suggestions[selectedIndex]);
+        if (selectedIndex >= 0 && predictions[selectedIndex]) {
+          handleSelect(predictions[selectedIndex]);
         }
         break;
       case 'Escape':
@@ -97,7 +169,17 @@ export default function AddressInput({ value, onChange, placeholder = "Enter cit
         setSelectedIndex(-1);
         break;
     }
-  }, [isOpen, selectedIndex, suggestions, handleSelect]);
+  }, [isOpen, selectedIndex, predictions, handleSelect]);
+
+  // Clear input
+  const handleClear = useCallback(() => {
+    setInput("");
+    setPredictions([]);
+    setIsOpen(false);
+    setError(null);
+    onChange({ city: "", state: "", zipCode: "" });
+    inputRef.current?.focus();
+  }, [onChange]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -126,44 +208,59 @@ export default function AddressInput({ value, onChange, placeholder = "Enter cit
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => {
-            if (suggestions.length > 0) setIsOpen(true);
+            if (predictions.length > 0 && !error) setIsOpen(true);
           }}
           placeholder={placeholder}
           className="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 transition-colors"
           autoComplete="off"
         />
         
-        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
           {isLoading ? (
             <div className="w-4 h-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
+          ) : input ? (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <FiX size={18} />
+            </button>
           ) : (
-            <FiChevronDown size={18} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            <FiChevronDown size={18} className={`text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
           )}
         </div>
       </div>
 
+      {/* Error message */}
+      {error && (
+        <div className="absolute z-50 w-full mt-1 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+          {error}
+        </div>
+      )}
+
       {/* Dropdown */}
-      {isOpen && suggestions.length > 0 && (
+      {isOpen && predictions.length > 0 && !error && (
         <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-          {suggestions.map((option, index) => (
+          {predictions.map((prediction, index) => (
             <button
-              key={`${option.type}-${option.state}-${option.city || 'state'}`}
+              key={prediction.placeId}
               type="button"
               className={`w-full px-4 py-3 text-left hover:bg-amber-50 transition-colors border-b border-gray-100 last:border-b-0 ${
                 index === selectedIndex ? 'bg-amber-50 border-amber-200' : ''
               }`}
-              onClick={() => handleSelect(option)}
+              onClick={() => handleSelect(prediction)}
               onMouseEnter={() => setSelectedIndex(index)}
             >
               <div className="flex items-center gap-2">
                 <FiMapPin size={16} className="text-gray-400 flex-shrink-0" />
-                <div>
-                  <div className="font-medium text-gray-900">
-                    {option.displayText}
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-gray-900 truncate">
+                    {prediction.mainText}
                   </div>
-                  {option.type === 'city' && option.zipCode && (
-                    <div className="text-xs text-gray-500">{option.zipCode}</div>
-                  )}
+                  <div className="text-xs text-gray-500 truncate">
+                    {prediction.secondaryText}
+                  </div>
                 </div>
               </div>
             </button>

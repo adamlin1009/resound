@@ -1,14 +1,15 @@
 "use client";
 
 import useUSLocations from "@/hook/useUSLocations";
+import { useCoordinates } from "@/hook/useCoordinates";
 import { SafeUser } from "@/types";
 import dynamic from "next/dynamic";
-import React from "react";
+import React, { useMemo } from "react";
 import { IconType } from "react-icons";
 import Avatar from "../Avatar";
 import ListingCategory from "./ListingCategory";
 
-const Map = dynamic(() => import("../Map").then(mod => mod.default), {
+const Map = dynamic(() => import("../Map"), {
   ssr: false,
 });
 
@@ -40,7 +41,16 @@ function ListingInfo({
   zipCode,
 }: Props) {
   const { formatLocation } = useUSLocations();
-  const locationDisplay = formatLocation({ city: city || undefined, state, zipCode: zipCode || undefined });
+  
+  // Memoize the location object to prevent infinite re-renders
+  const location = useMemo(() => ({
+    city: city || undefined,
+    state,
+    zipCode: zipCode || undefined
+  }), [city, state, zipCode]);
+  
+  const locationDisplay = formatLocation(location);
+  const { coordinates } = useCoordinates(location);
 
   return (
     <div className="col-span-4 flex flex-col gap-8">
@@ -80,6 +90,12 @@ function ListingInfo({
       <hr />
       <p className="text-xl font-semibold">Pickup location</p>
       <p className="text-lg font-medium text-neutral-700">{locationDisplay}</p>
+      <Map 
+        center={coordinates || undefined}
+        city={city || undefined}
+        state={state}
+        zipCode={zipCode || undefined}
+      />
     </div>
   );
 }

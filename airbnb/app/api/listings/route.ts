@@ -29,6 +29,15 @@ export async function POST(request: Request) {
     return NextResponse.error();
   }
 
+  // Validate ranges
+  if (conditionRating < 1 || conditionRating > 10) {
+    return NextResponse.error();
+  }
+  
+  if (experienceLevel < 1 || experienceLevel > 5) {
+    return NextResponse.error();
+  }
+
   const listen = await prisma.listing.create({
     data: {
       title,

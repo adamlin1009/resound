@@ -89,3 +89,12 @@ Required environment variables (see SETUP_INSTRUCTIONS.md):
 - `NEXTAUTH_SECRET` - Auth secret
 - `GOOGLE_CLIENT_ID/SECRET` - OAuth credentials
 - `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` - Image uploads
+- `GOOGLE_PLACES_API_KEY` - Google Places API for location autocomplete (optional)
+
+### Location System
+
+The app uses a US-focused location system:
+- **Google Places API** for professional autocomplete (when API key is configured)
+- **Fallback** to manual city/state/zip entry if API is not available
+- **US-only** locations with city, state, and optional zip code
+- **Smart search** in both listings and search functionality
