@@ -79,12 +79,15 @@ export default async function getListings(params: IListingsParams) {
       },
     });
 
-    const safeListings: safeListing[] = listings.map((list: any) => ({
-      ...list,
-      createdAt: list.createdAt.toISOString(),
-      conditionRating: list.conditionRating,
-      experienceLevel: list.experienceLevel,
-    }));
+    const safeListings: safeListing[] = listings.map((list: any) => {
+      const { exactAddress, ...publicListing } = list;
+      return {
+        ...publicListing,
+        createdAt: list.createdAt.toISOString(),
+        conditionRating: list.conditionRating,
+        experienceLevel: list.experienceLevel,
+      };
+    });
 
     return safeListings;
   } catch (error: any) {

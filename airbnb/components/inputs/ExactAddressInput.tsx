@@ -1,9 +1,8 @@
 "use client";
 
-import { USLocationValue } from "@/hook/useUSLocations";
-import { useDebounce } from "@/hook/useDebounce";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FiMapPin, FiChevronDown, FiX } from "react-icons/fi";
+import { useDebounce } from "@/hook/useDebounce";
 
 type Prediction = {
   placeId: string;
@@ -16,48 +15,37 @@ type Prediction = {
 };
 
 type Props = {
-  value?: USLocationValue;
-  onChange: (value: USLocationValue) => void;
+  value?: string;
+  onChange: (value: string) => void;
   placeholder?: string;
 };
 
-export default function AddressInput({ value, onChange, placeholder = "Enter city, state, or address" }: Props) {
-  const [input, setInput] = useState("");
+export default function ExactAddressInput({ value = "", onChange, placeholder = "Enter full street address" }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionToken, setSessionToken] = useState<string>("");
+  
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const justSelectedRef = useRef<boolean>(false);
   
-  const debouncedInput = useDebounce(input, 300);
+  const debouncedInput = useDebounce(value, 300);
 
   // Generate session token on mount
   useEffect(() => {
     setSessionToken(Math.random().toString(36).substring(7));
   }, []);
 
-  // Initialize input from value
-  useEffect(() => {
-    if (value?.city && value?.state) {
-      setInput(`${value.city}, ${value.state}`);
-    } else if (value?.state && !value?.city) {
-      setInput(value.state);
-    }
-  }, [value?.city, value?.state]);
-
-  // Fetch predictions from Google Places API
+  // Fetch predictions from Google Places API for addresses
   const fetchPredictions = useCallback(async (searchInput: string) => {
-    // Cancel previous request if exists
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
 
-    // Create new abort controller
     abortControllerRef.current = new AbortController();
 
     try {
@@ -98,12 +86,11 @@ export default function AddressInput({ value, onChange, placeholder = "Enter cit
 
   // Handle debounced input changes
   useEffect(() => {
-    // Don't fetch if we just selected something
     if (justSelectedRef.current) {
       return;
     }
     
-    if (debouncedInput.trim().length >= 2) {
+    if (debouncedInput.trim().length >= 5) { // Require more characters for addresses
       fetchPredictions(debouncedInput);
     } else {
       setPredictions([]);
@@ -111,47 +98,17 @@ export default function AddressInput({ value, onChange, placeholder = "Enter cit
     }
   }, [debouncedInput, fetchPredictions]);
 
-  // Handle input changes
-  const handleInputChange = useCallback((inputValue: string) => {
-    setInput(inputValue);
-    setSelectedIndex(-1);
-    setError(null);
-    justSelectedRef.current = false; // Reset the flag when user types
-
-    if (!inputValue.trim()) {
-      setPredictions([]);
-      setIsOpen(false);
-      onChange({ city: "", state: "", zipCode: "" });
-    }
-  }, [onChange]);
-
   // Handle selection from dropdown
   const handleSelect = useCallback((prediction: Prediction) => {
-    // Extract state abbreviation from secondary text
-    const stateMatch = prediction.secondaryText.match(/([A-Z]{2})/);
-    const stateAbbr = stateMatch ? stateMatch[1] : "";
-    
-    const newValue: USLocationValue = {
-      city: prediction.city,
-      state: stateAbbr,
-      zipCode: prediction.zipCode || ""
-    };
-    
-    // Update form values
-    onChange(newValue);
-    setInput(prediction.displayText);
-    
-    // Clear everything and close dropdown
+    onChange(prediction.displayText);
     setIsOpen(false);
     setSelectedIndex(-1);
     setPredictions([]);
     setError(null);
     justSelectedRef.current = true;
     
-    // Generate new session token after selection
     setSessionToken(Math.random().toString(36).substring(7));
     
-    // Reset the flag after a delay
     setTimeout(() => {
       justSelectedRef.current = false;
     }, 500);
@@ -185,28 +142,17 @@ export default function AddressInput({ value, onChange, placeholder = "Enter cit
     }
   }, [isOpen, selectedIndex, predictions, handleSelect]);
 
-  // Clear input
-  const handleClear = useCallback(() => {
-    setInput("");
-    setPredictions([]);
-    setIsOpen(false);
+  const handleInputChange = useCallback((inputValue: string) => {
+    onChange(inputValue);
+    setSelectedIndex(-1);
     setError(null);
-    onChange({ city: "", state: "", zipCode: "" });
-    inputRef.current?.focus();
+    justSelectedRef.current = false;
+
+    if (!inputValue.trim()) {
+      setPredictions([]);
+      setIsOpen(false);
+    }
   }, [onChange]);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-        setSelectedIndex(-1);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -218,32 +164,23 @@ export default function AddressInput({ value, onChange, placeholder = "Enter cit
         <input
           ref={inputRef}
           type="text"
-          value={input}
+          value={value}
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => {
-            // Don't open dropdown if we just selected or if input looks like a complete location
-            const looksComplete = input.includes(',') && (input.includes('USA') || input.includes('US'));
+            const looksComplete = value.includes(',') && (value.includes('USA') || value.includes('US'));
             if (!justSelectedRef.current && !looksComplete && predictions.length > 0 && !error) {
               setIsOpen(true);
             }
           }}
           placeholder={placeholder}
           className="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 transition-colors"
-          autoComplete="off"
+          autoComplete="street-address"
         />
         
         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
           {isLoading ? (
             <div className="w-4 h-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
-          ) : input ? (
-            <button
-              type="button"
-              onClick={handleClear}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <FiX size={18} />
-            </button>
           ) : (
             <FiChevronDown size={18} className={`text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
           )}
@@ -268,7 +205,7 @@ export default function AddressInput({ value, onChange, placeholder = "Enter cit
                 index === selectedIndex ? 'bg-amber-50 border-amber-200' : ''
               }`}
               onMouseDown={(e) => {
-                e.preventDefault(); // Prevent input from losing/gaining focus
+                e.preventDefault();
                 handleSelect(prediction);
               }}
               onMouseEnter={() => setSelectedIndex(index)}

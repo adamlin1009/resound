@@ -18,38 +18,49 @@ export async function POST(request: Request) {
     city,
     state,
     zipCode,
+    exactAddress,
     price,
     conditionRating,
     experienceLevel,
   } = body;
 
-  // Validate required fields (city and zipCode are optional)
-  const requiredFields = [title, description, imageSrc, category, state, price, conditionRating, experienceLevel];
-  if (requiredFields.some(field => !field)) {
-    return NextResponse.error();
+  // Validate required fields (imageSrc and zipCode are optional)
+  if (!title || !description || !category || !state || !city || !exactAddress) {
+    console.error('Missing required fields:', { title: !!title, description: !!description, category: !!category, state: !!state, city: !!city, exactAddress: !!exactAddress });
+    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  // Validate ranges
-  if (conditionRating < 1 || conditionRating > 10) {
-    return NextResponse.error();
+  // Validate price
+  const priceNum = parseInt(price, 10);
+  if (!price || isNaN(priceNum) || priceNum <= 0) {
+    console.error('Invalid price:', price);
+    return NextResponse.json({ error: 'Price must be a positive number' }, { status: 400 });
+  }
+
+  // Validate condition and experience
+  if (!conditionRating || conditionRating < 1 || conditionRating > 10) {
+    console.error('Invalid condition rating:', conditionRating);
+    return NextResponse.json({ error: 'Condition rating must be between 1-10' }, { status: 400 });
   }
   
-  if (experienceLevel < 1 || experienceLevel > 5) {
-    return NextResponse.error();
+  if (!experienceLevel || experienceLevel < 1 || experienceLevel > 5) {
+    console.error('Invalid experience level:', experienceLevel);
+    return NextResponse.json({ error: 'Experience level must be between 1-5' }, { status: 400 });
   }
 
   const listen = await prisma.listing.create({
     data: {
       title,
       description,
-      imageSrc,
+      imageSrc: imageSrc || '',
       category,
       conditionRating,
       experienceLevel,
-      city: city || null,
+      city,
       state,
       zipCode: zipCode || null,
-      price: parseInt(price, 10),
+      exactAddress,
+      price: priceNum,
       userId: currentUser.id,
     },
   });

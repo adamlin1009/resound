@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     } else if (hasNumbers) {
       types = 'address';
     } else {
-      types = '(cities)';
+      types = 'geocode'; // More comprehensive than just cities
     }
     
     // Build query parameters
@@ -89,6 +89,12 @@ export async function GET(request: NextRequest) {
         // For cities and addresses
         city = parts[0] || '';
         state = parts.length >= 2 ? parts[1] : '';
+        
+        // Try to extract zip code from description if present
+        const zipMatch = prediction.description.match(/\b(\d{5})\b/);
+        if (zipMatch) {
+          zipCode = zipMatch[1];
+        }
       }
       
       return {

@@ -12,6 +12,7 @@ import Heading from "../Heading";
 import CategoryInput from "../inputs/CategoryInput";
 import Counter from "../inputs/Counter";
 import AddressInput from "../inputs/AddressInput";
+import ExactAddressInput from "../inputs/ExactAddressInput";
 import ImageUpload from "../inputs/ImageUpload";
 import Input from "../inputs/Input";
 import { categories } from "../navbar/Categories";
@@ -47,6 +48,7 @@ function RentModal({}: Props) {
       city: "",
       state: "",
       zipCode: "",
+      exactAddress: "",
       conditionRating: 1,
       experienceLevel: 1,
       imageSrc: "",
@@ -60,6 +62,7 @@ function RentModal({}: Props) {
   const city = watch("city");
   const state = watch("state");
   const zipCode = watch("zipCode");
+  const exactAddress = watch("exactAddress");
   const conditionRating = watch("conditionRating");
   const experienceLevel = watch("experienceLevel");
   const imageSrc = watch("imageSrc");
@@ -104,8 +107,10 @@ function RentModal({}: Props) {
         setStep(STEPS.CATEGORY);
         rentModel.onClose();
       })
-      .catch(() => {
-        toast.error("Something Went Wrong");
+      .catch((error) => {
+        console.error('Listing creation error:', error);
+        const errorMessage = error.response?.data?.error || "Something went wrong";
+        toast.error(errorMessage);
       })
       .finally(() => {
         setIsLoading(false);
@@ -154,17 +159,39 @@ function RentModal({}: Props) {
       <div className="flex flex-col gap-8">
         <Heading
           title="Where is your instrument located?"
-          subtitle="Enter a city, zip code, or full address"
+          subtitle="Enter your full address - we'll only show the general area publicly"
         />
-        <AddressInput
-          value={{ city, state, zipCode }}
+        <ExactAddressInput
+          value={exactAddress}
           onChange={(value) => {
-            setCustomValue("city", value.city);
-            setCustomValue("state", value.state);
-            setCustomValue("zipCode", value.zipCode || "");
+            setCustomValue("exactAddress", value);
+            // Auto-parse address to extract city, state, zip
+            const addressParts = value.split(',').map(part => part.trim());
+            if (addressParts.length >= 3) {
+              const cityPart = addressParts[addressParts.length - 3];
+              const statePart = addressParts[addressParts.length - 2];
+              const zipMatch = value.match(/\b(\d{5})\b/);
+              
+              if (cityPart) setCustomValue("city", cityPart);
+              if (statePart) {
+                // Extract state abbreviation
+                const stateMatch = statePart.match(/([A-Z]{2})/);
+                if (stateMatch) setCustomValue("state", stateMatch[1]);
+              }
+              if (zipMatch) setCustomValue("zipCode", zipMatch[1]);
+            }
           }}
-          placeholder="Enter city, zip code, or address"
+          placeholder="123 Main Street, Apt 4B, Irvine, CA 92602"
         />
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <div className="text-amber-600 mt-0.5">🔒</div>
+            <div className="text-sm text-amber-800">
+              <p className="font-medium mb-1">Privacy Protection</p>
+              <p>We only show your general area (city and zip code) to potential renters. Your exact address is kept private and only shared with confirmed bookings for pickup coordination.</p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

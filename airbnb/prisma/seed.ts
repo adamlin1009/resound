@@ -92,6 +92,7 @@ async function main() {
       city: "New York",
       state: "NY",
       zipCode: "10001",
+      exactAddress: "123 Carnegie Hall Way, New York, NY 10001",
       price: 150,
       userId: users[0].id
     },
@@ -101,11 +102,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1460036521480-ff49c08c2781?w=800",
       category: "Violin",
       conditionRating: 7,
-      experienceLevel: 1,
-      city: "Los Angeles",
-      state: "CA",
-      zipCode: "90210",
-      price: 35,
+      experienceLevel: 1,exactAddress: "Sample Address, ,  ", 35,
       userId: users[1].id
     },
     {
@@ -114,11 +111,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
       category: "Violin",
       conditionRating: 8,
-      experienceLevel: 5,
-      city: "Chicago",
-      state: "IL",
-      zipCode: "60601",
-      price: 200,
+      experienceLevel: 5,exactAddress: "Sample Address, ,  ", 200,
       userId: users[3].id
     },
     {
@@ -127,11 +120,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=800",
       category: "Violin",
       conditionRating: 9,
-      experienceLevel: 3,
-      city: "Austin",
-      state: "TX",
-      zipCode: "73301",
-      price: 85,
+      experienceLevel: 3,exactAddress: "Sample Address, ,  ", 85,
       userId: users[4].id
     },
     {
@@ -140,11 +129,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1519635618540-9b1d5a4677c1?w=800",
       category: "Violin",
       conditionRating: 7,
-      experienceLevel: 2,
-      city: "Boston",
-      state: "MA",
-      zipCode: "02101",
-      price: 65,
+      experienceLevel: 2,exactAddress: "Sample Address, ,  ", 65,
       userId: users[0].id
     },
 
@@ -155,11 +140,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=800",
       category: "Piano",
       conditionRating: 10,
-      experienceLevel: 5,
-      city: "Miami",
-      state: "FL",
-      zipCode: "33101",
-      price: 300,
+      experienceLevel: 5,exactAddress: "Sample Address, ,  ", 300,
       userId: users[2].id
     },
     {
@@ -168,11 +149,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1552422535-c45813c61732?w=800",
       category: "Piano",
       conditionRating: 8,
-      experienceLevel: 2,
-      city: "Seattle",
-      state: "WA",
-      zipCode: "98101",
-      price: 120,
+      experienceLevel: 2,exactAddress: "Sample Address, ,  ", 120,
       userId: users[3].id
     },
     {
@@ -181,11 +158,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800",
       category: "Piano",
       conditionRating: 10,
-      experienceLevel: 5,
-      city: "San Francisco",
-      state: "CA",
-      zipCode: "94101",
-      price: 450,
+      experienceLevel: 5,exactAddress: "Sample Address, ,  ", 450,
       userId: users[2].id
     },
     {
@@ -194,11 +167,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1571974599782-87624638275b?w=800",
       category: "Piano",
       conditionRating: 8,
-      experienceLevel: 4,
-      city: "Nashville",
-      state: "TN",
-      zipCode: "37201",
-      price: 275,
+      experienceLevel: 4,exactAddress: "Sample Address, ,  ", 275,
       userId: users[5].id
     },
     {
@@ -207,11 +176,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1571974599782-87624638275b?w=800",
       category: "Piano",
       conditionRating: 9,
-      experienceLevel: 2,
-      city: "Denver",
-      state: "CO",
-      zipCode: "80201",
-      price: 75,
+      experienceLevel: 2,exactAddress: "Sample Address, ,  ", 75,
       userId: users[1].id
     },
     {
@@ -220,11 +185,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
       category: "Piano",
       conditionRating: 7,
-      experienceLevel: 3,
-      city: "Portland",
-      state: "OR",
-      zipCode: "97201",
-      price: 95,
+      experienceLevel: 3,exactAddress: "Sample Address, ,  ", 95,
       userId: users[4].id
     },
 
@@ -235,11 +196,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1558098329-a11cff621064?w=800",
       category: "Guitar",
       conditionRating: 9,
-      experienceLevel: 4,
-      city: "Atlanta",
-      state: "GA",
-      zipCode: "30301",
-      price: 125,
+      experienceLevel: 4,exactAddress: "Sample Address, ,  ", 125,
       userId: users[0].id
     },
     {
@@ -248,11 +205,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=800",
       category: "Guitar",
       conditionRating: 8,
-      experienceLevel: 3,
-      city: "Las Vegas",
-      state: "NV",
-      zipCode: "89101",
-      price: 85,
+      experienceLevel: 3,exactAddress: "Sample Address, ,  ", 85,
       userId: users[1].id
     },
     {
@@ -261,11 +214,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
       category: "Guitar",
       conditionRating: 9,
-      experienceLevel: 4,
-      city: "Phoenix",
-      state: "AZ",
-      zipCode: "85001",
-      price: 135,
+      experienceLevel: 4,exactAddress: "Sample Address, ,  ", 135,
       userId: users[6].id
     },
     {
@@ -274,11 +223,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800",
       category: "Guitar",
       conditionRating: 10,
-      experienceLevel: 4,
-      city: "San Diego",
-      state: "CA",
-      zipCode: "92101",
-      price: 165,
+      experienceLevel: 4,exactAddress: "Sample Address, ,  ", 165,
       userId: users[2].id
     },
     {
@@ -287,11 +232,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1520637836862-4d197d17c86a?w=800",
       category: "Guitar",
       conditionRating: 8,
-      experienceLevel: 3,
-      city: "Houston",
-      state: "TX",
-      zipCode: "77001",
-      price: 95,
+      experienceLevel: 3,exactAddress: "Sample Address, ,  ", 95,
       userId: users[4].id
     },
     {
@@ -300,11 +241,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1514119412350-e174d90d280e?w=800",
       category: "Guitar",
       conditionRating: 9,
-      experienceLevel: 4,
-      city: "Philadelphia",
-      state: "PA",
-      zipCode: "19101",
-      price: 115,
+      experienceLevel: 4,exactAddress: "Sample Address, ,  ", 115,
       userId: users[3].id
     },
     {
@@ -313,11 +250,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1525201548942-d8732f6617a0?w=800",
       category: "Guitar",
       conditionRating: 8,
-      experienceLevel: 1,
-      city: "Minneapolis",
-      state: "MN",
-      zipCode: "55401",
-      price: 35,
+      experienceLevel: 1,exactAddress: "Sample Address, ,  ", 35,
       userId: users[1].id
     },
     {
@@ -326,11 +259,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
       category: "Guitar",
       conditionRating: 8,
-      experienceLevel: 5,
-      city: "Detroit",
-      state: "MI",
-      zipCode: "48201",
-      price: 225,
+      experienceLevel: 5,exactAddress: "Sample Address, ,  ", 225,
       userId: users[5].id
     },
 
@@ -341,11 +270,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1516924962500-2b4b3b99ea02?w=800",
       category: "Saxophone",
       conditionRating: 9,
-      experienceLevel: 4,
-      city: "New Orleans",
-      state: "LA",
-      zipCode: "70112",
-      price: 175,
+      experienceLevel: 4,exactAddress: "Sample Address, ,  ", 175,
       userId: users[3].id
     },
     {
@@ -354,11 +279,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1551127481-43279ba57543?w=800",
       category: "Saxophone",
       conditionRating: 8,
-      experienceLevel: 2,
-      city: "Kansas City",
-      state: "MO",
-      zipCode: "64101",
-      price: 95,
+      experienceLevel: 2,exactAddress: "Sample Address, ,  ", 95,
       userId: users[5].id
     },
     {
@@ -367,11 +288,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1551127481-43279ba57543?w=800",
       category: "Saxophone",
       conditionRating: 9,
-      experienceLevel: 4,
-      city: "Memphis",
-      state: "TN",
-      zipCode: "38103",
-      price: 155,
+      experienceLevel: 4,exactAddress: "Sample Address, ,  ", 155,
       userId: users[4].id
     },
     {
@@ -380,11 +297,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1520637736862-4d197d17c86a?w=800",
       category: "Saxophone",
       conditionRating: 7,
-      experienceLevel: 1,
-      city: "Charlotte",
-      state: "NC",
-      zipCode: "28201",
-      price: 65,
+      experienceLevel: 1,exactAddress: "Sample Address, ,  ", 65,
       userId: users[6].id
     },
 
@@ -395,11 +308,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1558369178-9e3a64b4dc4d?w=800",
       category: "Trumpet",
       conditionRating: 9,
-      experienceLevel: 4,
-      city: "Cleveland",
-      state: "OH",
-      zipCode: "44101",
-      price: 125,
+      experienceLevel: 4,exactAddress: "Sample Address, ,  ", 125,
       userId: users[6].id
     },
     {
@@ -408,11 +317,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1558369178-9e3a64b4dc4d?w=800",
       category: "Trumpet",
       conditionRating: 8,
-      experienceLevel: 1,
-      city: "Indianapolis",
-      state: "IN",
-      zipCode: "46201",
-      price: 45,
+      experienceLevel: 1,exactAddress: "Sample Address, ,  ", 45,
       userId: users[7].id
     },
     {
@@ -421,11 +326,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1558369178-9e3a64b4dc4d?w=800",
       category: "Trumpet",
       conditionRating: 8,
-      experienceLevel: 3,
-      city: "Milwaukee",
-      state: "WI",
-      zipCode: "53201",
-      price: 85,
+      experienceLevel: 3,exactAddress: "Sample Address, ,  ", 85,
       userId: users[0].id
     },
 
@@ -436,11 +337,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1517810362723-b5e99b2b79a5?w=800",
       category: "Flute",
       conditionRating: 9,
-      experienceLevel: 4,
-      city: "Salt Lake City",
-      state: "UT",
-      zipCode: "84101",
-      price: 135,
+      experienceLevel: 4,exactAddress: "Sample Address, ,  ", 135,
       userId: users[5].id
     },
     {
@@ -449,11 +346,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1517810362723-b5e99b2b79a5?w=800",
       category: "Flute",
       conditionRating: 8,
-      experienceLevel: 1,
-      city: "Albuquerque",
-      state: "NM",
-      zipCode: "87101",
-      price: 55,
+      experienceLevel: 1,exactAddress: "Sample Address, ,  ", 55,
       userId: users[1].id
     },
 
@@ -464,11 +357,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1551127481-43279ba57543?w=800",
       category: "Clarinet",
       conditionRating: 9,
-      experienceLevel: 4,
-      city: "Richmond",
-      state: "VA",
-      zipCode: "23220",
-      price: 145,
+      experienceLevel: 4,exactAddress: "Sample Address, ,  ", 145,
       userId: users[5].id
     },
     {
@@ -477,11 +366,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1551127481-43279ba57543?w=800",
       category: "Clarinet",
       conditionRating: 8,
-      experienceLevel: 2,
-      city: "Jacksonville",
-      state: "FL",
-      zipCode: "32201",
-      price: 75,
+      experienceLevel: 2,exactAddress: "Sample Address, ,  ", 75,
       userId: users[2].id
     },
 
@@ -492,11 +377,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1571327073757-95991d7ce7e1?w=800",
       category: "Drums",
       conditionRating: 8,
-      experienceLevel: 2,
-      city: "Columbus",
-      state: "OH",
-      zipCode: "43215",
-      price: 185,
+      experienceLevel: 2,exactAddress: "Sample Address, ,  ", 185,
       userId: users[7].id
     },
     {
@@ -505,11 +386,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1571327073757-95991d7ce7e1?w=800",
       category: "Drums",
       conditionRating: 9,
-      experienceLevel: 3,
-      city: "Oklahoma City",
-      state: "OK",
-      zipCode: "73102",
-      price: 65,
+      experienceLevel: 3,exactAddress: "Sample Address, ,  ", 65,
       userId: users[3].id
     },
     {
@@ -518,11 +395,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1571327073757-95991d7ce7e1?w=800",
       category: "Drums",
       conditionRating: 9,
-      experienceLevel: 2,
-      city: "Raleigh",
-      state: "NC",
-      zipCode: "27601",
-      price: 125,
+      experienceLevel: 2,exactAddress: "Sample Address, ,  ", 125,
       userId: users[4].id
     },
 
@@ -533,11 +406,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
       category: "Cello",
       conditionRating: 9,
-      experienceLevel: 4,
-      city: "Buffalo",
-      state: "NY",
-      zipCode: "14201",
-      price: 185,
+      experienceLevel: 4,exactAddress: "Sample Address, ,  ", 185,
       userId: users[0].id
     },
     {
@@ -546,11 +415,7 @@ async function main() {
       imageSrc: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
       category: "Cello",
       conditionRating: 7,
-      experienceLevel: 2,
-      city: "Louisville",
-      state: "KY",
-      zipCode: "40202",
-      price: 95,
+      experienceLevel: 2,exactAddress: "Sample Address, ,  ", 95,
       userId: users[1].id
     }
   ];
