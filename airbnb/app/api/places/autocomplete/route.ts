@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     const isPartialZip = /^\d{1,4}$/.test(input);
     const hasNumbers = /\d/.test(input);
     
-    let types;
+    let types: string;
     if (isZipCode) {
       types = 'postal_code';
     } else if (isPartialZip) {
