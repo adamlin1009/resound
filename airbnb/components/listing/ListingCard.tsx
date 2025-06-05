@@ -64,10 +64,12 @@ function ListingCard({
     return `${format(start, "PP")} - ${format(end, "PP")}`;
   }, [reservation]);
 
+  const isCanceled = reservation?.status === "CANCELED";
+
   return (
     <div
       onClick={() => router.push(`/listings/${data.id}`)}
-      className="col-span-1 cursor-pointer group"
+      className={`col-span-1 cursor-pointer group ${isCanceled ? 'opacity-50' : ''}`}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.5 }}
@@ -101,6 +103,11 @@ function ListingCard({
           </div>
           <div className="font-light text-neutral-500">
             {reservationDate || data.category}
+            {isCanceled && (
+              <span className="ml-2 px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">
+                CANCELED
+              </span>
+            )}
           </div>
           <div className="flex flex-row gap-2 text-sm text-neutral-600">
             <span>Condition: {data.conditionRating}/10</span>
@@ -114,7 +121,7 @@ function ListingCard({
               ${price} {!reservation && <div className="font-light"> per day</div>}
             </div>
           </div>
-          {onAction && actionLabel && (
+          {onAction && actionLabel && !isCanceled && (
             <Button
               disabled={disabled}
               small

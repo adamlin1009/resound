@@ -20,16 +20,18 @@ function RentalsClient({ reservations, currentUser }: Props) {
 
   const onCancel = useCallback(
     (id: string) => {
+      if (!confirm("Are you sure you want to cancel this rental?")) return;
+      
       setDeletingId(id);
 
       axios
-        .delete(`/api/reservations/${id}`)
-        .then(() => {
-          toast.info("Rental cancelled");
+        .post(`/api/reservations/${id}/cancel`, { reason: "User requested cancellation" })
+        .then((response) => {
+          toast.success(response.data.message || "Rental cancelled");
           router.refresh();
         })
         .catch((error) => {
-          toast.error(error?.response?.data?.error);
+          toast.error(error?.response?.data?.error || "Failed to cancel rental");
         })
         .finally(() => {
           setDeletingId("");

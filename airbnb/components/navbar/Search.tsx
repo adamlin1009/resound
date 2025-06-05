@@ -18,20 +18,27 @@ function Search({}: Props) {
   const state = params?.get("state");
   const startDate = params?.get("startDate");
   const endDate = params?.get("endDate");
+  const nationwide = params?.get("nationwide");
+  const radius = params?.get("radius");
 
   const locationLabel = useMemo(() => {
+    if (nationwide === "true") {
+      return "Nationwide";
+    }
+    
     if (city && state) {
-      return formatLocationShort({ city, state });
+      const location = formatLocationShort({ city, state });
+      return radius ? `${location} (${radius}mi)` : location;
     }
     if (city) {
-      return city;
+      return radius ? `${city} (${radius}mi)` : city;
     }
     if (state) {
       return state;
     }
 
     return "Location";
-  }, [formatLocationShort, city, state]);
+  }, [formatLocationShort, city, state, nationwide, radius]);
 
   const durationLabel = useMemo(() => {
     if (startDate && endDate) {
@@ -46,7 +53,7 @@ function Search({}: Props) {
       return `${diff} Days`;
     }
 
-    return "Select dates";
+    return "Any time";
   }, [startDate, endDate]);
 
   return (

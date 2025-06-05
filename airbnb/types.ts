@@ -3,8 +3,8 @@ import { Listing, Reservation, User } from "@prisma/client";
 // Core listing data with US location fields
 export type CoreListingData = Omit<Listing, "createdAt">;
 
-// Public listing data (without exact address for privacy)
-export type safeListing = Omit<CoreListingData, "exactAddress"> & {
+// Public listing data (without exact address and coordinates for privacy)
+export type safeListing = Omit<CoreListingData, "exactAddress" | "latitude" | "longitude"> & {
   createdAt: string;
   conditionRating: number;
   experienceLevel: number;

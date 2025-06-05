@@ -587,6 +587,148 @@ async function main() {
       exactAddress: "123 Music St, Atlanta, GA 30301",
       price: 95,
       userId: users[1].id
+    },
+
+    // Colburn School String Instruments (10 listings)
+    {
+      title: "Professional Violin - Italian Workshop",
+      description: "Beautiful Italian workshop violin perfect for conservatory students. Rich, warm tone with excellent projection. Available for rental from Colburn School's instrument collection.",
+      imageSrc: "https://images.unsplash.com/photo-1612225330812-01a9c6b355ec?w=800",
+      category: "Violin",
+      conditionRating: 9,
+      experienceLevel: 4,
+      city: "Los Angeles",
+      state: "CA",
+      zipCode: "90012",
+      exactAddress: "200 S Grand Ave, Los Angeles, CA 90012",
+      price: 180,
+      userId: users[0].id
+    },
+    {
+      title: "Advanced Student Violin - German Make",
+      description: "Quality German student violin ideal for advanced music students. Recently serviced with new strings and bridge adjustment. Perfect for orchestral work.",
+      imageSrc: "https://images.unsplash.com/photo-1460036521480-ff49c08c2781?w=800",
+      category: "Violin",
+      conditionRating: 8,
+      experienceLevel: 3,
+      city: "Los Angeles",
+      state: "CA",
+      zipCode: "90012",
+      exactAddress: "200 S Grand Ave, Los Angeles, CA 90012",
+      price: 120,
+      userId: users[2].id
+    },
+    {
+      title: "Concert Viola - Professional Level",
+      description: "Full-size concert viola with exceptional tone quality. Perfect for chamber music and orchestral performances. Includes professional bow and case.",
+      imageSrc: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
+      category: "Viola",
+      conditionRating: 9,
+      experienceLevel: 5,
+      city: "Los Angeles",
+      state: "CA",
+      zipCode: "90012",
+      exactAddress: "200 S Grand Ave, Los Angeles, CA 90012",
+      price: 200,
+      userId: users[3].id
+    },
+    {
+      title: "Intermediate Viola - Workshop Quality",
+      description: "High-quality workshop viola suitable for intermediate to advanced students. Great projection and comfortable playability. Recently professionally set up.",
+      imageSrc: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
+      category: "Viola",
+      conditionRating: 8,
+      experienceLevel: 3,
+      city: "Los Angeles",
+      state: "CA",
+      zipCode: "90012",
+      exactAddress: "200 S Grand Ave, Los Angeles, CA 90012",
+      price: 140,
+      userId: users[1].id
+    },
+    {
+      title: "Professional Cello - European Workshop",
+      description: "Magnificent European workshop cello with rich, deep resonance. Perfect for solo recitals and chamber music. Includes carbon fiber bow and wheeled case.",
+      imageSrc: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
+      category: "Cello",
+      conditionRating: 10,
+      experienceLevel: 5,
+      city: "Los Angeles",
+      state: "CA",
+      zipCode: "90012",
+      exactAddress: "200 S Grand Ave, Los Angeles, CA 90012",
+      price: 250,
+      userId: users[4].id
+    },
+    {
+      title: "Student Cello - 3/4 Size",
+      description: "Quality 3/4 size cello perfect for younger students or smaller adults. Good tone quality and comfortable setup. Includes bow, rosin, and soft case.",
+      imageSrc: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
+      category: "Cello",
+      conditionRating: 8,
+      experienceLevel: 2,
+      city: "Los Angeles",
+      state: "CA",
+      zipCode: "90012",
+      exactAddress: "200 S Grand Ave, Los Angeles, CA 90012",
+      price: 110,
+      userId: users[5].id
+    },
+    {
+      title: "Double Bass - Orchestral Quality",
+      description: "Full-size orchestral double bass with powerful, deep tone. Perfect for symphony orchestra and jazz ensemble work. Includes German bow and padded cover.",
+      imageSrc: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
+      category: "Bass",
+      conditionRating: 9,
+      experienceLevel: 4,
+      city: "Los Angeles",
+      state: "CA",
+      zipCode: "90012",
+      exactAddress: "200 S Grand Ave, Los Angeles, CA 90012",
+      price: 300,
+      userId: users[6].id
+    },
+    {
+      title: "Electric Violin - Modern Performance",
+      description: "High-end electric violin perfect for contemporary classical and crossover performances. Built-in pickup system with professional sound quality.",
+      imageSrc: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=800",
+      category: "Violin",
+      conditionRating: 9,
+      experienceLevel: 4,
+      city: "Los Angeles",
+      state: "CA",
+      zipCode: "90012",
+      exactAddress: "200 S Grand Ave, Los Angeles, CA 90012",
+      price: 160,
+      userId: users[7].id
+    },
+    {
+      title: "Baroque Violin - Period Instrument",
+      description: "Authentic baroque violin setup with gut strings and baroque bow. Perfect for historically informed performance and baroque ensemble work.",
+      imageSrc: "https://images.unsplash.com/photo-1612225330812-01a9c6b355ec?w=800",
+      category: "Violin",
+      conditionRating: 8,
+      experienceLevel: 5,
+      city: "Los Angeles",
+      state: "CA",
+      zipCode: "90012",
+      exactAddress: "200 S Grand Ave, Los Angeles, CA 90012",
+      price: 220,
+      userId: users[0].id
+    },
+    {
+      title: "Electric Cello - Concert Series",
+      description: "Professional electric cello with full acoustic sound when unplugged. Perfect for amplified performances and recording. Includes premium bow and case.",
+      imageSrc: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
+      category: "Cello",
+      conditionRating: 9,
+      experienceLevel: 4,
+      city: "Los Angeles",
+      state: "CA",
+      zipCode: "90012",
+      exactAddress: "200 S Grand Ave, Los Angeles, CA 90012",
+      price: 190,
+      userId: users[2].id
     }
   ];
 
@@ -629,6 +771,7 @@ async function main() {
   console.log(`Created ${users.length} users`);
   console.log(`Created ${createdListings.length} instrument listings across the United States`);
   console.log(`Created ${reservations.length} sample reservations`);
+  console.log(`🎻 Added 10 string instruments at Colburn School, Los Angeles`);
   console.log('\n📧 Test accounts:');
   console.log('Email: john.musician@email.com | Password: password123');
   console.log('Email: sarah.strings@email.com | Password: password123');

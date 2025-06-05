@@ -1,5 +1,6 @@
 import prisma from "@/lib/prismadb";
 import { safeListing } from "@/types";
+import { geocodeLocation, buildLocationString, calculateDistance, Coordinates } from "@/lib/geocoding";
 
 export interface IListingsParams {
   userId?: string;
@@ -11,6 +12,8 @@ export interface IListingsParams {
   state?: string;
   zipCode?: string;
   category?: string;
+  radius?: number; // search radius in miles
+  nationwide?: boolean; // nationwide search
 }
 
 export default async function getListings(params: IListingsParams) {
@@ -38,19 +41,34 @@ export default async function getListings(params: IListingsParams) {
       };
     }
 
-    if (params.city) {
-      queryParams.city = {
-        contains: params.city,
-        mode: 'insensitive'
-      };
-    }
+    // Handle location filtering
+    let searchCoordinates: Coordinates | null = null;
+    
+    if (params.nationwide) {
+      // Nationwide search - no location filter
+    } else if (params.radius && (params.city || params.zipCode)) {
+      // Radius-based search - we'll filter after querying
+      const locationString = buildLocationString(params.city, params.state, params.zipCode);
+      searchCoordinates = await geocodeLocation(locationString);
+      
+      // For radius search, we don't add location filters to queryParams
+      // We'll filter by distance after getting all listings with coordinates
+    } else {
+      // Location-specific search without radius
+      if (params.city) {
+        queryParams.city = {
+          contains: params.city,
+          mode: 'insensitive'
+        };
+      }
 
-    if (params.state) {
-      queryParams.state = params.state;
-    }
+      if (params.state) {
+        queryParams.state = params.state;
+      }
 
-    if (params.zipCode) {
-      queryParams.zipCode = params.zipCode;
+      if (params.zipCode) {
+        queryParams.zipCode = params.zipCode;
+      }
     }
 
     if (params.startDate && params.endDate) {
@@ -72,15 +90,32 @@ export default async function getListings(params: IListingsParams) {
       };
     }
 
-    const listings = await prisma.listing.findMany({
+    let listings = await prisma.listing.findMany({
       where: queryParams,
       orderBy: {
         createdAt: "desc",
       },
     });
 
+    // Apply radius filtering if needed
+    if (searchCoordinates && params.radius) {
+      listings = listings.filter((listing: any) => {
+        if (!listing.latitude || !listing.longitude) {
+          return false; // Exclude listings without coordinates
+        }
+
+        const listingCoords: Coordinates = {
+          lat: listing.latitude,
+          lng: listing.longitude
+        };
+
+        const distance = calculateDistance(searchCoordinates!, listingCoords);
+        return distance <= params.radius!;
+      });
+    }
+
     const safeListings: safeListing[] = listings.map((list: any) => {
-      const { exactAddress, ...publicListing } = list;
+      const { exactAddress, latitude, longitude, ...publicListing } = list;
       return {
         ...publicListing,
         createdAt: list.createdAt.toISOString(),

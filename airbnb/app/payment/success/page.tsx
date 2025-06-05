@@ -86,7 +86,7 @@ const PaymentSuccessPage = () => {
           <div className="flex justify-center mt-4">
             <button
               onClick={() => router.push("/rentals")}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+              className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition"
             >
               Go to My Rentals Now
             </button>

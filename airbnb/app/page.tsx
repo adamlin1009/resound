@@ -34,6 +34,8 @@ export default async function Home({ searchParams }: HomeProps) {
       startDate: awaitParams.get("startDate") || undefined,
       endDate: awaitParams.get("endDate") || undefined,
       category: awaitParams.get("category") || undefined,
+      radius: getNum("radius"),
+      nationwide: awaitParams.get("nationwide") === "true",
     };
   } else {
     // Already an object (from client navigation)
@@ -47,6 +49,8 @@ export default async function Home({ searchParams }: HomeProps) {
       startDate: awaitParams.startDate,
       endDate: awaitParams.endDate,
       category: awaitParams.category,
+      radius: awaitParams.radius ? Number(awaitParams.radius) : undefined,
+      nationwide: awaitParams.nationwide === "true" || awaitParams.nationwide === true,
     };
   }
 

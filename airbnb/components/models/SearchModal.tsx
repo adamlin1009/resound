@@ -31,6 +31,8 @@ function SearchModal({}: Props) {
   const [step, setStep] = useState(STEPS.LOCATION);
   const [conditionRating, setConditionRating] = useState(1);
   const [experienceLevel, setExperienceLevel] = useState(1);
+  const [radius, setRadius] = useState(25); // Default 25 mile radius
+  const [isNationwide, setIsNationwide] = useState(false);
   const [dateRange, setDateRange] = useState<Range>({
     startDate: new Date(),
     endDate: new Date(),
@@ -54,10 +56,6 @@ function SearchModal({}: Props) {
   }, []);
 
   const onSubmit = useCallback(async () => {
-    if (step !== STEPS.DATE) {
-      return onNext();
-    }
-
     let currentQuery = {};
 
     if (params) {
@@ -66,33 +64,70 @@ function SearchModal({}: Props) {
 
     const updatedQuery: any = {
       ...currentQuery,
-      city: location?.city,
-      state: location?.state,
-      zipCode: location?.zipCode,
       conditionRating,
       experienceLevel,
     };
 
-    if (dateRange.startDate) {
-      updatedQuery.startDate = formatISO(dateRange.startDate);
+    // Handle location search options
+    if (isNationwide) {
+      updatedQuery.nationwide = true;
+      // Remove location-specific params for nationwide search
+      delete updatedQuery.city;
+      delete updatedQuery.state;
+      delete updatedQuery.zipCode;
+      delete updatedQuery.radius;
+    } else if (location?.city || location?.state || location?.zipCode) {
+      updatedQuery.city = location?.city;
+      updatedQuery.state = location?.state;
+      updatedQuery.zipCode = location?.zipCode;
+      updatedQuery.radius = radius;
     }
 
-    if (dateRange.endDate) {
-      updatedQuery.endDate = formatISO(dateRange.endDate);
+    // Only add dates if we're on the date step and dates are selected
+    if (step === STEPS.DATE) {
+      if (dateRange.startDate) {
+        updatedQuery.startDate = formatISO(dateRange.startDate);
+      }
+      if (dateRange.endDate) {
+        updatedQuery.endDate = formatISO(dateRange.endDate);
+      }
     }
 
-    const url = qs.stringifyUrl(
-      {
-        url: "/",
-        query: updatedQuery,
-      },
-      { skipNull: true }
-    );
+    // If we're on location step and have location or nationwide, can search directly
+    if (step === STEPS.LOCATION && (location?.city || location?.state || isNationwide)) {
+      const url = qs.stringifyUrl(
+        {
+          url: "/",
+          query: updatedQuery,
+        },
+        { skipNull: true }
+      );
 
-    setStep(STEPS.LOCATION);
-    searchModel.onClose();
+      setStep(STEPS.LOCATION);
+      searchModel.onClose();
+      router.push(url);
+      return;
+    }
 
-    router.push(url);
+    // If we're on location step but no location, go to next step
+    if (step === STEPS.LOCATION) {
+      return onNext();
+    }
+
+    // If we're on date step, search
+    if (step === STEPS.DATE) {
+      const url = qs.stringifyUrl(
+        {
+          url: "/",
+          query: updatedQuery,
+        },
+        { skipNull: true }
+      );
+
+      setStep(STEPS.LOCATION);
+      searchModel.onClose();
+      router.push(url);
+    }
   }, [
     step,
     searchModel,
@@ -101,6 +136,8 @@ function SearchModal({}: Props) {
     conditionRating,
     experienceLevel,
     dateRange,
+    radius,
+    isNationwide,
     onNext,
     params,
   ]);
@@ -110,16 +147,37 @@ function SearchModal({}: Props) {
       return "Search";
     }
 
+    // If we have location or nationwide on first step, show Search button
+    if (step === STEPS.LOCATION && (location?.city || location?.state || isNationwide)) {
+      return "Search";
+    }
+
     return "Next";
-  }, [step]);
+  }, [step, location, isNationwide]);
+
+  const secondaryAction = useMemo(() => {
+    if (step === STEPS.LOCATION && (location?.city || location?.state || isNationwide)) {
+      return onNext; // "Add dates" action
+    }
+    
+    if (step === STEPS.LOCATION) {
+      return undefined;
+    }
+
+    return onBack; // "Back" action
+  }, [step, location, isNationwide, onNext, onBack]);
 
   const secondActionLabel = useMemo(() => {
+    if (step === STEPS.LOCATION && (location?.city || location?.state || isNationwide)) {
+      return "Add dates";
+    }
+    
     if (step === STEPS.LOCATION) {
       return undefined;
     }
 
     return "Back";
-  }, [step]);
+  }, [step, location, isNationwide]);
 
   let bodyContent = (
     <div className="flex flex-col gap-8">
@@ -127,11 +185,58 @@ function SearchModal({}: Props) {
         title="Where do you want to find instruments?"
         subtitle="Find the perfect location!"
       />
-      <AddressInput
-        value={location}
-        onChange={(value) => setLocation(value)}
-        placeholder="Search by city, zip code, or address"
-      />
+      
+      {/* Nationwide toggle */}
+      <div className="flex items-center gap-3">
+        <input
+          type="checkbox"
+          id="nationwide"
+          checked={isNationwide}
+          onChange={(e) => {
+            setIsNationwide(e.target.checked);
+            if (e.target.checked) {
+              setLocation({ city: "", state: "" }); // Clear location if nationwide
+            }
+          }}
+          className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+        />
+        <label htmlFor="nationwide" className="text-sm font-medium text-gray-700">
+          Search nationwide
+        </label>
+      </div>
+
+      {!isNationwide && (
+        <>
+          <AddressInput
+            value={location}
+            onChange={(value) => setLocation(value)}
+            placeholder="Search by city, zip code, or address"
+          />
+          
+          {/* Radius selector */}
+          {(location?.city || location?.zipCode) && (
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">
+                Search radius: {radius} miles
+              </label>
+              <input
+                type="range"
+                min="5"
+                max="500"
+                step="5"
+                value={radius}
+                onChange={(e) => setRadius(Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+              />
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>5 miles</span>
+                <span>100 miles</span>
+                <span>500 miles</span>
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 
@@ -176,10 +281,10 @@ function SearchModal({}: Props) {
       isOpen={searchModel.isOpen}
       onClose={searchModel.onClose}
       onSubmit={onSubmit}
-      secondaryAction={step === STEPS.LOCATION ? undefined : onBack}
+      secondaryAction={secondaryAction}
       secondaryActionLabel={secondActionLabel}
       title="Filters"
-      actionLabel="Search"
+      actionLabel={actionLabel}
       body={bodyContent}
     />
   );

@@ -16,6 +16,10 @@ npm run seed           # Seed database with sample data
 npm run db:reset       # Reset database and reseed
 npx prisma generate    # Regenerate Prisma client
 npx prisma db push     # Push schema changes to database
+
+# One-time setup for existing deployments
+node scripts/geocodeExistingListings.js  # Geocode existing listings for radius search
+node scripts/makeAdmin.js your@email.com # Make a user an admin
 ```
 
 ## Architecture Overview

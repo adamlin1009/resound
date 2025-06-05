@@ -47,12 +47,14 @@ function ListingHead({
         }}
         className="w-full h-[60vh] overflow-hidden rounded-xl relative"
       >
-        <Image
-          src={imageSrc}
-          alt="image"
-          fill
-          className="object-cover w-full"
-        />
+        {imageSrc && (
+          <Image
+            src={imageSrc}
+            alt="image"
+            fill
+            className="object-cover w-full"
+          />
+        )}
         <div className="absolute top-5 right-5">
           <HeartButton listingId={id} currentUser={currentUser} />
         </div>

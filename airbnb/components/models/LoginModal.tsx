@@ -60,8 +60,16 @@ function LoginModal({}: Props) {
 
   const bodyContent = (
     <div className="flex flex-col gap-4">
-      <Heading title="Welcome Back" subtitle="Login to your Account!" center />
-      <Input
+      <Heading title="Welcome Back" subtitle="Sign in to your Account!" center />
+      <div className="flex justify-center mt-4">
+        <Button
+          outline
+          label="Continue with Google"
+          icon={FcGoogle}
+          onClick={() => signIn("google")}
+        />
+      </div>
+      {/* <Input
         id="email"
         label="Email Address"
         disabled={isLoading}
@@ -76,19 +84,12 @@ function LoginModal({}: Props) {
         register={register}
         errors={errors}
         required
-      />
+      /> */}
     </div>
   );
 
   const footerContent = (
-    <div className="flex flex-col gap-4 mt-3">
-      <hr />
-      <Button
-        outline
-        label="Continue with Google"
-        icon={FcGoogle}
-        onClick={() => signIn("google")}
-      />
+    <div className="flex flex-col gap-4">
       {/* <Button
         outline
         label="Continue with Facebook"
@@ -96,9 +97,9 @@ function LoginModal({}: Props) {
         onClick={() => signIn("facebook")}
         isColor
       /> */}
-      <div className="text-neutral-500 text-center mt-4 font-light">
+      <div className="text-neutral-500 text-center font-light">
         <div>
-          {`Didn't have an Account?`}{" "}
+          {`Don't have an Account?`}{" "}
           <span
             onClick={toggle}
             className="text-neutral-800 cursor-pointer hover:underline"
@@ -114,9 +115,9 @@ function LoginModal({}: Props) {
       disabled={isLoading}
       isOpen={loginModel.isOpen}
       title="Login"
-      actionLabel="Continue"
+      actionLabel=""
       onClose={loginModel.onClose}
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={() => {}}
       body={bodyContent}
       footer={footerContent}
     />

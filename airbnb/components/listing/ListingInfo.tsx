@@ -2,11 +2,16 @@
 
 import useUSLocations from "@/hook/useUSLocations";
 import { useCoordinates } from "@/hook/useCoordinates";
+import useMessages from "@/hook/useMessages";
+import useLoginModel from "@/hook/useLoginModal";
 import { SafeUser } from "@/types";
 import dynamic from "next/dynamic";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { IconType } from "react-icons";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import Avatar from "../Avatar";
+import Button from "../Button";
 import ListingCategory from "./ListingCategory";
 
 const Map = dynamic(() => import("../Map"), {
@@ -28,6 +33,8 @@ type Props = {
   city: string | null;
   state: string;
   zipCode: string | null;
+  listingId: string;
+  currentUser?: SafeUser | null;
 };
 
 function ListingInfo({
@@ -39,8 +46,14 @@ function ListingInfo({
   city,
   state,
   zipCode,
+  listingId,
+  currentUser,
 }: Props) {
   const { formatLocation } = useUSLocations();
+  const { startConversation } = useMessages();
+  const loginModal = useLoginModel();
+  const router = useRouter();
+  const [isContactingOwner, setIsContactingOwner] = useState(false);
   
   // Memoize the location object to prevent infinite re-renders
   const location = useMemo(() => ({
@@ -51,6 +64,29 @@ function ListingInfo({
   
   const locationDisplay = formatLocation(location);
   const { coordinates } = useCoordinates(location);
+
+  const handleContactOwner = async () => {
+    if (!currentUser) {
+      return loginModal.onOpen();
+    }
+
+    if (currentUser.id === user.id) {
+      toast.error("You cannot message yourself");
+      return;
+    }
+
+    try {
+      setIsContactingOwner(true);
+      await startConversation(listingId);
+      router.push('/messages');
+      toast.success("Conversation started!");
+    } catch (error) {
+      console.error("Failed to start conversation:", error);
+      toast.error("Failed to start conversation. Please try again.");
+    } finally {
+      setIsContactingOwner(false);
+    }
+  };
 
   return (
     <div className="col-span-4 flex flex-col gap-8">
@@ -63,6 +99,17 @@ function ListingInfo({
           <p>Condition: {conditionRating}/10</p>
           <p>Level: {experienceLevel === 1 ? 'Beginner' : experienceLevel === 2 ? 'Intermediate' : experienceLevel === 3 ? 'Advanced' : experienceLevel === 4 ? 'Expert' : 'Professional'}</p>
         </div>
+        {currentUser && currentUser.id !== user.id && (
+          <div className="mt-4">
+            <Button
+              label={isContactingOwner ? "Starting conversation..." : "Contact Owner"}
+              onClick={handleContactOwner}
+              disabled={isContactingOwner}
+              outline
+              small
+            />
+          </div>
+        )}
       </div>
       <hr />
       {category && (

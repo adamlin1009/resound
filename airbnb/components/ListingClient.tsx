@@ -124,6 +124,8 @@ function ListingClient({ reservations = [], listing, currentUser }: Props) {
               city={listing.city}
               state={listing.state}
               zipCode={listing.zipCode}
+              listingId={listing.id}
+              currentUser={currentUser}
             />
             <div className="order-first mb-10 md:order-last md:col-span-3">
               <ListingReservation

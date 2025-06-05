@@ -1,5 +1,6 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
+import { geocodeLocation } from "@/lib/geocoding";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -48,6 +49,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Experience level must be between 1-5' }, { status: 400 });
   }
 
+  // Geocode the address
+  let coordinates = null;
+  try {
+    coordinates = await geocodeLocation(exactAddress);
+  } catch (error) {
+    console.error('Geocoding failed:', error);
+    // Continue without coordinates rather than failing the listing creation
+  }
+
   const listen = await prisma.listing.create({
     data: {
       title,
@@ -60,6 +70,8 @@ export async function POST(request: Request) {
       state,
       zipCode: zipCode || null,
       exactAddress,
+      latitude: coordinates?.lat || null,
+      longitude: coordinates?.lng || null,
       price: priceNum,
       userId: currentUser.id,
     },
