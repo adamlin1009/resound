@@ -52,7 +52,7 @@ function CountrySelect({ value, onChange }: Props) {
           colors: {
             ...theme.colors,
             primary: "black",
-            primary25: "#ffe4e6",
+            primary25: "#fef3c7",
           },
         })}
       />

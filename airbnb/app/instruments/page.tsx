@@ -2,13 +2,13 @@ import ClientOnly from "@/components/ClientOnly";
 import EmptyState from "@/components/EmptyState";
 import getCurrentUser from "../actions/getCurrentUser";
 import getListings from "../actions/getListings";
-import PropertiesClient from "./PropertiesClient";
+import InstrumentsClient from "./InstrumentsClient";
 
 type Props = {};
 
 export const dynamic = 'force-dynamic';
 
-const PropertiesPage = async (props: Props) => {
+const InstrumentsPage = async (props: Props) => {
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -33,9 +33,9 @@ const PropertiesPage = async (props: Props) => {
   }
   return (
     <ClientOnly>
-      <PropertiesClient listings={listings} currentUser={currentUser} />
+      <InstrumentsClient listings={listings} currentUser={currentUser} />
     </ClientOnly>
   );
 };
 
-export default PropertiesPage;
+export default InstrumentsPage;

@@ -7,8 +7,6 @@ import React from "react";
 import { IconType } from "react-icons";
 import Avatar from "../Avatar";
 import ListingCategory from "./ListingCategory";
-import Sleep from "../Sleep";
-import Offers from "../Offers";
 
 const Map = dynamic(() => import("../Map").then(mod => mod.default), {
   ssr: false,

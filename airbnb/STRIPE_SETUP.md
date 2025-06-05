@@ -58,13 +58,43 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 - This requires Phase 2 (webhook implementation) to complete the flow
 - Users will see success page but no reservation in "My Trips" yet
 
-## Next Steps (Phase 2)
+## Phase 2 Implementation Complete ✅
 
-To complete the payment flow, you'll need to:
-1. Implement Stripe webhook handler
-2. Listen for `payment_intent.succeeded` events
-3. Create reservations when payment succeeds
-4. Handle edge cases and failures
+### Webhook Integration Added
+- `/app/api/webhooks/stripe/route.ts` - Handles Stripe events
+- Signature verification for security
+- Creates reservations on successful payment
+- Updates payment status tracking
+
+### New Features
+- **Automatic Reservation Creation** - Webhooks create reservations after payment
+- **Payment Status API** - `/api/payments/[sessionId]` for status checks
+- **Enhanced Success Page** - Shows processing state and waits for confirmation
+- **Transaction Safety** - Database transactions ensure consistency
+
+### Testing Webhooks Locally
+
+1. Install Stripe CLI:
+   ```bash
+   brew install stripe/stripe-cli/stripe
+   ```
+
+2. Login to Stripe:
+   ```bash
+   stripe login
+   ```
+
+3. Forward webhooks to local server:
+   ```bash
+   ./scripts/test-stripe-webhook.sh
+   ```
+
+4. Copy the webhook signing secret and add to `.env`:
+   ```env
+   STRIPE_WEBHOOK_SECRET=whsec_...
+   ```
+
+5. Test a payment flow and watch the logs!
 
 ## Test Cards
 

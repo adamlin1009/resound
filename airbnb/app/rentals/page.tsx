@@ -3,13 +3,13 @@ import EmptyState from "@/components/EmptyState";
 import React from "react";
 import getCurrentUser from "../actions/getCurrentUser";
 import getReservation from "../actions/getReservations";
-import TripsClient from "./TripsClient";
+import RentalsClient from "./RentalsClient";
 
 export const dynamic = 'force-dynamic';
 
 type Props = {};
 
-const TripsPage = async (props: Props) => {
+const RentalsPage = async (props: Props) => {
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -37,9 +37,9 @@ const TripsPage = async (props: Props) => {
 
   return (
     <ClientOnly>
-      <TripsClient reservations={reservations} currentUser={currentUser} />
+      <RentalsClient reservations={reservations} currentUser={currentUser} />
     </ClientOnly>
   );
 };
 
-export default TripsPage;
+export default RentalsPage;

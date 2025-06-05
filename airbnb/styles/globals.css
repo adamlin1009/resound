@@ -4,8 +4,98 @@
 
 @layer base {
   body {
-    @apply !scrollbar-thin !scrollbar-track-transparent !scrollbar-thumb-[#FF5A5F];
+    @apply !scrollbar-thin !scrollbar-track-transparent !scrollbar-thumb-amber-600;
   }
+}
+
+/* Override react-date-range default pink colors */
+.rdrDefinedRangesWrapper .rdrStaticRange {
+  border: none;
+  background: transparent;
+}
+
+.rdrDefinedRangesWrapper .rdrStaticRange:hover {
+  background: #fef3c7 !important; /* Light amber */
+}
+
+.rdrDefinedRangesWrapper .rdrStaticRangeSelected {
+  background: #d97706 !important; /* Amber-600 */
+  color: white !important;
+}
+
+.rdrDateRangeWrapper .rdrDateInput {
+  background-color: transparent;
+}
+
+.rdrDay:not(.rdrDayPassive) .rdrInRange ~ .rdrDayNumber span,
+.rdrDay:not(.rdrDayPassive) .rdrStartEdge ~ .rdrDayNumber span,
+.rdrDay:not(.rdrDayPassive) .rdrEndEdge ~ .rdrDayNumber span,
+.rdrDay:not(.rdrDayPassive) .rdrSelected ~ .rdrDayNumber span {
+  color: white !important;
+}
+
+.rdrDayStartEdge,
+.rdrDayEndEdge,
+.rdrDayInRange {
+  background: #d97706 !important; /* Amber-600 */
+}
+
+.rdrDayStartEdge:not(.rdrDayPassive),
+.rdrDayEndEdge:not(.rdrDayPassive) {
+  background: #92400e !important; /* Amber-800 */
+}
+
+/* Override react-toastify colors */
+.Toastify__toast--success {
+  background: #065f46 !important; /* Emerald-800 */
+}
+
+.Toastify__toast--error {
+  background: #dc2626 !important; /* Red-600 */
+}
+
+.Toastify__toast--info {
+  background: #1e40af !important; /* Blue-700 */
+}
+
+.Toastify__toast--warning {
+  background: #d97706 !important; /* Amber-600 */
+}
+
+/* Override any remaining pink colors from libraries */
+*[style*="#FF5A5F"], 
+*[style*="#f56565"],
+*[style*="#ed64a6"],
+*[style*="rgb(255, 90, 95)"] {
+  background-color: #d97706 !important; /* Amber-600 */
+  border-color: #d97706 !important;
+  color: white !important;
+}
+
+/* Force override any pink background */
+.pink, .rose, [class*="pink"], [class*="rose"] {
+  background-color: #d97706 !important;
+  border-color: #d97706 !important;
+}
+
+/* Override Next.js loading states */
+.__next-route-announcer,
+[data-nextjs-scroll-focus-boundary] {
+  color: #374151 !important; /* Gray-700 */
+}
+
+/* Override any progress bars or loading indicators */
+progress {
+  accent-color: #d97706 !important; /* Amber-600 */
+}
+
+/* Override browser default loading states */
+::-webkit-progress-bar {
+  background-color: #f3f4f6 !important; /* Gray-100 */
+}
+
+::-webkit-progress-value {
+  background-color: #d97706 !important; /* Amber-600 */
 }
 
 html,

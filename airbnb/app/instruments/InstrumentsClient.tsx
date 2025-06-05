@@ -14,7 +14,7 @@ type Props = {
   currentUser?: SafeUser | null;
 };
 
-function PropertiesClient({ listings, currentUser }: Props) {
+function InstrumentsClient({ listings, currentUser }: Props) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState("");
 
@@ -58,4 +58,4 @@ function PropertiesClient({ listings, currentUser }: Props) {
   );
 }
 
-export default PropertiesClient;
+export default InstrumentsClient;

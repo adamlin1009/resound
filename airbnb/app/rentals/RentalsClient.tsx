@@ -14,7 +14,7 @@ type Props = {
   currentUser?: SafeUser | null;
 };
 
-function TripsClient({ reservations, currentUser }: Props) {
+function RentalsClient({ reservations, currentUser }: Props) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState("");
 
@@ -62,4 +62,4 @@ function TripsClient({ reservations, currentUser }: Props) {
   );
 }
 
-export default TripsClient;
+export default RentalsClient;
