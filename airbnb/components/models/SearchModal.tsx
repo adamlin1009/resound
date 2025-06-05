@@ -11,7 +11,8 @@ import { Range } from "react-date-range";
 import Heading from "../Heading";
 import Calendar from "../inputs/Calendar";
 import Counter from "../inputs/Counter";
-import CountrySelect, { CountrySelectValue } from "../inputs/CountrySelect";
+import AddressInput from "../inputs/AddressInput";
+import useUSLocations, { USLocationValue } from "@/hook/useUSLocations";
 import Modal from "./Modal";
 
 enum STEPS {
@@ -26,7 +27,7 @@ function SearchModal({}: Props) {
   const params = useSearchParams();
   const searchModel = useSearchModal();
 
-  const [location, setLocation] = useState<CountrySelectValue>();
+  const [location, setLocation] = useState<USLocationValue>({ city: "", state: "" });
   const [step, setStep] = useState(STEPS.LOCATION);
   const [conditionRating, setConditionRating] = useState(1);
   const [experienceLevel, setExperienceLevel] = useState(1);
@@ -65,7 +66,9 @@ function SearchModal({}: Props) {
 
     const updatedQuery: any = {
       ...currentQuery,
-      locationValue: location?.value,
+      city: location?.city,
+      state: location?.state,
+      zipCode: location?.zipCode,
       conditionRating,
       experienceLevel,
     };
@@ -124,12 +127,11 @@ function SearchModal({}: Props) {
         title="Where do you want to find instruments?"
         subtitle="Find the perfect location!"
       />
-      <CountrySelect
+      <AddressInput
         value={location}
-        onChange={(value) => setLocation(value as CountrySelectValue)}
+        onChange={(value) => setLocation(value)}
+        placeholder="Search by city, zip code, or address"
       />
-      <hr />
-      <Map center={location?.latlng} />
     </div>
   );
 

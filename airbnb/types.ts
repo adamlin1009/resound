@@ -1,12 +1,21 @@
 import { Listing, Reservation, User } from "@prisma/client";
 
-// Remove unused Airbnb fields from the base Listing type for safeListing
-export type CoreListingData = Omit<Listing, "createdAt" | "roomCount" | "bathroomCount" | "guestCount">;
+// Core listing data with US location fields
+export type CoreListingData = Omit<Listing, "createdAt">;
 
 export type safeListing = CoreListingData & {
   createdAt: string;
   conditionRating: number;
   experienceLevel: number;
+  city: string | null;
+  state: string;
+  zipCode: string | null;
+};
+
+export type USLocation = {
+  city?: string;
+  state: string;
+  zipCode?: string;
 };
 
 export type SafeReservation = Omit<

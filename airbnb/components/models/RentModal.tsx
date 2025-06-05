@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import Heading from "../Heading";
 import CategoryInput from "../inputs/CategoryInput";
 import Counter from "../inputs/Counter";
-import CountrySelect from "../inputs/CountrySelect";
+import AddressInput from "../inputs/AddressInput";
 import ImageUpload from "../inputs/ImageUpload";
 import Input from "../inputs/Input";
 import { categories } from "../navbar/Categories";
@@ -44,7 +44,9 @@ function RentModal({}: Props) {
   } = useForm<FieldValues>({
     defaultValues: {
       category: "",
-      location: null,
+      city: "",
+      state: "",
+      zipCode: "",
       conditionRating: 1,
       experienceLevel: 1,
       imageSrc: "",
@@ -55,7 +57,9 @@ function RentModal({}: Props) {
   });
 
   const category = watch("category");
-  const location = watch("location");
+  const city = watch("city");
+  const state = watch("state");
+  const zipCode = watch("zipCode");
   const conditionRating = watch("conditionRating");
   const experienceLevel = watch("experienceLevel");
   const imageSrc = watch("imageSrc");
@@ -150,13 +154,17 @@ function RentModal({}: Props) {
       <div className="flex flex-col gap-8">
         <Heading
           title="Where is your instrument located?"
-          subtitle="Help musicians find you!"
+          subtitle="Enter a city, zip code, or full address"
         />
-        <CountrySelect
-          value={location}
-          onChange={(value) => setCustomValue("location", value)}
+        <AddressInput
+          value={{ city, state, zipCode }}
+          onChange={(value) => {
+            setCustomValue("city", value.city);
+            setCustomValue("state", value.state);
+            setCustomValue("zipCode", value.zipCode || "");
+          }}
+          placeholder="Enter city, zip code, or address"
         />
-        <Map center={location?.latlng} />
       </div>
     );
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import useCountries from "@/hook/useCountries";
+import useUSLocations from "@/hook/useUSLocations";
 import { SafeUser } from "@/types";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -24,7 +24,9 @@ type Props = {
         description: string;
       }
     | undefined;
-  locationValue: string;
+  city: string | null;
+  state: string;
+  zipCode: string | null;
 };
 
 function ListingInfo({
@@ -33,10 +35,12 @@ function ListingInfo({
   conditionRating,
   experienceLevel,
   category,
-  locationValue,
+  city,
+  state,
+  zipCode,
 }: Props) {
-  const { getByValue } = useCountries();
-  const coordinates = getByValue(locationValue)?.latlng;
+  const { formatLocation } = useUSLocations();
+  const locationDisplay = formatLocation({ city: city || undefined, state, zipCode: zipCode || undefined });
 
   return (
     <div className="col-span-4 flex flex-col gap-8">
@@ -74,8 +78,8 @@ function ListingInfo({
       <hr />
       <p className="text-lg font-light text-neutral-500">{description}</p>
       <hr />
-      <p className="text-xl font-semibold">{`Pickup location`}</p>
-      <Map center={coordinates} locationValue={locationValue} />
+      <p className="text-xl font-semibold">Pickup location</p>
+      <p className="text-lg font-medium text-neutral-700">{locationDisplay}</p>
     </div>
   );
 }

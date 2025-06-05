@@ -53,7 +53,9 @@ model Listing {
   category         String
   conditionRating  Int
   experienceLevel  Int
-  locationValue    String
+  city             String?
+  state            String
+  zipCode          String?
   userId           String        @db.ObjectId
   price            Int
   user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)

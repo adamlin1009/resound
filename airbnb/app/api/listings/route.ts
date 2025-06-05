@@ -15,17 +15,19 @@ export async function POST(request: Request) {
     description,
     imageSrc,
     category,
-    location,
+    city,
+    state,
+    zipCode,
     price,
     conditionRating,
     experienceLevel,
   } = body;
 
-  Object.keys(body).forEach((value: any) => {
-    if (!body[value]) {
-      NextResponse.error();
-    }
-  });
+  // Validate required fields (city and zipCode are optional)
+  const requiredFields = [title, description, imageSrc, category, state, price, conditionRating, experienceLevel];
+  if (requiredFields.some(field => !field)) {
+    return NextResponse.error();
+  }
 
   const listen = await prisma.listing.create({
     data: {
@@ -35,10 +37,12 @@ export async function POST(request: Request) {
       category,
       conditionRating,
       experienceLevel,
-      locationValue: location.value,
+      city: city || null,
+      state,
+      zipCode: zipCode || null,
       price: parseInt(price, 10),
       userId: currentUser.id,
-    } as any,
+    },
   });
 
   return NextResponse.json(listen);

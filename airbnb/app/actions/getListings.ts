@@ -7,7 +7,9 @@ export interface IListingsParams {
   experienceLevel?: number; // minimum experience level
   startDate?: string;
   endDate?: string;
-  locationValue?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
   category?: string;
 }
 
@@ -36,8 +38,19 @@ export default async function getListings(params: IListingsParams) {
       };
     }
 
-    if (params.locationValue) {
-      queryParams.locationValue = params.locationValue;
+    if (params.city) {
+      queryParams.city = {
+        contains: params.city,
+        mode: 'insensitive'
+      };
+    }
+
+    if (params.state) {
+      queryParams.state = params.state;
+    }
+
+    if (params.zipCode) {
+      queryParams.zipCode = params.zipCode;
     }
 
     if (params.startDate && params.endDate) {

@@ -27,7 +27,7 @@ function EmptyState({
         viewport={{ once: true }}
       >
         <Heading center title={title} subtitle={subtitle} />
-        <div className="w-48 mt-4">
+        <div className="w-48 mt-4 mx-auto">
           {showReset && (
             <Button
               outline

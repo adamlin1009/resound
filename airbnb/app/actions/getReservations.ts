@@ -47,7 +47,9 @@ export default async function getReservation(params: IParams) {
           category: rListing.category,
           conditionRating: rListing.conditionRating,
           experienceLevel: rListing.experienceLevel,
-          locationValue: rListing.locationValue,
+          city: rListing.city,
+          state: rListing.state,
+          zipCode: rListing.zipCode,
           userId: rListing.userId,
           price: rListing.price,
         };

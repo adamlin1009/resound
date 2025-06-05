@@ -1,6 +1,6 @@
 "use client";
 
-import useCountries from "@/hook/useCountries";
+import useUSLocations from "@/hook/useUSLocations";
 import { SafeReservation, SafeUser, safeListing } from "@/types";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -30,9 +30,9 @@ function ListingCard({
   currentUser,
 }: Props) {
   const router = useRouter();
-  const { getByValue } = useCountries();
+  const { formatLocationShort } = useUSLocations();
 
-  const location = getByValue(data.locationValue);
+  const locationDisplay = formatLocationShort({ city: data.city || undefined, state: data.state });
 
   const handleCancel = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -107,7 +107,7 @@ function ListingCard({
             <span>Level: {data.experienceLevel === 1 ? 'Beginner' : data.experienceLevel === 2 ? 'Intermediate' : data.experienceLevel === 3 ? 'Advanced' : data.experienceLevel === 4 ? 'Expert' : 'Professional'}</span>
           </div>
           <div className="font-medium text-neutral-700">
-            {location?.label}, {location?.region}
+            {locationDisplay}
           </div>
           <div className="flex flex-row items-center gap-">
             <div className="flex gap-1 font-semibold">

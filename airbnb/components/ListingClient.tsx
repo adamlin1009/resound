@@ -108,7 +108,9 @@ function ListingClient({ reservations = [], listing, currentUser }: Props) {
           <ListingHead
             title={listing.title}
             imageSrc={listing.imageSrc}
-            locationValue={listing.locationValue}
+            city={listing.city}
+            state={listing.state}
+            zipCode={listing.zipCode}
             id={listing.id}
             currentUser={currentUser}
           />
@@ -119,7 +121,9 @@ function ListingClient({ reservations = [], listing, currentUser }: Props) {
               description={listing.description}
               conditionRating={listing.conditionRating}
               experienceLevel={listing.experienceLevel}
-              locationValue={listing.locationValue}
+              city={listing.city}
+              state={listing.state}
+              zipCode={listing.zipCode}
             />
             <div className="order-first mb-10 md:order-last md:col-span-3">
               <ListingReservation
