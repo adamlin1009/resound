@@ -7,7 +7,30 @@ export interface Coordinates {
 
 export async function geocodeLocation(address: string): Promise<Coordinates | null> {
   if (!process.env.GOOGLE_PLACES_API_KEY) {
-    console.error('Google Places API key not configured');
+    console.warn('Google Places API key not configured, using fallback coordinates');
+    // Fallback coordinates for common US cities
+    const cityCoordinates: { [key: string]: Coordinates } = {
+      'los angeles': { lat: 34.0522, lng: -118.2437 },
+      'new york': { lat: 40.7128, lng: -74.0060 },
+      'chicago': { lat: 41.8781, lng: -87.6298 },
+      'san francisco': { lat: 37.7749, lng: -122.4194 },
+      'seattle': { lat: 47.6062, lng: -122.3321 },
+      'boston': { lat: 42.3601, lng: -71.0589 },
+      'austin': { lat: 30.2672, lng: -97.7431 },
+      'denver': { lat: 39.7392, lng: -104.9903 },
+      'portland': { lat: 45.5152, lng: -122.6784 },
+      'atlanta': { lat: 33.7490, lng: -84.3880 },
+      'nashville': { lat: 36.1627, lng: -86.7816 },
+      'philadelphia': { lat: 39.9526, lng: -75.1652 },
+    };
+    
+    const normalizedAddress = address.toLowerCase();
+    for (const [city, coords] of Object.entries(cityCoordinates)) {
+      if (normalizedAddress.includes(city)) {
+        return coords;
+      }
+    }
+    
     return null;
   }
 
@@ -26,6 +49,7 @@ export async function geocodeLocation(address: string): Promise<Coordinates | nu
       };
     }
 
+    console.warn(`Geocoding failed for address: ${address}, status: ${data.status}`);
     return null;
   } catch (error) {
     console.error('Geocoding error:', error);

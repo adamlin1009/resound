@@ -72,6 +72,22 @@ export default async function getListings(params: IListingsParams) {
       const locationString = buildLocationString(params.city, params.state, params.zipCode);
       searchCoordinates = await geocodeLocation(locationString);
       
+      if (!searchCoordinates) {
+        // Fall back to exact location match if geocoding fails
+        if (params.city) {
+          queryParams.city = {
+            contains: params.city,
+            mode: 'insensitive'
+          };
+        }
+        if (params.state) {
+          queryParams.state = params.state;
+        }
+        if (params.zipCode) {
+          queryParams.zipCode = params.zipCode;
+        }
+      }
+      
       // For radius search, we don't add location filters to queryParams
       // We'll filter by distance after getting all listings with coordinates
     } else {

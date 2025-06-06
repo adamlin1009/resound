@@ -125,10 +125,14 @@ function SearchModal({}: Props) {
       endDate: undefined,
       key: "selection",
     });
-  }, []);
+    
+    // Also clear the URL parameters
+    searchModel.onClose();
+    router.push("/");
+  }, [router, searchModel]);
 
   let bodyContent = (
-    <div className="flex flex-col gap-6 max-h-[75vh] overflow-y-auto">
+    <div className="flex flex-col gap-6 max-h-[75vh] overflow-y-auto px-1">
       <div className="flex justify-between items-start">
         <Heading
           title="Find your perfect instrument"

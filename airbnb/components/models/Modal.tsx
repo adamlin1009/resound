@@ -36,15 +36,11 @@ function Modal({
   }, [isOpen]);
 
   const handleClose = useCallback(() => {
-    if (disabled) {
-      return;
-    }
-
     setShowModal(false);
     setTimeout(() => {
       onClose();
     }, 300);
-  }, [disabled, onClose]);
+  }, [onClose]);
 
   const handleSubmit = useCallback(() => {
     if (disabled) {
@@ -55,12 +51,12 @@ function Modal({
   }, [onSubmit, disabled]);
 
   const handleSecondAction = useCallback(() => {
-    if (disabled || !secondaryAction) {
+    if (!secondaryAction) {
       return;
     }
 
     secondaryAction();
-  }, [disabled, secondaryAction]);
+  }, [secondaryAction]);
 
   if (!isOpen) {
     return null;
@@ -91,7 +87,7 @@ function Modal({
                   {secondaryAction && secondaryActionLabel && (
                     <Button
                       outline
-                      disabled={disabled}
+                      disabled={false}
                       label={secondaryActionLabel}
                       onClick={handleSecondAction}
                     />

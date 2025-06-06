@@ -160,8 +160,8 @@ const useMessages = create<MessagesStore>((set, get) => ({
   },
   
   refreshCurrentConversation: async () => {
-    const { currentConversation, conversations } = get();
-    if (!currentConversation) return;
+    const { currentConversation, conversations, isLoading } = get();
+    if (!currentConversation || isLoading) return;
 
     try {
       // Fetch the latest messages for the current conversation

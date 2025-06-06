@@ -14,7 +14,9 @@ async function checkListingData() {
         city: true,
         state: true,
         zipCode: true,
-        exactAddress: true
+        exactAddress: true,
+        latitude: true,
+        longitude: true
       }
     });
     
@@ -26,6 +28,7 @@ async function checkListingData() {
       console.log(`  State: ${listing.state}`);
       console.log(`  ZIP: ${listing.zipCode}`);
       console.log(`  Exact Address: ${listing.exactAddress}`);
+      console.log(`  Coordinates: ${listing.latitude ? `${listing.latitude}, ${listing.longitude}` : 'NOT GEOCODED'}`);
       
       // Check if city contains address-like content
       if (listing.city && (listing.city.includes(',') || /\d/.test(listing.city))) {

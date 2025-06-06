@@ -92,9 +92,15 @@ function Search({}: Props) {
         </div>
         <div className="text-sm pl-6 pr-2 text-gray-600 flex items-center gap-3 border-l-[1px] border-gray-200">
           <div className="hidden sm:block">Search</div>
-          <div className="p-2 bg-amber-700 rounded-full text-white">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              searchModel.onOpen();
+            }}
+            className="p-2 bg-amber-700 rounded-full text-white hover:bg-amber-800 transition"
+          >
             <BiSearch size={18} />
-          </div>
+          </button>
         </div>
       </div>
     </div>

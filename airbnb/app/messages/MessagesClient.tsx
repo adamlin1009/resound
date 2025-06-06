@@ -49,20 +49,20 @@ const MessagesClient: React.FC<MessagesClientProps> = ({ currentUser }) => {
 
   // Poll for new messages when a conversation is selected
   useEffect(() => {
-    if (!currentConversation) return;
+    if (!currentConversation?.id) return;
 
     // Refresh immediately when conversation changes
     refreshCurrentConversation();
 
-    // Set up polling interval (every 3 seconds)
+    // Set up polling interval (every 5 seconds)
     const interval = setInterval(() => {
       refreshCurrentConversation();
-    }, 3000);
+    }, 5000);
 
     return () => {
       clearInterval(interval);
     };
-  }, [currentConversation?.id, refreshCurrentConversation]);
+  }, [currentConversation?.id]); // Only depend on conversation ID
 
   // Scroll to bottom when messages change
   useEffect(() => {
