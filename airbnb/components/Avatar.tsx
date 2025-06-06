@@ -6,34 +6,35 @@ import React from "react";
 type Props = {
   src: string | null | undefined;
   userName?: string | null | undefined;
+  size?: number;
 };
 
-function Avatar({ src, userName }: Props) {
+function Avatar({ src, userName, size = 30 }: Props) {
   return (
-    <div>
+    <div className="relative" style={{ width: size, height: size }}>
       {src ? (
         <Image
-          className="rounded-full"
-          height="30"
-          width="30"
+          className="rounded-full object-cover"
+          fill
           alt="hasImag"
           src={src}
+          sizes={`${size}px`}
         />
       ) : userName ? (
         <Image
-          className="rounded-full"
-          height={30}
-          width={30}
+          className="rounded-full object-cover"
+          fill
           alt="nameImage"
-          src={`https://ui-avatars.com/api/?name=${userName}`}
+          src={`https://ui-avatars.com/api/?name=${userName}&size=${size}`}
+          sizes={`${size}px`}
         />
       ) : (
         <Image
-          className="rounded-full"
-          height="30"
-          width="30"
+          className="rounded-full object-cover"
+          fill
           alt="noUser"
           src="/assets/avatar.png"
+          sizes={`${size}px`}
         />
       )}
     </div>

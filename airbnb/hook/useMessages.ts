@@ -112,6 +112,11 @@ const useMessages = create<MessagesStore>((set, get) => ({
         body: JSON.stringify({ listingId }),
       });
       
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to start conversation');
+      }
+      
       const conversation = await response.json();
       set({ currentConversation: conversation });
       

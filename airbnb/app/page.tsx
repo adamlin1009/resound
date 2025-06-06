@@ -34,6 +34,7 @@ export default async function Home({ searchParams }: HomeProps) {
       startDate: awaitParams.get("startDate") || undefined,
       endDate: awaitParams.get("endDate") || undefined,
       category: awaitParams.get("category") || undefined,
+      instrumentType: awaitParams.get("instrumentType") || undefined,
       radius: getNum("radius"),
       nationwide: awaitParams.get("nationwide") === "true",
     };
@@ -49,6 +50,7 @@ export default async function Home({ searchParams }: HomeProps) {
       startDate: awaitParams.startDate,
       endDate: awaitParams.endDate,
       category: awaitParams.category,
+      instrumentType: awaitParams.instrumentType,
       radius: awaitParams.radius ? Number(awaitParams.radius) : undefined,
       nationwide: awaitParams.nationwide === "true" || awaitParams.nationwide === true,
     };

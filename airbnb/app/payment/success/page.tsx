@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 const PaymentSuccessPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [countdown, setCountdown] = useState(10);
+  const [countdown, setCountdown] = useState(5);
   const [isProcessing, setIsProcessing] = useState(true);
   const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
 
@@ -21,7 +21,10 @@ const PaymentSuccessPage = () => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            router.push("/rentals");
+            // Use setTimeout to avoid state update during render
+            setTimeout(() => {
+              router.push("/rentals");
+            }, 0);
             return 0;
           }
           return prev - 1;

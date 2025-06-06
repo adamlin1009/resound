@@ -35,6 +35,7 @@ type Props = {
   zipCode: string | null;
   listingId: string;
   currentUser?: SafeUser | null;
+  hasPaidReservation?: boolean;
 };
 
 function ListingInfo({
@@ -48,6 +49,7 @@ function ListingInfo({
   zipCode,
   listingId,
   currentUser,
+  hasPaidReservation = false,
 }: Props) {
   const { formatLocation } = useUSLocations();
   const { startConversation } = useMessages();
@@ -80,9 +82,13 @@ function ListingInfo({
       await startConversation(listingId);
       router.push('/messages');
       toast.success("Conversation started!");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to start conversation:", error);
-      toast.error("Failed to start conversation. Please try again.");
+      if (error.message.includes("rental payment")) {
+        toast.error("You can only message the owner after making a rental payment");
+      } else {
+        toast.error("Failed to start conversation. Please try again.");
+      }
     } finally {
       setIsContactingOwner(false);
     }
@@ -99,7 +105,7 @@ function ListingInfo({
           <p>Condition: {conditionRating}/10</p>
           <p>Level: {experienceLevel === 1 ? 'Beginner' : experienceLevel === 2 ? 'Intermediate' : experienceLevel === 3 ? 'Advanced' : experienceLevel === 4 ? 'Expert' : 'Professional'}</p>
         </div>
-        {currentUser && currentUser.id !== user.id && (
+        {currentUser && currentUser.id !== user.id && hasPaidReservation && (
           <div className="mt-4">
             <Button
               label={isContactingOwner ? "Starting conversation..." : "Contact Owner"}

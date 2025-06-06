@@ -37,6 +37,40 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
+    // Check if renter has a paid reservation for this listing
+    if (conversation.renterId === currentUser.id) {
+      const paidReservation = await prisma.reservation.findFirst({
+        where: {
+          listingId: conversation.listingId,
+          userId: currentUser.id,
+          status: { in: ['ACTIVE', 'COMPLETED'] }
+        }
+      });
+
+      if (!paidReservation) {
+        return NextResponse.json({ 
+          error: "You can only message the owner after making a rental payment" 
+        }, { status: 403 });
+      }
+
+      // Check if there's a successful payment for this reservation
+      const payment = await prisma.payment.findFirst({
+        where: {
+          userId: currentUser.id,
+          listingId: conversation.listingId,
+          status: 'SUCCEEDED',
+          startDate: paidReservation.startDate,
+          endDate: paidReservation.endDate
+        }
+      });
+
+      if (!payment) {
+        return NextResponse.json({ 
+          error: "You can only message the owner after making a rental payment" 
+        }, { status: 403 });
+      }
+    }
+
     // Create message
     const message = await prisma.message.create({
       data: {

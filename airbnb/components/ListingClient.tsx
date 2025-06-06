@@ -27,9 +27,10 @@ type Props = {
     user: SafeUser;
   };
   currentUser?: SafeUser | null;
+  hasPaidReservation?: boolean;
 };
 
-function ListingClient({ reservations = [], listing, currentUser }: Props) {
+function ListingClient({ reservations = [], listing, currentUser, hasPaidReservation = false }: Props) {
   const router = useRouter();
   const loginModal = useLoginModel();
 
@@ -126,6 +127,7 @@ function ListingClient({ reservations = [], listing, currentUser }: Props) {
               zipCode={listing.zipCode}
               listingId={listing.id}
               currentUser={currentUser}
+              hasPaidReservation={hasPaidReservation}
             />
             <div className="order-first mb-10 md:order-last md:col-span-3">
               <ListingReservation

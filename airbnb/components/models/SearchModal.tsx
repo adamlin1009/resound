@@ -33,6 +33,7 @@ function SearchModal({}: Props) {
   const [experienceLevel, setExperienceLevel] = useState(1);
   const [radius, setRadius] = useState(25); // Default 25 mile radius
   const [isNationwide, setIsNationwide] = useState(false);
+  const [instrumentType, setInstrumentType] = useState("");
   const [dateRange, setDateRange] = useState<Range>({
     startDate: new Date(),
     endDate: new Date(),
@@ -67,6 +68,11 @@ function SearchModal({}: Props) {
       conditionRating,
       experienceLevel,
     };
+
+    // Add instrument type if specified
+    if (instrumentType) {
+      updatedQuery.instrumentType = instrumentType;
+    }
 
     // Handle location search options
     if (isNationwide) {
@@ -138,6 +144,7 @@ function SearchModal({}: Props) {
     dateRange,
     radius,
     isNationwide,
+    instrumentType,
     onNext,
     params,
   ]);
@@ -185,6 +192,23 @@ function SearchModal({}: Props) {
         title="Where do you want to find instruments?"
         subtitle="Find the perfect location!"
       />
+      
+      {/* Instrument type search */}
+      <div>
+        <label className="text-sm font-medium text-gray-700 block mb-2">
+          Instrument type (optional)
+        </label>
+        <input
+          type="text"
+          value={instrumentType}
+          onChange={(e) => setInstrumentType(e.target.value)}
+          placeholder="e.g., Cello, Clarinet, Harp, etc."
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          Search for specific instrument types not shown in the categories
+        </p>
+      </div>
       
       {/* Nationwide toggle */}
       <div className="flex items-center gap-3">

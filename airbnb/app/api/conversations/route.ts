@@ -64,6 +64,38 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Cannot message yourself" }, { status: 400 });
     }
 
+    // Check if user has a paid reservation for this listing
+    const paidReservation = await prisma.reservation.findFirst({
+      where: {
+        listingId: listingId,
+        userId: currentUser.id,
+        status: { in: ['ACTIVE', 'COMPLETED'] }
+      }
+    });
+
+    if (!paidReservation) {
+      return NextResponse.json({ 
+        error: "You can only message the owner after making a rental payment" 
+      }, { status: 403 });
+    }
+
+    // Check if there's a successful payment for this reservation
+    const payment = await prisma.payment.findFirst({
+      where: {
+        userId: currentUser.id,
+        listingId: listingId,
+        status: 'SUCCEEDED',
+        startDate: paidReservation.startDate,
+        endDate: paidReservation.endDate
+      }
+    });
+
+    if (!payment) {
+      return NextResponse.json({ 
+        error: "You can only message the owner after making a rental payment" 
+      }, { status: 403 });
+    }
+
     // Find existing conversation or create new one
     let conversation = await prisma.conversation.findFirst({
       where: {

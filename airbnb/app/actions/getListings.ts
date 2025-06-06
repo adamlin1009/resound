@@ -12,6 +12,7 @@ export interface IListingsParams {
   state?: string;
   zipCode?: string;
   category?: string;
+  instrumentType?: string; // free text instrument type search
   radius?: number; // search radius in miles
   nationwide?: boolean; // nationwide search
 }
@@ -27,6 +28,30 @@ export default async function getListings(params: IListingsParams) {
 
     if (params.category) {
       queryParams.category = params.category;
+    }
+
+    // Handle instrument type search - search in category, title, and description
+    if (params.instrumentType) {
+      queryParams.OR = [
+        {
+          category: {
+            contains: params.instrumentType,
+            mode: 'insensitive'
+          }
+        },
+        {
+          title: {
+            contains: params.instrumentType,
+            mode: 'insensitive'
+          }
+        },
+        {
+          description: {
+            contains: params.instrumentType,
+            mode: 'insensitive'
+          }
+        }
+      ];
     }
 
     if (params.conditionRating) {
