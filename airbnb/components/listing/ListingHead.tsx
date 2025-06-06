@@ -27,7 +27,18 @@ function ListingHead({
   currentUser,
 }: Props) {
   const { formatLocation } = useUSLocations();
-  const locationDisplay = formatLocation({ city: city || undefined, state, zipCode: zipCode || undefined });
+  
+  // Handle incorrectly stored address data
+  let correctedCity = city;
+  let correctedState = state;
+  
+  // If state looks like a city name (not a 2-letter code), assume data is swapped
+  if (state && state.length > 2 && !state.includes(',')) {
+    correctedCity = state; // Use state as city
+    correctedState = 'CA'; // Default to CA
+  }
+  
+  const locationDisplay = formatLocation({ city: correctedCity || undefined, state: correctedState, zipCode: zipCode || undefined });
 
   const MotionDiv = motion.div as any;
 

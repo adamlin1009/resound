@@ -8,72 +8,53 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
+import useConfirmModal from "@/hook/useConfirmModal";
 
 type Props = {
   listings: safeListing[];
   currentUser?: SafeUser | null;
-  pendingSetups?: number;
-  ownerReservations?: any[];
 };
 
-function InstrumentsClient({ listings, currentUser, pendingSetups = 0, ownerReservations = [] }: Props) {
+function InstrumentsClient({ listings, currentUser }: Props) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState("");
+  const confirmModal = useConfirmModal();
 
   const onDelete = useCallback(
     (id: string) => {
-      setDeletingId(id);
+      const listing = listings.find(l => l.id === id);
+      
+      confirmModal.onOpen({
+        title: "Delete Listing",
+        message: `Are you sure you want to delete "${listing?.title || 'this listing'}"? This action cannot be undone.`,
+        actionLabel: "Delete",
+        onConfirm: () => {
+          setDeletingId(id);
 
-      axios
-        .delete(`/api/listings/${id}`)
-        .then(() => {
-          toast.info("Instrument listing deleted");
-          router.refresh();
-        })
-        .catch((error) => {
-          toast.error(error?.response?.data?.error);
-        })
-        .finally(() => {
-          setDeletingId("");
-        });
+          axios
+            .delete(`/api/listings/${id}`)
+            .then(() => {
+              toast.success("Instrument listing deleted");
+              router.refresh();
+            })
+            .catch((error) => {
+              console.error("Delete error:", error);
+              const errorMessage = error?.response?.data?.error || "Failed to delete listing";
+              toast.error(errorMessage);
+            })
+            .finally(() => {
+              setDeletingId("");
+            });
+        }
+      });
     },
-    [router]
+    [router, confirmModal, listings]
   );
 
   return (
     <Container>
-      <Heading title="My Instruments" subtitle="Instruments you're lending" />
+      <Heading title="My Instruments" subtitle="Manage your instrument listings" />
       
-      {/* Pending Setups Alert */}
-      {pendingSetups > 0 && (
-        <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
-          <div className="flex items-start">
-            <div className="flex-1">
-              <h3 className="text-amber-800 font-medium">
-                You have {pendingSetups} rental{pendingSetups > 1 ? 's' : ''} awaiting setup
-              </h3>
-              <p className="text-amber-700 text-sm mt-1">
-                Please set up pickup and return details for your new bookings.
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                // Find the first reservation that needs setup
-                const pendingReservation = ownerReservations.find(
-                  res => res.rentalStatus === 'PENDING'
-                );
-                if (pendingReservation) {
-                  router.push(`/rentals/${pendingReservation.id}/manage`);
-                }
-              }}
-              className="ml-4 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition text-sm"
-            >
-              Set Up Now
-            </button>
-          </div>
-        </div>
-      )}
-
       <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
         {listings.map((listing: any) => (
           <ListingCard
@@ -82,7 +63,7 @@ function InstrumentsClient({ listings, currentUser, pendingSetups = 0, ownerRese
             actionId={listing.id}
             onAction={onDelete}
             disabled={deletingId === listing.id}
-            actionLabel="Delete instrument"
+            actionLabel="Delete listing"
             currentUser={currentUser}
           />
         ))}

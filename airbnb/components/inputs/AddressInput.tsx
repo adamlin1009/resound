@@ -222,9 +222,8 @@ export default function AddressInput({ value, onChange, placeholder = "Enter cit
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => {
-            // Don't open dropdown if we just selected or if input looks like a complete location
-            const looksComplete = input.includes(',') && (input.includes('USA') || input.includes('US'));
-            if (!justSelectedRef.current && !looksComplete && predictions.length > 0 && !error) {
+            // Don't open dropdown if we just selected
+            if (!justSelectedRef.current && predictions.length > 0 && !error) {
               setIsOpen(true);
             }
           }}

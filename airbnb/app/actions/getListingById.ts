@@ -48,6 +48,11 @@ export default async function getListingById(params: IParams) {
       zipCode: listing.zipCode,
       userId: listing.userId,
       price: listing.price,
+      pickupStartTime: listing.pickupStartTime,
+      pickupEndTime: listing.pickupEndTime,
+      returnStartTime: listing.returnStartTime,
+      returnEndTime: listing.returnEndTime,
+      availableDays: listing.availableDays,
       user: safeUser,
     };
 

@@ -70,6 +70,14 @@ model Listing {
   longitude        Float?
   userId           String        @db.ObjectId
   price            Int
+  
+  // Availability Settings
+  pickupStartTime  String?       // e.g., "09:00"
+  pickupEndTime    String?       // e.g., "17:00"
+  returnStartTime  String?       // e.g., "09:00"
+  returnEndTime    String?       // e.g., "17:00"
+  availableDays    String[]      @default([]) // e.g., ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+  
   user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   reservations     Reservation[]
   payments         Payment[]
@@ -107,6 +115,8 @@ model Reservation {
   returnAddress      String?
   returnInstructions String?
   returnDeadline     DateTime?
+  returnStartTime    DateTime?
+  returnEndTime      DateTime?
   returnConfirmedByOwner   Boolean @default(false)
   returnConfirmedByRenter  Boolean @default(false)
   returnConfirmedAt  DateTime?

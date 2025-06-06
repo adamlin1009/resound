@@ -44,7 +44,9 @@ export async function createReservationHold(
   listingId: string,
   startDate: Date,
   endDate: Date,
-  totalPrice: number
+  totalPrice: number,
+  pickupTime?: string,
+  returnTime?: string
 ) {
   // Check for conflicts first
   const hasConflict = await checkReservationConflict(listingId, startDate, endDate);
@@ -53,8 +55,18 @@ export async function createReservationHold(
     throw new Error("These dates are no longer available");
   }
 
+  // Get listing to get the exact address
+  const listing = await prisma.listing.findUnique({
+    where: { id: listingId },
+    select: { exactAddress: true }
+  });
+
   // Create a pending reservation that expires in 15 minutes
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+  // Combine dates with times
+  const pickupDateTime = pickupTime ? new Date(`${startDate.toISOString().split('T')[0]}T${pickupTime}:00`) : null;
+  const returnDateTime = returnTime ? new Date(`${endDate.toISOString().split('T')[0]}T${returnTime}:00`) : null;
 
   const reservation = await prisma.reservation.create({
     data: {
@@ -64,7 +76,13 @@ export async function createReservationHold(
       endDate,
       totalPrice,
       status: "PENDING",
-      expiresAt
+      expiresAt,
+      pickupAddress: listing?.exactAddress || null,
+      returnAddress: listing?.exactAddress || null,
+      pickupStartTime: pickupDateTime,
+      pickupEndTime: pickupDateTime,
+      returnStartTime: returnDateTime,
+      returnEndTime: returnDateTime,
     }
   });
 

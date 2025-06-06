@@ -1,5 +1,6 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import getListingById from "@/app/actions/getListingById";
+import getListingWithAddress from "@/app/actions/getListingWithAddress";
 import getReservation from "@/app/actions/getReservations";
 import ClientOnly from "@/components/ClientOnly";
 import EmptyState from "@/components/EmptyState";
@@ -27,6 +28,8 @@ const ListingPage = async ({ params }: { params: Promise<IParams> }) => {
 
   // Check if current user has a paid reservation for this listing
   let hasPaidReservation = false;
+  let listingWithAddress = null;
+  
   if (currentUser && listingId) {
     const userReservation = await prisma.reservation.findFirst({
       where: {
@@ -48,7 +51,17 @@ const ListingPage = async ({ params }: { params: Promise<IParams> }) => {
         }
       });
       hasPaidReservation = !!payment;
+      
+      // If user has paid reservation or is the owner, get full listing with address
+      if (hasPaidReservation || currentUser.id === listing.userId) {
+        listingWithAddress = await getListingWithAddress(listingId);
+      }
     }
+  }
+  
+  // Also check if the current user is the owner
+  if (currentUser && currentUser.id === listing.userId && listingId) {
+    listingWithAddress = await getListingWithAddress(listingId);
   }
 
   return (
@@ -58,6 +71,7 @@ const ListingPage = async ({ params }: { params: Promise<IParams> }) => {
         currentUser={currentUser}
         reservations={reservations}
         hasPaidReservation={hasPaidReservation}
+        exactAddress={listingWithAddress?.exactAddress}
       />
     </ClientOnly>
   );

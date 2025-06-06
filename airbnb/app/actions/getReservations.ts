@@ -39,27 +39,53 @@ export default async function getReservation(params: IParams) {
       if (authorId !== currentUser.id && !currentUser.isAdmin) {
         return [];
       }
-      query.listing = { userId: authorId };
+      // Don't set query.listing here - it will be handled in whereClause construction
     }
 
     // If no specific query params, return user's own reservations
     if (!listingId && !userId && !authorId) {
       query.OR = [
         { userId: currentUser.id },
-        { listing: { userId: currentUser.id } }
+        { listing: { is: { userId: currentUser.id } } }
       ];
     }
 
     // Show all reservations except canceled ones
     // Don't filter by status for now due to enum issues
 
-    const reservations = await prisma.reservation.findMany({
-      where: {
+    // Handle the query differently based on the type
+    let whereClause: any = {};
+    
+    if (authorId) {
+      // For incoming rentals (where current user is the listing owner)
+      whereClause = {
+        listing: {
+          is: {
+            userId: authorId
+          }
+        }
+      };
+    } else if (query.listing) {
+      // If query already has listing conditions
+      whereClause = {
         ...query,
         listing: {
-          isNot: null  // Ensure listing exists to prevent query errors
+          ...query.listing,
+          isNot: null
         }
-      },
+      };
+    } else {
+      // For other queries
+      whereClause = {
+        ...query,
+        listing: {
+          isNot: null
+        }
+      };
+    }
+
+    const reservations = await prisma.reservation.findMany({
+      where: whereClause,
       include: {
         listing: {
           include: {
@@ -98,6 +124,11 @@ export default async function getReservation(params: IParams) {
           zipCode: rListing.zipCode,
           userId: rListing.userId,
           price: rListing.price,
+          pickupStartTime: rListing.pickupStartTime,
+          pickupEndTime: rListing.pickupEndTime,
+          returnStartTime: rListing.returnStartTime,
+          returnEndTime: rListing.returnEndTime,
+          availableDays: rListing.availableDays,
           user: {
             ...rListing.user,
             createdAt: rListing.user.createdAt.toISOString(),
@@ -123,6 +154,8 @@ export default async function getReservation(params: IParams) {
           pickupEndTime: reservation.pickupEndTime?.toISOString() || null,
           pickupConfirmedAt: reservation.pickupConfirmedAt?.toISOString() || null,
           returnDeadline: reservation.returnDeadline?.toISOString() || null,
+          returnStartTime: reservation.returnStartTime?.toISOString() || null,
+          returnEndTime: reservation.returnEndTime?.toISOString() || null,
           returnConfirmedAt: reservation.returnConfirmedAt?.toISOString() || null,
           listing: mappedListing,
           user: safeUser,

@@ -2,6 +2,44 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const GOOGLE_PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
 const GOOGLE_PLACES_API_URL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+const GOOGLE_PLACE_DETAILS_URL = 'https://maps.googleapis.com/maps/api/place/details/json';
+
+async function getPlaceDetails(placeId: string): Promise<{ zipCode?: string; city?: string; state?: string }> {
+  try {
+    const queryParams = new URLSearchParams({
+      place_id: placeId,
+      fields: 'address_components',
+      key: GOOGLE_PLACES_API_KEY!,
+    });
+
+    const response = await fetch(`${GOOGLE_PLACE_DETAILS_URL}?${queryParams}`);
+    if (!response.ok) return {};
+
+    const data = await response.json();
+    if (data.status !== 'OK' || !data.result?.address_components) return {};
+
+    let zipCode = '';
+    let city = '';
+    let state = '';
+
+    for (const component of data.result.address_components) {
+      const types = component.types || [];
+      
+      if (types.includes('postal_code')) {
+        zipCode = component.long_name;
+      } else if (types.includes('locality')) {
+        city = component.long_name;
+      } else if (types.includes('administrative_area_level_1')) {
+        state = component.short_name;
+      }
+    }
+
+    return { zipCode, city, state };
+  } catch (error) {
+    console.error('Error fetching place details:', error);
+    return {};
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -68,14 +106,25 @@ export async function GET(request: NextRequest) {
     }
 
     // Format predictions for our use case
-    const formattedPredictions = (data.predictions || []).map((prediction: any) => {
-      // Extract city and state from description
-      const parts = prediction.description.split(', ');
+    const formattedPredictions = await Promise.all((data.predictions || []).map(async (prediction: any) => {
+      // Remove "USA" from the description
+      let cleanDescription = prediction.description.replace(/, USA$/, '');
+      
+      // Extract parts from cleaned description
+      const parts = cleanDescription.split(', ');
       
       // Handle different prediction types
       let city = '';
       let state = '';
       let zipCode = '';
+      let formattedDisplay = '';
+      let streetAddress = '';
+      
+      // Try to extract zip code from anywhere in the description
+      const zipMatch = cleanDescription.match(/\b(\d{5})\b/);
+      if (zipMatch) {
+        zipCode = zipMatch[1];
+      }
       
       if (types === 'postal_code') {
         // For postal codes, the main text is the zip code
@@ -84,29 +133,101 @@ export async function GET(request: NextRequest) {
         const secondary = prediction.structured_formatting?.secondary_text || '';
         const secondaryParts = secondary.split(', ');
         city = secondaryParts[0] || '';
-        state = secondaryParts[1] || '';
-      } else {
-        // For cities and addresses
-        city = parts[0] || '';
-        state = parts.length >= 2 ? parts[1] : '';
+        state = secondaryParts[1]?.replace(/, USA/, '').trim() || '';
         
-        // Try to extract zip code from description if present
-        const zipMatch = prediction.description.match(/\b(\d{5})\b/);
-        if (zipMatch) {
-          zipCode = zipMatch[1];
+        // Format: "City, State ZIP"
+        formattedDisplay = `${city}, ${state} ${zipCode}`;
+      } else if (types === 'address' && parts.length >= 3) {
+        // For street addresses
+        streetAddress = parts[0];
+        city = parts[1] || '';
+        
+        // Handle state part which might contain zip code
+        let statePart = parts[2] || '';
+        
+        // Check if the last part or any part contains a zip code
+        if (parts.length >= 4 && /^\d{5}$/.test(parts[parts.length - 1])) {
+          // Zip code is a separate part
+          zipCode = parts[parts.length - 1];
+          state = statePart;
+        } else if (statePart.includes(' ')) {
+          // State and zip might be combined like "CA 92602"
+          const stateZipParts = statePart.split(' ');
+          state = stateZipParts[0];
+          if (stateZipParts[1] && /^\d{5}$/.test(stateZipParts[1])) {
+            zipCode = stateZipParts[1];
+          }
+        } else {
+          // Just state, no zip in this part
+          state = statePart;
         }
+        
+        // Clean up state from any remaining zip code
+        state = state.replace(/\s*\d{5}$/, '').trim();
+        
+        // Format: "Street Address, City, State ZIP"
+        formattedDisplay = zipCode 
+          ? `${streetAddress}, ${city}, ${state} ${zipCode}`
+          : `${streetAddress}, ${city}, ${state}`;
+      } else {
+        // For cities and general geocoding
+        city = parts[0] || '';
+        state = parts[1] || '';
+        
+        // Clean up state if it has zip code
+        if (state && state.includes(' ')) {
+          const stateParts = state.split(' ');
+          state = stateParts[0];
+          if (stateParts[1] && /^\d{5}$/.test(stateParts[1])) {
+            zipCode = stateParts[1];
+          }
+        }
+        
+        // Format: "City, State ZIP" or "City, State"
+        formattedDisplay = zipCode 
+          ? `${city}, ${state} ${zipCode}`
+          : `${city}, ${state}`;
+      }
+      
+      // Clean up secondary text for display
+      let cleanSecondaryText = prediction.structured_formatting?.secondary_text || '';
+      cleanSecondaryText = cleanSecondaryText.replace(/, USA$/, '');
+      
+      // If this is an address and we don't have a zip code, fetch place details
+      if (types === 'address' && !zipCode && prediction.place_id) {
+        const details = await getPlaceDetails(prediction.place_id);
+        if (details.zipCode) {
+          zipCode = details.zipCode;
+          // Update city and state if we got better data
+          if (details.city) city = details.city;
+          if (details.state) state = details.state;
+          
+          // Rebuild the formatted display with the zip code
+          if (streetAddress) {
+            formattedDisplay = `${streetAddress}, ${city}, ${state} ${zipCode}`;
+          } else {
+            formattedDisplay = `${city}, ${state} ${zipCode}`;
+          }
+        }
+      }
+      
+      // If we still don't have a good display, but we have the parts, construct it
+      if (!formattedDisplay && streetAddress && city && state) {
+        formattedDisplay = zipCode 
+          ? `${streetAddress}, ${city}, ${state} ${zipCode}`
+          : `${streetAddress}, ${city}, ${state}`;
       }
       
       return {
         placeId: prediction.place_id,
-        displayText: prediction.description,
+        displayText: formattedDisplay || cleanDescription,
         city,
         state,
         zipCode,
         mainText: prediction.structured_formatting?.main_text || city,
-        secondaryText: prediction.structured_formatting?.secondary_text || state,
+        secondaryText: cleanSecondaryText,
       };
-    });
+    }));
 
     return NextResponse.json({ 
       predictions: formattedPredictions,

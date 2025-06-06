@@ -22,12 +22,29 @@ export async function POST(request: Request) {
     exactAddress,
     price,
     experienceLevel,
+    pickupStartTime,
+    pickupEndTime,
+    returnStartTime,
+    returnEndTime,
+    availableDays,
   } = body;
 
   // Validate required fields (imageSrc and zipCode are optional)
-  if (!title || !description || !category || !state || !city || !exactAddress) {
-    console.error('Missing required fields:', { title: !!title, description: !!description, category: !!category, state: !!state, city: !!city, exactAddress: !!exactAddress });
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+  const missingFields = [];
+  if (!title) missingFields.push('title');
+  if (!description) missingFields.push('description');
+  if (!category) missingFields.push('category');
+  if (!state) missingFields.push('state');
+  if (!city) missingFields.push('city');
+  if (!exactAddress) missingFields.push('exactAddress');
+  
+  if (missingFields.length > 0) {
+    console.error('Missing required fields:', missingFields);
+    console.error('Received data:', { title, description, category, state, city, exactAddress });
+    return NextResponse.json({ 
+      error: `Missing required fields: ${missingFields.join(', ')}`,
+      missingFields 
+    }, { status: 400 });
   }
 
   // Validate price
@@ -74,6 +91,11 @@ export async function POST(request: Request) {
       longitude: coordinates?.lng || null,
       price: priceNum,
       userId: currentUser.id,
+      pickupStartTime: pickupStartTime || "09:00",
+      pickupEndTime: pickupEndTime || "17:00",
+      returnStartTime: returnStartTime || "09:00",
+      returnEndTime: returnEndTime || "17:00",
+      availableDays: availableDays || ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
     },
   });
 

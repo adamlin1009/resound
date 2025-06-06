@@ -84,8 +84,9 @@ export async function POST(
         where: {
           listingId: conversation.listingId,
           userId: currentUser.id,
-          status: { in: ['ACTIVE', 'COMPLETED'] }
-        }
+          status: { in: ['ACTIVE', 'COMPLETED', 'PENDING'] }
+        },
+        orderBy: { createdAt: 'desc' }
       });
 
       if (!paidReservation) {
@@ -94,14 +95,24 @@ export async function POST(
         }, { status: 403 });
       }
 
+      // For completed reservations, allow messaging for 30 days after end date
+      if (paidReservation.status === 'COMPLETED') {
+        const thirtyDaysAfterEnd = new Date(paidReservation.endDate);
+        thirtyDaysAfterEnd.setDate(thirtyDaysAfterEnd.getDate() + 30);
+        
+        if (new Date() > thirtyDaysAfterEnd) {
+          return NextResponse.json({ 
+            error: "Messaging period has expired for this rental (30 days after completion)" 
+          }, { status: 403 });
+        }
+      }
+
       // Check if there's a successful payment for this reservation
       const payment = await prisma.payment.findFirst({
         where: {
           userId: currentUser.id,
           listingId: conversation.listingId,
-          status: 'SUCCEEDED',
-          startDate: paidReservation.startDate,
-          endDate: paidReservation.endDate
+          status: 'SUCCEEDED'
         }
       });
 

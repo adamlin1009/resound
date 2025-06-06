@@ -1,31 +1,35 @@
 "use client";
 
-import React from "react";
-import "react-toastify/dist/ReactToastify.css";
+import React, { useEffect, useState } from "react";
 
-// Import everything to debug what's available
-const toastify = require("react-toastify");
+function ToastProvider() {
+  const [ToastContainer, setToastContainer] = useState<any>(null);
 
-export default function ToastProvider() {
-  console.log("react-toastify exports:", Object.keys(toastify));
-  
-  const ToastContainer = toastify.ToastContainer;
-  
+  useEffect(() => {
+    // Dynamically import react-toastify to avoid SSR issues
+    import("react-toastify").then((mod) => {
+      setToastContainer(() => mod.ToastContainer);
+    });
+  }, []);
+
   if (!ToastContainer) {
-    console.error("ToastContainer is not available from react-toastify");
     return null;
   }
 
   return (
     <ToastContainer
-      position="bottom-left"
-      autoClose={5000}
+      position="bottom-right"
+      autoClose={3000}
       hideProgressBar={false}
-      newestOnTop={false}
+      newestOnTop={true}
       closeOnClick
+      rtl={false}
       pauseOnFocusLoss
+      draggable
       pauseOnHover
-      theme="colored"
+      theme="light"
     />
   );
 }
+
+export default ToastProvider;

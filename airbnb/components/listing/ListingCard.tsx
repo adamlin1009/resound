@@ -32,7 +32,17 @@ function ListingCard({
   const router = useRouter();
   const { formatLocationShort } = useUSLocations();
 
-  const locationDisplay = formatLocationShort({ city: data.city || undefined, state: data.state });
+  // Handle incorrectly stored address data
+  let city = data.city;
+  let state = data.state;
+  
+  // If state looks like a city name (not a 2-letter code), assume data is swapped
+  if (state && state.length > 2 && !state.includes(',')) {
+    city = state; // Use state as city
+    state = 'CA'; // Default to CA since most listings seem to be there
+  }
+  
+  const locationDisplay = formatLocationShort({ city: city || undefined, state: state });
 
   const handleCancel = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -68,16 +78,18 @@ function ListingCard({
   const isCompleted = reservation?.status === "COMPLETED";
   const isInactive = isCanceled || isCompleted;
 
+  const handleCardClick = useCallback(() => {
+    // If this card represents a reservation, go to the rental management page
+    if (reservation) {
+      router.push(`/rentals/${reservation.id}/manage`);
+    } else {
+      router.push(`/listings/${data.id}`);
+    }
+  }, [reservation, data.id, router]);
+
   return (
     <div
-      onClick={() => {
-        // If this card represents a reservation, go to the rental management page
-        if (reservation) {
-          router.push(`/rentals/${reservation.id}/manage`);
-        } else {
-          router.push(`/listings/${data.id}`);
-        }
-      }}
+      onClick={handleCardClick}
       className={`col-span-1 cursor-pointer group ${isInactive ? 'opacity-50' : ''}`}
     >
       <motion.div

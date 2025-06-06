@@ -16,10 +16,10 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { listingId, startDate, endDate, totalPrice } = body;
+    const { listingId, startDate, endDate, totalPrice, pickupTime, returnTime } = body;
 
     // Validate required fields
-    if (!listingId || !startDate || !endDate || !totalPrice) {
+    if (!listingId || !startDate || !endDate || !totalPrice || !pickupTime || !returnTime) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -38,6 +38,14 @@ export async function POST(request: Request) {
       );
     }
 
+    // Prevent owners from booking their own listings
+    if (listing.userId === currentUser.id) {
+      return NextResponse.json(
+        { error: "You cannot rent your own instrument" },
+        { status: 400 }
+      );
+    }
+
     // Create a reservation hold to prevent double-booking
     let reservation;
     try {
@@ -46,7 +54,9 @@ export async function POST(request: Request) {
         listingId,
         new Date(startDate),
         new Date(endDate),
-        totalPrice
+        totalPrice,
+        pickupTime,
+        returnTime
       );
     } catch (error: any) {
       return NextResponse.json(
@@ -96,6 +106,8 @@ export async function POST(request: Request) {
         userId: currentUser.id,
         startDate: startDate,
         endDate: endDate,
+        pickupTime: pickupTime,
+        returnTime: returnTime,
       },
     });
 

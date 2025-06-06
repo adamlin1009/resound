@@ -3,16 +3,16 @@
 import { useCallback, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
-import { toast } from 'react-toastify';
+import { toast } from '@/components/Toast';
 import axios from 'axios';
 
 import { SafeReservation, SafeUser } from '@/types';
 import Container from '@/components/Container';
 import Heading from '@/components/Heading';
 import Button from '@/components/Button';
+import Input from '@/components/inputs/Input';
 import { RentalStatus } from '@prisma/client';
 import useMessages from '@/hook/useMessages';
-import RentalSetupModal from '@/components/models/RentalSetupModal';
 
 interface RentalManageClientProps {
   reservation: SafeReservation & {
@@ -30,10 +30,35 @@ const RentalManageClient: React.FC<RentalManageClientProps> = ({
   const { startConversation } = useMessages();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
-  const [showSetupModal, setShowSetupModal] = useState(false);
-
+  
+  // Destructure first
   const { listing, user: renter, isRenter, isOwner } = reservation;
   const owner = listing.user;
+  
+  // Helper function to format addresses
+  const formatAddress = (address: string | null | undefined) => {
+    if (!address) return '';
+    // Remove ', USA' and ensure proper formatting
+    return address.replace(/, USA$/, '');
+  };
+  
+  // Form states for inline editing (only instructions are editable now)
+  const [pickupInstructions, setPickupInstructions] = useState(reservation.pickupInstructions || '');
+  const [returnInstructions, setReturnInstructions] = useState(reservation.returnInstructions || '');
+  
+  // Use the address from reservation if available, otherwise construct from listing location
+  let cleanAddress = '';
+  if (reservation.pickupAddress) {
+    cleanAddress = reservation.pickupAddress.replace(/, USA$/, '');
+  } else if (listing.city && listing.state) {
+    cleanAddress = `${listing.city}, ${listing.state}`;
+    if (listing.zipCode) {
+      cleanAddress += ` ${listing.zipCode}`;
+    }
+  }
+  
+  const pickupAddress = cleanAddress;
+  const returnAddress = reservation.returnAddress ? reservation.returnAddress.replace(/, USA$/, '') : cleanAddress;
 
   // Format dates
   const rentalPeriod = `${format(new Date(reservation.startDate), 'MMM dd')} - ${format(
@@ -115,6 +140,32 @@ const RentalManageClient: React.FC<RentalManageClientProps> = ({
     }
   }, [reservation.id, router]);
 
+  // Handle setup save
+  const handleSetupSave = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      
+      const setupData = {
+        pickupAddress,
+        pickupInstructions,
+        returnAddress,
+        returnInstructions,
+      };
+      
+      await axios.put(`/api/reservations/${reservation.id}/setup`, setupData);
+      
+      // Show success message
+      toast.success('Instructions saved!');
+      
+      // Refresh the page data
+      router.refresh();
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Failed to save instructions');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [reservation.id, pickupAddress, pickupInstructions, returnAddress, returnInstructions, router]);
+
   // Render content based on active tab
   const renderTabContent = () => {
     switch (activeTab) {
@@ -138,7 +189,7 @@ const RentalManageClient: React.FC<RentalManageClientProps> = ({
                 </p>
                 <Button
                   label="Set Up Rental Details"
-                  onClick={() => setShowSetupModal(true)}
+                  onClick={() => setActiveTab('pickup')}
                   small
                 />
               </div>
@@ -196,7 +247,7 @@ const RentalManageClient: React.FC<RentalManageClientProps> = ({
                 <div className="space-y-4">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Pickup Address</p>
-                    <p className="font-medium">{reservation.pickupAddress}</p>
+                    <p className="font-medium">{formatAddress(reservation.pickupAddress)}</p>
                   </div>
                   
                   {reservation.pickupStartTime && reservation.pickupEndTime && (
@@ -273,9 +324,79 @@ const RentalManageClient: React.FC<RentalManageClientProps> = ({
                       </div>
                     </div>
                   )}
+
+                  {/* Owner Edit Section */}
+                  {isOwner && (
+                    <div className="mt-6 pt-6 border-t">
+                      <h4 className="font-medium mb-4">Add Pickup Instructions</h4>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium text-gray-700">Pickup Instructions</label>
+                          <textarea
+                            value={pickupInstructions}
+                            onChange={(e) => setPickupInstructions(e.target.value)}
+                            placeholder="Add any special instructions for pickup (e.g., parking info, building access code, etc.)"
+                            rows={3}
+                            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                          />
+                        </div>
+                        
+                        <div className="flex justify-end">
+                          <Button
+                            label="Save Instructions"
+                            onClick={handleSetupSave}
+                            disabled={isLoading}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
-                <p className="text-gray-500">Pickup details will be available once the owner sets them up.</p>
+                <>
+                  {isOwner ? (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">Pickup Address</label>
+                        <div className="mt-1 p-3 bg-gray-100 rounded-md">
+                          <p className="font-medium text-gray-900">{cleanAddress}</p>
+                        </div>
+                      </div>
+                      
+                      {reservation.pickupStartTime && (
+                        <div>
+                          <label className="text-sm font-medium text-gray-700">Scheduled Pickup Time</label>
+                          <div className="mt-1 p-3 bg-gray-100 rounded-md">
+                            <p className="font-medium text-gray-900">
+                              {format(new Date(reservation.pickupStartTime), 'MMM dd, yyyy h:mm a')}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">Pickup Instructions</label>
+                        <textarea
+                          value={pickupInstructions}
+                          onChange={(e) => setPickupInstructions(e.target.value)}
+                          placeholder="Add any special instructions for pickup (e.g., parking info, building access code, etc.)"
+                          rows={3}
+                          className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        />
+                      </div>
+                      
+                      <div className="flex justify-end">
+                        <Button
+                          label="Save Instructions"
+                          onClick={handleSetupSave}
+                          disabled={isLoading}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-gray-500">Pickup details will be available once the owner sets them up.</p>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -291,14 +412,14 @@ const RentalManageClient: React.FC<RentalManageClientProps> = ({
                 <div className="space-y-4">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Return Address</p>
-                    <p className="font-medium">{reservation.returnAddress}</p>
+                    <p className="font-medium">{formatAddress(reservation.returnAddress)}</p>
                   </div>
                   
-                  {reservation.returnDeadline && (
+                  {reservation.returnStartTime && reservation.returnEndTime && (
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Return Deadline</p>
+                      <p className="text-sm text-gray-600 mb-1">Return Window</p>
                       <p className="font-medium">
-                        {format(new Date(reservation.returnDeadline), 'MMM dd, yyyy h:mm a')}
+                        {format(new Date(reservation.returnStartTime), 'MMM dd, h:mm a')} - {format(new Date(reservation.returnEndTime), 'h:mm a')}
                       </p>
                     </div>
                   )}
@@ -367,9 +488,75 @@ const RentalManageClient: React.FC<RentalManageClientProps> = ({
                       </div>
                     </div>
                   )}
+
+                  {/* Owner Edit Section */}
+                  {isOwner && (
+                    <div className="mt-6 pt-6 border-t">
+                      <h4 className="font-medium mb-4">Add Return Instructions</h4>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium text-gray-700">Return Instructions</label>
+                          <textarea
+                            value={returnInstructions}
+                            onChange={(e) => setReturnInstructions(e.target.value)}
+                            placeholder="Add any special instructions for return (e.g., where to leave the instrument, etc.)"
+                            rows={3}
+                            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                          />
+                        </div>
+                        
+                        <div className="flex justify-end">
+                          <Button
+                            label="Save Instructions"
+                            onClick={handleSetupSave}
+                            disabled={isLoading}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
-                <p className="text-gray-500">Return details will be available once the owner sets them up.</p>
+                <>
+                  {isOwner ? (
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">Return Address</p>
+                        <p className="font-medium">{cleanAddress}</p>
+                      </div>
+                      
+                      {reservation.returnStartTime && (
+                        <div>
+                          <p className="text-sm text-gray-600 mb-1">Scheduled Return Time</p>
+                          <p className="font-medium">
+                            {format(new Date(reservation.returnStartTime), 'MMM dd, yyyy h:mm a')}
+                          </p>
+                        </div>
+                      )}
+                      
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">Return Instructions</p>
+                        <textarea
+                          value={returnInstructions}
+                          onChange={(e) => setReturnInstructions(e.target.value)}
+                          placeholder="Add any special instructions for return (e.g., where to leave the instrument, etc.)"
+                          rows={3}
+                          className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        />
+                      </div>
+                      
+                      <div className="flex justify-end">
+                        <Button
+                          label="Save Instructions"
+                          onClick={handleSetupSave}
+                          disabled={isLoading}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-gray-500">Return details will be available once the owner sets them up.</p>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -450,19 +637,6 @@ const RentalManageClient: React.FC<RentalManageClientProps> = ({
           </div>
         </div>
       </Container>
-      
-      {/* Rental Setup Modal */}
-      {isOwner && (
-        <RentalSetupModal
-          isOpen={showSetupModal}
-          onClose={() => setShowSetupModal(false)}
-          reservation={reservation}
-          onComplete={() => {
-            router.refresh();
-            toast.success('Rental details have been set up successfully!');
-          }}
-        />
-      )}
     </>
   );
 };

@@ -141,6 +141,11 @@ export default async function getListings(params: IListingsParams) {
         ...publicListing,
         createdAt: list.createdAt.toISOString(),
         experienceLevel: list.experienceLevel,
+        pickupStartTime: list.pickupStartTime,
+        pickupEndTime: list.pickupEndTime,
+        returnStartTime: list.returnStartTime,
+        returnEndTime: list.returnEndTime,
+        availableDays: list.availableDays,
       };
     });
 

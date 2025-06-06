@@ -4,7 +4,7 @@ import prisma from "@/lib/prismadb";
 import { sendEmail, emailTemplates } from "@/lib/email";
 import { format } from "date-fns";
 
-export async function PUT(
+async function handleSetup(
   request: Request,
   { params }: { params: Promise<{ reservationId: string }> }
 ) {
@@ -31,11 +31,8 @@ export async function PUT(
     const {
       pickupAddress,
       pickupInstructions,
-      pickupStartTime,
-      pickupEndTime,
       returnAddress,
       returnInstructions,
-      returnDeadline,
       ownerNotes,
     } = body;
 
@@ -65,21 +62,22 @@ export async function PUT(
     }
 
     // Update the reservation with rental details
+    const updateData: any = {
+      pickupInstructions,
+      returnInstructions,
+      ownerNotes,
+    };
+
+    // Only update rental status if it's still PENDING
+    if (reservation.rentalStatus === 'PENDING') {
+      updateData.rentalStatus = "READY_FOR_PICKUP";
+    }
+
     const updatedReservation = await prisma.reservation.update({
       where: {
         id: reservationId,
       },
-      data: {
-        pickupAddress: pickupAddress || reservation.listing.exactAddress,
-        pickupInstructions,
-        pickupStartTime: pickupStartTime ? new Date(pickupStartTime) : null,
-        pickupEndTime: pickupEndTime ? new Date(pickupEndTime) : null,
-        returnAddress: returnAddress || pickupAddress || reservation.listing.exactAddress,
-        returnInstructions,
-        returnDeadline: returnDeadline ? new Date(returnDeadline) : null,
-        ownerNotes,
-        rentalStatus: "READY_FOR_PICKUP",
-      },
+      data: updateData,
       include: {
         user: true,
         listing: {
@@ -90,27 +88,32 @@ export async function PUT(
       },
     });
 
-    // Send email notification to renter that pickup details are ready
-    if (updatedReservation.user.email) {
-      await sendEmail({
-        to: updatedReservation.user.email,
-        subject: `Pickup Details Ready - ${updatedReservation.listing.title}`,
-        html: emailTemplates.rentalDetailsReady({
-          renterName: updatedReservation.user.name || 'there',
-          listingTitle: updatedReservation.listing.title,
-          pickupAddress: updatedReservation.pickupAddress || '',
-          pickupStartTime: updatedReservation.pickupStartTime 
-            ? format(updatedReservation.pickupStartTime, 'MMM dd, h:mm a')
-            : '',
-          pickupEndTime: updatedReservation.pickupEndTime
-            ? format(updatedReservation.pickupEndTime, 'h:mm a')
-            : '',
-          returnDeadline: updatedReservation.returnDeadline
-            ? format(updatedReservation.returnDeadline, 'MMM dd, yyyy h:mm a')
-            : '',
-          reservationId: updatedReservation.id,
-        }),
-      });
+    // Send email notification to renter only if status just changed to READY_FOR_PICKUP
+    if (reservation.rentalStatus === 'PENDING' && updatedReservation.user.email) {
+      try {
+        await sendEmail({
+          to: updatedReservation.user.email,
+          subject: `Pickup Details Ready - ${updatedReservation.listing.title}`,
+          html: emailTemplates.rentalDetailsReady({
+            renterName: updatedReservation.user.name || 'there',
+            listingTitle: updatedReservation.listing.title,
+            pickupAddress: updatedReservation.pickupAddress || '',
+            pickupStartTime: updatedReservation.pickupStartTime 
+              ? format(updatedReservation.pickupStartTime, 'MMM dd, h:mm a')
+              : '',
+            pickupEndTime: updatedReservation.pickupEndTime
+              ? format(updatedReservation.pickupEndTime, 'h:mm a')
+              : '',
+            returnDeadline: updatedReservation.returnDeadline
+              ? format(updatedReservation.returnDeadline, 'MMM dd, yyyy h:mm a')
+              : '',
+            reservationId: updatedReservation.id,
+          }),
+        });
+      } catch (emailError) {
+        console.error('Failed to send email notification:', emailError);
+        // Continue anyway - don't fail the request just because email failed
+      }
     }
 
     return NextResponse.json({
@@ -124,4 +127,18 @@ export async function PUT(
       { status: 500 }
     );
   }
+}
+
+export async function PUT(
+  request: Request,
+  params: { params: Promise<{ reservationId: string }> }
+) {
+  return handleSetup(request, params);
+}
+
+export async function POST(
+  request: Request,
+  params: { params: Promise<{ reservationId: string }> }
+) {
+  return handleSetup(request, params);
 }

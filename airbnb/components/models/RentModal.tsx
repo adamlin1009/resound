@@ -4,7 +4,7 @@ import useRentModal from "@/hook/useRentModal";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -25,7 +25,8 @@ enum STEPS {
   INFO = 2,
   IMAGES = 3,
   DESCRIPTION = 4,
-  PRICE = 5,
+  AVAILABILITY = 5,
+  PRICE = 6,
 }
 
 function RentModal({}: Props) {
@@ -33,6 +34,7 @@ function RentModal({}: Props) {
   const rentModel = useRentModal();
   const [step, setStep] = useState(STEPS.CATEGORY);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAddressValid, setIsAddressValid] = useState(false);
 
   const {
     register,
@@ -53,6 +55,11 @@ function RentModal({}: Props) {
       price: 1,
       title: "",
       description: "",
+      pickupStartTime: "09:00",
+      pickupEndTime: "17:00",
+      returnStartTime: "09:00",
+      returnEndTime: "17:00",
+      availableDays: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
     },
   });
 
@@ -63,6 +70,18 @@ function RentModal({}: Props) {
   const exactAddress = watch("exactAddress");
   const experienceLevel = watch("experienceLevel");
   const imageSrc = watch("imageSrc");
+  const pickupStartTime = watch("pickupStartTime");
+  const pickupEndTime = watch("pickupEndTime");
+  const returnStartTime = watch("returnStartTime");
+  const returnEndTime = watch("returnEndTime");
+  const availableDays = watch("availableDays");
+
+  // Reset address validation when modal opens
+  useEffect(() => {
+    if (rentModel.isOpen) {
+      setIsAddressValid(false);
+    }
+  }, [rentModel.isOpen]);
 
   const Map = useMemo(
     () =>
@@ -85,6 +104,22 @@ function RentModal({}: Props) {
   };
 
   const onNext = () => {
+    // Validate current step before proceeding
+    if (step === STEPS.CATEGORY && !category) {
+      toast.error("Please select a category");
+      return;
+    }
+    
+    if (step === STEPS.LOCATION && (!isAddressValid || !exactAddress || !city || !state)) {
+      toast.error("Please select a valid address from the dropdown");
+      return;
+    }
+    
+    if (step === STEPS.DESCRIPTION && (!watch("title") || !watch("description"))) {
+      toast.error("Please enter both title and description");
+      return;
+    }
+    
     setStep((value) => value + 1);
   };
 
@@ -93,7 +128,46 @@ function RentModal({}: Props) {
       return onNext();
     }
 
+    // Validate required fields before submission
+    if (!data.title || !data.description || !data.category || !data.exactAddress) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    // If city or state are missing, try to parse them from exactAddress
+    if (!data.city || !data.state) {
+      const addressParts = data.exactAddress.split(',').map((part: string) => part.trim());
+      if (addressParts.length >= 3) {
+        // Typically: street, city, state zip
+        const cityPart = addressParts[addressParts.length - 2];
+        const stateZipPart = addressParts[addressParts.length - 1];
+        
+        if (!data.city && cityPart) {
+          data.city = cityPart;
+        }
+        
+        if (!data.state && stateZipPart) {
+          // Extract state abbreviation
+          const stateMatch = stateZipPart.match(/([A-Z]{2})/);
+          if (stateMatch) {
+            data.state = stateMatch[1];
+          }
+        }
+        
+        // Extract zip code if not already set
+        if (!data.zipCode) {
+          const zipMatch = data.exactAddress.match(/\b(\d{5})\b/);
+          if (zipMatch) {
+            data.zipCode = zipMatch[1];
+          }
+        }
+      }
+    }
+
     setIsLoading(true);
+
+    // Log the data being sent
+    console.log('Submitting listing data:', data);
 
     axios
       .post("/api/listings", data)
@@ -106,6 +180,7 @@ function RentModal({}: Props) {
       })
       .catch((error) => {
         console.error('Listing creation error:', error);
+        console.error('Error response:', error.response?.data);
         const errorMessage = error.response?.data?.error || "Something went wrong";
         toast.error(errorMessage);
       })
@@ -162,24 +237,29 @@ function RentModal({}: Props) {
           value={exactAddress}
           onChange={(value) => {
             setCustomValue("exactAddress", value);
-            // Auto-parse address to extract city, state, zip
-            const addressParts = value.split(',').map(part => part.trim());
-            if (addressParts.length >= 3) {
-              const cityPart = addressParts[addressParts.length - 3];
-              const statePart = addressParts[addressParts.length - 2];
-              const zipMatch = value.match(/\b(\d{5})\b/);
-              
-              if (cityPart) setCustomValue("city", cityPart);
-              if (statePart) {
-                // Extract state abbreviation
-                const stateMatch = statePart.match(/([A-Z]{2})/);
-                if (stateMatch) setCustomValue("state", stateMatch[1]);
-              }
-              if (zipMatch) setCustomValue("zipCode", zipMatch[1]);
+          }}
+          onValidSelection={(isValid, locationData) => {
+            setIsAddressValid(isValid);
+            if (isValid && locationData) {
+              // Use the validated location data from Google Places
+              if (locationData.city) setCustomValue("city", locationData.city);
+              if (locationData.state) setCustomValue("state", locationData.state);
+              if (locationData.zipCode) setCustomValue("zipCode", locationData.zipCode);
+            } else {
+              // Clear location fields when invalid
+              setCustomValue("city", "");
+              setCustomValue("state", "");
+              setCustomValue("zipCode", "");
             }
           }}
-          placeholder="123 Main Street, Apt 4B, Irvine, CA 92602"
+          placeholder="Start typing your address..."
         />
+        {/* Show warning only if address is typed but not selected */}
+        {exactAddress && !isAddressValid && (
+          <div className="text-sm p-3 rounded-md bg-yellow-50 text-yellow-800">
+            <p className="font-medium">⚠️ Please select an address from the dropdown</p>
+          </div>
+        )}
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
             <div className="text-amber-600 mt-0.5">🔒</div>
@@ -270,6 +350,105 @@ function RentModal({}: Props) {
     );
   }
 
+  if (step === STEPS.AVAILABILITY) {
+    bodyContent = (
+      <div className="flex flex-col gap-8">
+        <Heading
+          title="Set your availability"
+          subtitle="When can renters pick up and return your instrument?"
+        />
+        
+        {/* Pickup Times */}
+        <div className="space-y-4">
+          <h3 className="font-medium text-gray-900">Pickup Times</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-gray-700 block mb-2">
+                Earliest Pickup
+              </label>
+              <input
+                type="time"
+                value={pickupStartTime}
+                onChange={(e) => setCustomValue("pickupStartTime", e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 block mb-2">
+                Latest Pickup
+              </label>
+              <input
+                type="time"
+                value={pickupEndTime}
+                onChange={(e) => setCustomValue("pickupEndTime", e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Return Times */}
+        <div className="space-y-4">
+          <h3 className="font-medium text-gray-900">Return Times</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-gray-700 block mb-2">
+                Earliest Return
+              </label>
+              <input
+                type="time"
+                value={returnStartTime}
+                onChange={(e) => setCustomValue("returnStartTime", e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 block mb-2">
+                Latest Return
+              </label>
+              <input
+                type="time"
+                value={returnEndTime}
+                onChange={(e) => setCustomValue("returnEndTime", e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Available Days */}
+        <div className="space-y-4">
+          <h3 className="font-medium text-gray-900">Available Days</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map((day) => (
+              <label key={day} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded">
+                <input
+                  type="checkbox"
+                  checked={availableDays.includes(day)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setCustomValue("availableDays", [...availableDays, day]);
+                    } else {
+                      setCustomValue("availableDays", availableDays.filter((d: string) => d !== day));
+                    }
+                  }}
+                  className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+                />
+                <span className="text-sm capitalize">{day}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+          <p className="text-sm text-amber-800">
+            <strong>Note:</strong> Renters will only be able to book pickup and return during these times on your available days.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (step == STEPS.PRICE) {
     bodyContent = (
       <div className="flex flex-col gap-8">
@@ -291,9 +470,17 @@ function RentModal({}: Props) {
     );
   }
 
+  // Determine if Next button should be disabled
+  const isNextDisabled = useMemo(() => {
+    if (step === STEPS.LOCATION) {
+      return !isAddressValid || !exactAddress || !city || !state;
+    }
+    return false;
+  }, [step, isAddressValid, exactAddress, city, state]);
+
   return (
     <Modal
-      disabled={isLoading}
+      disabled={isLoading || isNextDisabled}
       isOpen={rentModel.isOpen}
       title="Lend your instrument!"
       actionLabel={actionLabel}

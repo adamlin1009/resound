@@ -24,7 +24,11 @@ export default async function getOwnerReservations() {
       },
       include: {
         user: true,
-        listing: true,
+        listing: {
+          include: {
+            user: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',
@@ -46,10 +50,23 @@ export default async function getOwnerReservations() {
       pickupEndTime: reservation.pickupEndTime?.toISOString() || null,
       pickupConfirmedAt: reservation.pickupConfirmedAt?.toISOString() || null,
       returnDeadline: reservation.returnDeadline?.toISOString() || null,
+      returnStartTime: reservation.returnStartTime?.toISOString() || null,
+      returnEndTime: reservation.returnEndTime?.toISOString() || null,
       returnConfirmedAt: reservation.returnConfirmedAt?.toISOString() || null,
       listing: {
         ...reservation.listing,
         createdAt: reservation.listing.createdAt.toISOString(),
+        pickupStartTime: reservation.listing.pickupStartTime,
+        pickupEndTime: reservation.listing.pickupEndTime,
+        returnStartTime: reservation.listing.returnStartTime,
+        returnEndTime: reservation.listing.returnEndTime,
+        availableDays: reservation.listing.availableDays,
+        user: {
+          ...reservation.listing.user,
+          createdAt: reservation.listing.user.createdAt.toISOString(),
+          updatedAt: reservation.listing.user.updatedAt.toISOString(),
+          emailVerified: reservation.listing.user.emailVerified?.toISOString() || null,
+        },
       },
       user: {
         ...reservation.user,

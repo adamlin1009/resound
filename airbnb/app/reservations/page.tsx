@@ -2,7 +2,7 @@ import ClientOnly from "@/components/ClientOnly";
 import EmptyState from "@/components/EmptyState";
 import React from "react";
 import getCurrentUser from "../actions/getCurrentUser";
-import getReservation from "../actions/getReservations";
+import getOwnerReservations from "../actions/getOwnerReservations";
 import ReservationsClient from "./ReservationsClient";
 
 type Props = {};
@@ -20,11 +20,12 @@ const ReservationsPage = async (props: Props) => {
     );
   }
 
-  const reservations = await getReservation({
-    authorId: currentUser.id,
-  });
+  const { reservations, pendingSetups } = await getOwnerReservations();
 
-  if (reservations.length === 0) {
+  // Filter out canceled reservations
+  const activeReservations = reservations.filter(r => r.status !== "CANCELED");
+
+  if (activeReservations.length === 0) {
     return (
       <ClientOnly>
         <EmptyState
@@ -40,6 +41,7 @@ const ReservationsPage = async (props: Props) => {
       <ReservationsClient
         reservations={reservations}
         currentUser={currentUser}
+        pendingSetups={pendingSetups}
       />
     </ClientOnly>
   );

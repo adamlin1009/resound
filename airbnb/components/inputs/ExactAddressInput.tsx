@@ -17,10 +17,11 @@ type Prediction = {
 type Props = {
   value?: string;
   onChange: (value: string) => void;
+  onValidSelection?: (isValid: boolean, locationData?: { city: string; state: string; zipCode?: string }) => void;
   placeholder?: string;
 };
 
-export default function ExactAddressInput({ value = "", onChange, placeholder = "Enter full street address" }: Props) {
+export default function ExactAddressInput({ value = "", onChange, onValidSelection, placeholder = "Enter full street address" }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -33,7 +34,7 @@ export default function ExactAddressInput({ value = "", onChange, placeholder = 
   const abortControllerRef = useRef<AbortController | null>(null);
   const justSelectedRef = useRef<boolean>(false);
   
-  const debouncedInput = useDebounce(value, 300);
+  const debouncedInput = useDebounce(value, 200); // Faster response
 
   // Generate session token on mount
   useEffect(() => {
@@ -90,7 +91,7 @@ export default function ExactAddressInput({ value = "", onChange, placeholder = 
       return;
     }
     
-    if (debouncedInput.trim().length >= 5) { // Require more characters for addresses
+    if (debouncedInput.trim().length >= 1) { // Start searching immediately
       fetchPredictions(debouncedInput);
     } else {
       setPredictions([]);
@@ -101,6 +102,13 @@ export default function ExactAddressInput({ value = "", onChange, placeholder = 
   // Handle selection from dropdown
   const handleSelect = useCallback((prediction: Prediction) => {
     onChange(prediction.displayText);
+    if (onValidSelection) {
+      onValidSelection(true, {
+        city: prediction.city,
+        state: prediction.state,
+        zipCode: prediction.zipCode
+      });
+    }
     setIsOpen(false);
     setSelectedIndex(-1);
     setPredictions([]);
@@ -112,7 +120,7 @@ export default function ExactAddressInput({ value = "", onChange, placeholder = 
     setTimeout(() => {
       justSelectedRef.current = false;
     }, 500);
-  }, [onChange]);
+  }, [onChange, onValidSelection]);
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -148,11 +156,16 @@ export default function ExactAddressInput({ value = "", onChange, placeholder = 
     setError(null);
     justSelectedRef.current = false;
 
+    // Mark as invalid when user types manually
+    if (onValidSelection && !justSelectedRef.current) {
+      onValidSelection(false);
+    }
+
     if (!inputValue.trim()) {
       setPredictions([]);
       setIsOpen(false);
     }
-  }, [onChange]);
+  }, [onChange, onValidSelection]);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -168,8 +181,7 @@ export default function ExactAddressInput({ value = "", onChange, placeholder = 
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => {
-            const looksComplete = value.includes(',') && (value.includes('USA') || value.includes('US'));
-            if (!justSelectedRef.current && !looksComplete && predictions.length > 0 && !error) {
+            if (!justSelectedRef.current && predictions.length > 0 && !error) {
               setIsOpen(true);
             }
           }}

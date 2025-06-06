@@ -35,6 +35,7 @@ type Props = {
   listingId: string;
   currentUser?: SafeUser | null;
   hasPaidReservation?: boolean;
+  exactAddress?: string;
 };
 
 function ListingInfo({
@@ -48,6 +49,7 @@ function ListingInfo({
   listingId,
   currentUser,
   hasPaidReservation = false,
+  exactAddress,
 }: Props) {
   const { formatLocation } = useUSLocations();
   const { startConversation } = useMessages();
@@ -55,12 +57,22 @@ function ListingInfo({
   const router = useRouter();
   const [isContactingOwner, setIsContactingOwner] = useState(false);
   
+  // Handle incorrectly stored address data
+  let correctedCity = city;
+  let correctedState = state;
+  
+  // If state looks like a city name (not a 2-letter code), assume data is swapped
+  if (state && state.length > 2 && !state.includes(',')) {
+    correctedCity = state; // Use state as city
+    correctedState = 'CA'; // Default to CA
+  }
+  
   // Memoize the location object to prevent infinite re-renders
   const location = useMemo(() => ({
-    city: city || undefined,
-    state,
+    city: correctedCity || undefined,
+    state: correctedState,
     zipCode: zipCode || undefined
-  }), [city, state, zipCode]);
+  }), [correctedCity, correctedState, zipCode]);
   
   const locationDisplay = formatLocation(location);
   const { coordinates } = useCoordinates(location);
@@ -145,11 +157,26 @@ function ListingInfo({
       <p className="text-lg font-light text-neutral-500">{description}</p>
       <hr />
       <p className="text-xl font-semibold">Pickup location</p>
-      <p className="text-lg font-medium text-neutral-700">{locationDisplay}</p>
+      {exactAddress ? (
+        <>
+          <p className="text-lg font-medium text-neutral-700">{exactAddress}</p>
+          <p className="text-sm text-neutral-500">{locationDisplay}</p>
+        </>
+      ) : (
+        <>
+          <p className="text-lg font-medium text-neutral-700">{locationDisplay}</p>
+          {!currentUser && (
+            <p className="text-sm text-neutral-500 italic">Exact address available after booking</p>
+          )}
+          {currentUser && currentUser.id !== user.id && !hasPaidReservation && (
+            <p className="text-sm text-neutral-500 italic">Exact address available after booking</p>
+          )}
+        </>
+      )}
       <Map 
         center={coordinates || undefined}
-        city={city || undefined}
-        state={state}
+        city={correctedCity || undefined}
+        state={correctedState}
         zipCode={zipCode || undefined}
       />
     </div>

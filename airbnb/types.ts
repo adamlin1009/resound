@@ -10,6 +10,11 @@ export type safeListing = Omit<CoreListingData, "exactAddress" | "latitude" | "l
   city: string | null;
   state: string;
   zipCode: string | null;
+  pickupStartTime?: string | null;
+  pickupEndTime?: string | null;
+  returnStartTime?: string | null;
+  returnEndTime?: string | null;
+  availableDays?: string[];
 };
 
 // Full listing data (with exact address for owners/renters)
@@ -30,7 +35,7 @@ export type USLocation = {
 
 export type SafeReservation = Omit<
   Reservation,
-  "createdAt" | "startDate" | "endDate" | "listing" | "canceledAt" | "pickupStartTime" | "pickupEndTime" | "pickupConfirmedAt" | "returnDeadline" | "returnConfirmedAt"
+  "createdAt" | "startDate" | "endDate" | "listing" | "canceledAt" | "pickupStartTime" | "pickupEndTime" | "pickupConfirmedAt" | "returnDeadline" | "returnStartTime" | "returnEndTime" | "returnConfirmedAt" | "expiresAt"
 > & {
   createdAt: string;
   startDate: string;
@@ -40,6 +45,8 @@ export type SafeReservation = Omit<
   pickupEndTime?: string | null;
   pickupConfirmedAt?: string | null;
   returnDeadline?: string | null;
+  returnStartTime?: string | null;
+  returnEndTime?: string | null;
   returnConfirmedAt?: string | null;
   listing: safeListing & {
     user: SafeUser;

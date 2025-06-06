@@ -9,6 +9,7 @@ interface ConfirmModalStore {
   onOpen: (data: {
     title: string;
     subtitle?: string;
+    message?: string; // Support both subtitle and message
     actionLabel?: string;
     onConfirm: () => void;
   }) => void;
@@ -25,7 +26,7 @@ const useConfirmModal = create<ConfirmModalStore>((set) => ({
     set({
       isOpen: true,
       title: data.title,
-      subtitle: data.subtitle,
+      subtitle: data.subtitle || data.message, // Support both
       actionLabel: data.actionLabel,
       onConfirm: data.onConfirm,
     }),

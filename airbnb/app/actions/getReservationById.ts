@@ -54,6 +54,8 @@ export default async function getReservationById(params: IParams) {
       pickupEndTime: reservation.pickupEndTime?.toISOString() || null,
       pickupConfirmedAt: reservation.pickupConfirmedAt?.toISOString() || null,
       returnDeadline: reservation.returnDeadline?.toISOString() || null,
+      returnStartTime: reservation.returnStartTime?.toISOString() || null,
+      returnEndTime: reservation.returnEndTime?.toISOString() || null,
       returnConfirmedAt: reservation.returnConfirmedAt?.toISOString() || null,
       listing: {
         ...reservation.listing,

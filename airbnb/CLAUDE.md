@@ -286,7 +286,15 @@ Centralized modal management using Zustand stores:
 - Message history
 - User avatars
 - Chronological ordering
+- Post-rental messaging support (30 days after completion)
 - Unread indicators (planned)
+
+#### Messaging Rules:
+- Renters must have a paid reservation to start conversations
+- Messaging allowed during PENDING, ACTIVE, and COMPLETED states
+- After rental completion, messaging continues for 30 days
+- Owners can always respond to renter messages
+- Conversations persist even if listings are deleted
 
 ### File Upload System
 
