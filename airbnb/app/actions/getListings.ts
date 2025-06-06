@@ -4,7 +4,6 @@ import { geocodeLocation, buildLocationString, calculateDistance, Coordinates } 
 
 export interface IListingsParams {
   userId?: string;
-  conditionRating?: number; // minimum condition rating
   experienceLevel?: number; // minimum experience level
   startDate?: string;
   endDate?: string;
@@ -54,15 +53,12 @@ export default async function getListings(params: IListingsParams) {
       ];
     }
 
-    if (params.conditionRating) {
-      queryParams.conditionRating = {
-        gte: +params.conditionRating,
-      };
-    }
 
     if (params.experienceLevel) {
+      // Show instruments that require this skill level or lower
+      // E.g., if user is Advanced (3), show Beginner (1), Intermediate (2), and Advanced (3) instruments
       queryParams.experienceLevel = {
-        gte: +params.experienceLevel,
+        lte: +params.experienceLevel,
       };
     }
 
@@ -144,7 +140,6 @@ export default async function getListings(params: IListingsParams) {
       return {
         ...publicListing,
         createdAt: list.createdAt.toISOString(),
-        conditionRating: list.conditionRating,
         experienceLevel: list.experienceLevel,
       };
     });

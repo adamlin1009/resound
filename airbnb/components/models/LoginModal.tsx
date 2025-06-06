@@ -60,7 +60,7 @@ function LoginModal({}: Props) {
 
   const bodyContent = (
     <div className="flex flex-col gap-4">
-      <Heading title="Welcome Back" subtitle="Sign in to your Account!" center />
+      <Heading title="Welcome Back" subtitle="Sign in to your account!" center />
       <div className="flex justify-center mt-4">
         <Button
           outline
@@ -99,7 +99,7 @@ function LoginModal({}: Props) {
       /> */}
       <div className="text-neutral-500 text-center font-light">
         <div>
-          {`Don't have an Account?`}{" "}
+          {`Don't have an account?`}{" "}
           <span
             onClick={toggle}
             className="text-neutral-800 cursor-pointer hover:underline"

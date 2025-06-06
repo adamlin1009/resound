@@ -2,6 +2,7 @@ import ClientOnly from "@/components/ClientOnly";
 import EmptyState from "@/components/EmptyState";
 import getCurrentUser from "../actions/getCurrentUser";
 import getListings from "../actions/getListings";
+import getOwnerReservations from "../actions/getOwnerReservations";
 import InstrumentsClient from "./InstrumentsClient";
 
 type Props = {};
@@ -20,6 +21,7 @@ const InstrumentsPage = async (props: Props) => {
   }
 
   const listings = await getListings({ userId: currentUser.id });
+  const { reservations: ownerReservations, pendingSetups } = await getOwnerReservations();
 
   if (listings.length === 0) {
     return (
@@ -33,7 +35,12 @@ const InstrumentsPage = async (props: Props) => {
   }
   return (
     <ClientOnly>
-      <InstrumentsClient listings={listings} currentUser={currentUser} />
+      <InstrumentsClient 
+        listings={listings} 
+        currentUser={currentUser}
+        pendingSetups={pendingSetups}
+        ownerReservations={ownerReservations}
+      />
     </ClientOnly>
   );
 };

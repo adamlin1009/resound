@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { listingId } = body;
+    const { listingId, ownerId, renterId } = body;
 
     if (!listingId) {
       return NextResponse.json({ error: "Listing ID is required" }, { status: 400 });
@@ -60,39 +60,49 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Listing not found" }, { status: 404 });
     }
 
-    if (listing.userId === currentUser.id) {
+    // Determine the owner and renter IDs
+    let finalOwnerId = ownerId || listing.userId;
+    let finalRenterId = renterId || currentUser.id;
+
+    // If current user is the owner, swap the roles
+    if (currentUser.id === listing.userId && renterId) {
+      finalOwnerId = currentUser.id;
+      finalRenterId = renterId;
+    }
+
+    if (finalOwnerId === finalRenterId) {
       return NextResponse.json({ error: "Cannot message yourself" }, { status: 400 });
     }
 
-    // Check if user has a paid reservation for this listing
-    const paidReservation = await prisma.reservation.findFirst({
+    // Check if there's a valid reservation for this conversation
+    const validReservation = await prisma.reservation.findFirst({
       where: {
         listingId: listingId,
-        userId: currentUser.id,
+        userId: finalRenterId,
         status: { in: ['ACTIVE', 'COMPLETED'] }
       }
     });
 
-    if (!paidReservation) {
+    if (!validReservation) {
       return NextResponse.json({ 
-        error: "You can only message the owner after making a rental payment" 
+        error: "A valid rental reservation is required to start a conversation" 
       }, { status: 403 });
     }
 
     // Check if there's a successful payment for this reservation
     const payment = await prisma.payment.findFirst({
       where: {
-        userId: currentUser.id,
+        userId: finalRenterId,
         listingId: listingId,
         status: 'SUCCEEDED',
-        startDate: paidReservation.startDate,
-        endDate: paidReservation.endDate
+        startDate: validReservation.startDate,
+        endDate: validReservation.endDate
       }
     });
 
     if (!payment) {
       return NextResponse.json({ 
-        error: "You can only message the owner after making a rental payment" 
+        error: "A successful payment is required to start a conversation" 
       }, { status: 403 });
     }
 
@@ -100,8 +110,8 @@ export async function POST(request: Request) {
     let conversation = await prisma.conversation.findFirst({
       where: {
         listingId: listingId,
-        ownerId: listing.userId,
-        renterId: currentUser.id
+        ownerId: finalOwnerId,
+        renterId: finalRenterId
       },
       include: {
         listing: { select: { title: true, imageSrc: true } },
@@ -120,8 +130,8 @@ export async function POST(request: Request) {
       conversation = await prisma.conversation.create({
         data: {
           listingId: listingId,
-          ownerId: listing.userId,
-          renterId: currentUser.id
+          ownerId: finalOwnerId,
+          renterId: finalRenterId
         },
         include: {
           listing: { select: { title: true, imageSrc: true } },

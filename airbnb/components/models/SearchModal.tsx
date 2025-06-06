@@ -10,14 +10,12 @@ import { Range } from "react-date-range";
 
 import Heading from "../Heading";
 import Calendar from "../inputs/Calendar";
-import Counter from "../inputs/Counter";
 import AddressInput from "../inputs/AddressInput";
 import useUSLocations, { USLocationValue } from "@/hook/useUSLocations";
 import Modal from "./Modal";
 
 enum STEPS {
-  LOCATION = 0,
-  DATE = 1,
+  FILTERS = 0,
 }
 
 type Props = {};
@@ -28,15 +26,15 @@ function SearchModal({}: Props) {
   const searchModel = useSearchModal();
 
   const [location, setLocation] = useState<USLocationValue>({ city: "", state: "" });
-  const [step, setStep] = useState(STEPS.LOCATION);
-  const [conditionRating, setConditionRating] = useState(1);
+  const [step, setStep] = useState(STEPS.FILTERS);
   const [experienceLevel, setExperienceLevel] = useState(1);
   const [radius, setRadius] = useState(25); // Default 25 mile radius
   const [isNationwide, setIsNationwide] = useState(false);
   const [instrumentType, setInstrumentType] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [dateRange, setDateRange] = useState<Range>({
-    startDate: new Date(),
-    endDate: new Date(),
+    startDate: undefined,
+    endDate: undefined,
     key: "selection",
   });
 
@@ -48,13 +46,6 @@ function SearchModal({}: Props) {
     []
   );
 
-  const onBack = useCallback(() => {
-    setStep((value) => value - 1);
-  }, []);
-
-  const onNext = useCallback(() => {
-    setStep((value) => value + 1);
-  }, []);
 
   const onSubmit = useCallback(async () => {
     let currentQuery = {};
@@ -65,7 +56,6 @@ function SearchModal({}: Props) {
 
     const updatedQuery: any = {
       ...currentQuery,
-      conditionRating,
       experienceLevel,
     };
 
@@ -89,225 +79,196 @@ function SearchModal({}: Props) {
       updatedQuery.radius = radius;
     }
 
-    // Only add dates if we're on the date step and dates are selected
-    if (step === STEPS.DATE) {
-      if (dateRange.startDate) {
-        updatedQuery.startDate = formatISO(dateRange.startDate);
-      }
-      if (dateRange.endDate) {
-        updatedQuery.endDate = formatISO(dateRange.endDate);
-      }
+    // Add dates if they are selected
+    if (showDatePicker && dateRange.startDate && dateRange.endDate) {
+      updatedQuery.startDate = formatISO(dateRange.startDate);
+      updatedQuery.endDate = formatISO(dateRange.endDate);
     }
 
-    // If we're on location step and have location or nationwide, can search directly
-    if (step === STEPS.LOCATION && (location?.city || location?.state || isNationwide)) {
-      const url = qs.stringifyUrl(
-        {
-          url: "/",
-          query: updatedQuery,
-        },
-        { skipNull: true }
-      );
+    const url = qs.stringifyUrl(
+      {
+        url: "/",
+        query: updatedQuery,
+      },
+      { skipNull: true }
+    );
 
-      setStep(STEPS.LOCATION);
-      searchModel.onClose();
-      router.push(url);
-      return;
-    }
-
-    // If we're on location step but no location, go to next step
-    if (step === STEPS.LOCATION) {
-      return onNext();
-    }
-
-    // If we're on date step, search
-    if (step === STEPS.DATE) {
-      const url = qs.stringifyUrl(
-        {
-          url: "/",
-          query: updatedQuery,
-        },
-        { skipNull: true }
-      );
-
-      setStep(STEPS.LOCATION);
-      searchModel.onClose();
-      router.push(url);
-    }
+    setStep(STEPS.FILTERS);
+    searchModel.onClose();
+    router.push(url);
   }, [
     step,
     searchModel,
     location,
     router,
-    conditionRating,
     experienceLevel,
     dateRange,
     radius,
     isNationwide,
     instrumentType,
-    onNext,
+    showDatePicker,
     params,
   ]);
 
   const actionLabel = useMemo(() => {
-    if (step === STEPS.DATE) {
-      return "Search";
-    }
+    return "Search";
+  }, []);
 
-    // If we have location or nationwide on first step, show Search button
-    if (step === STEPS.LOCATION && (location?.city || location?.state || isNationwide)) {
-      return "Search";
-    }
-
-    return "Next";
-  }, [step, location, isNationwide]);
-
-  const secondaryAction = useMemo(() => {
-    if (step === STEPS.LOCATION && (location?.city || location?.state || isNationwide)) {
-      return onNext; // "Add dates" action
-    }
-    
-    if (step === STEPS.LOCATION) {
-      return undefined;
-    }
-
-    return onBack; // "Back" action
-  }, [step, location, isNationwide, onNext, onBack]);
-
-  const secondActionLabel = useMemo(() => {
-    if (step === STEPS.LOCATION && (location?.city || location?.state || isNationwide)) {
-      return "Add dates";
-    }
-    
-    if (step === STEPS.LOCATION) {
-      return undefined;
-    }
-
-    return "Back";
-  }, [step, location, isNationwide]);
+  const onClear = useCallback(() => {
+    setLocation({ city: "", state: "" });
+    setInstrumentType("");
+    setExperienceLevel(1);
+    setRadius(25);
+    setIsNationwide(false);
+    setShowDatePicker(false);
+    setDateRange({
+      startDate: undefined,
+      endDate: undefined,
+      key: "selection",
+    });
+  }, []);
 
   let bodyContent = (
-    <div className="flex flex-col gap-8">
-      <Heading
-        title="Where do you want to find instruments?"
-        subtitle="Find the perfect location!"
-      />
+    <div className="flex flex-col gap-6 max-h-[75vh] overflow-y-auto">
+      <div className="flex justify-between items-start">
+        <Heading
+          title="Find your perfect instrument"
+          subtitle="Use filters to narrow down your search"
+        />
+        <button
+          type="button"
+          onClick={onClear}
+          className="text-sm text-gray-500 hover:text-gray-700 underline"
+        >
+          Clear all
+        </button>
+      </div>
       
       {/* Instrument type search */}
       <div>
         <label className="text-sm font-medium text-gray-700 block mb-2">
-          Instrument type (optional)
+          What instrument are you looking for?
         </label>
         <input
           type="text"
           value={instrumentType}
           onChange={(e) => setInstrumentType(e.target.value)}
-          placeholder="e.g., Cello, Clarinet, Harp, etc."
+          placeholder="e.g., Violin, Piano, Saxophone..."
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
         />
-        <p className="text-xs text-gray-500 mt-1">
-          Search for specific instrument types not shown in the categories
-        </p>
       </div>
       
-      {/* Nationwide toggle */}
-      <div className="flex items-center gap-3">
-        <input
-          type="checkbox"
-          id="nationwide"
-          checked={isNationwide}
-          onChange={(e) => {
-            setIsNationwide(e.target.checked);
-            if (e.target.checked) {
-              setLocation({ city: "", state: "" }); // Clear location if nationwide
-            }
-          }}
-          className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
-        />
-        <label htmlFor="nationwide" className="text-sm font-medium text-gray-700">
-          Search nationwide
-        </label>
-      </div>
-
-      {!isNationwide && (
-        <>
-          <AddressInput
-            value={location}
-            onChange={(value) => setLocation(value)}
-            placeholder="Search by city, zip code, or address"
+      <hr />
+      
+      {/* Location Section */}
+      <div>
+        <h3 className="font-semibold mb-4">Location</h3>
+        
+        {/* Nationwide toggle */}
+        <div className="flex items-center gap-3 mb-4">
+          <input
+            type="checkbox"
+            id="nationwide"
+            checked={isNationwide}
+            onChange={(e) => {
+              setIsNationwide(e.target.checked);
+              if (e.target.checked) {
+                setLocation({ city: "", state: "" });
+              }
+            }}
+            className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
           />
-          
-          {/* Radius selector */}
-          {(location?.city || location?.zipCode) && (
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">
-                Search radius: {radius} miles
-              </label>
-              <input
-                type="range"
-                min="5"
-                max="500"
-                step="5"
-                value={radius}
-                onChange={(e) => setRadius(Number(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-              />
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>5 miles</span>
-                <span>100 miles</span>
-                <span>500 miles</span>
+          <label htmlFor="nationwide" className="text-sm font-medium text-gray-700">
+            Search nationwide
+          </label>
+        </div>
+
+        {!isNationwide && (
+          <>
+            <AddressInput
+              value={location}
+              onChange={(value) => setLocation(value)}
+              placeholder="Enter city, state, or ZIP code"
+            />
+            
+            {/* Radius selector */}
+            {(location?.city || location?.zipCode) && (
+              <div className="flex flex-col gap-2 mt-4">
+                <label className="text-sm font-medium text-gray-700">
+                  Search radius: {radius} miles
+                </label>
+                <input
+                  type="range"
+                  min="5"
+                  max="100"
+                  step="5"
+                  value={radius}
+                  onChange={(e) => setRadius(Number(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>5 mi</span>
+                  <span>50 mi</span>
+                  <span>100 mi</span>
+                </div>
               </div>
-            </div>
-          )}
-        </>
-      )}
+            )}
+          </>
+        )}
+      </div>
+      
+      <hr />
+      
+      {/* Date Selection (Optional) */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold">Rental dates (optional)</h3>
+          <button
+            type="button"
+            onClick={() => setShowDatePicker(!showDatePicker)}
+            className="text-sm text-amber-600 hover:underline"
+          >
+            {showDatePicker ? "Skip dates" : "Add dates"}
+          </button>
+        </div>
+        
+        {showDatePicker && (
+          <Calendar
+            onChange={(value) => setDateRange(value.selection)}
+            value={dateRange}
+          />
+        )}
+      </div>
+      
+      <hr />
+      
+      {/* Skill Level Filter */}
+      <div>
+        <h3 className="font-semibold mb-2">Your skill level</h3>
+        <p className="text-sm text-gray-500 mb-4">Show instruments suitable for your experience</p>
+        <select
+          value={experienceLevel}
+          onChange={(e) => setExperienceLevel(Number(e.target.value))}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+        >
+          <option value={1}>Beginner</option>
+          <option value={2}>Intermediate</option>
+          <option value={3}>Advanced</option>
+          <option value={4}>Professional</option>
+        </select>
+        <p className="text-xs text-gray-500 mt-2">
+          You'll see instruments that match your level or below
+        </p>
+      </div>
     </div>
   );
-
-  if (step === STEPS.DATE) {
-    bodyContent = (
-      <div className="flex flex-col gap-8">
-        <Heading
-          title="When do you need the instrument?"
-          subtitle="Select your rental period!"
-        />
-        <Calendar
-          onChange={(value) => setDateRange(value.selection)}
-          value={dateRange}
-        />
-        <hr />
-        <div className="flex flex-col gap-4">
-          <Counter
-            onChange={(value) => setConditionRating(value)}
-            value={conditionRating}
-            title="Condition"
-            subtitle="Minimum condition rating (1-10)?"
-            min={1}
-            max={10}
-          />
-          <Counter
-            onChange={(value) => {
-              setExperienceLevel(value);
-            }}
-            value={experienceLevel}
-            title="Experience Level"
-            subtitle="What skill level? (1=Beginner, 5=Pro)"
-            min={1}
-            max={5}
-          />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <Modal
       isOpen={searchModel.isOpen}
       onClose={searchModel.onClose}
       onSubmit={onSubmit}
-      secondaryAction={secondaryAction}
-      secondaryActionLabel={secondActionLabel}
-      title="Filters"
+      title="Search & Filters"
       actionLabel={actionLabel}
       body={bodyContent}
     />

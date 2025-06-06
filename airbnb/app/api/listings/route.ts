@@ -21,7 +21,6 @@ export async function POST(request: Request) {
     zipCode,
     exactAddress,
     price,
-    conditionRating,
     experienceLevel,
   } = body;
 
@@ -38,15 +37,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Price must be a positive number' }, { status: 400 });
   }
 
-  // Validate condition and experience
-  if (!conditionRating || conditionRating < 1 || conditionRating > 10) {
-    console.error('Invalid condition rating:', conditionRating);
-    return NextResponse.json({ error: 'Condition rating must be between 1-10' }, { status: 400 });
-  }
-  
-  if (!experienceLevel || experienceLevel < 1 || experienceLevel > 5) {
+  // Validate experience level (removed condition rating validation)
+  if (!experienceLevel || experienceLevel < 1 || experienceLevel > 4) {
     console.error('Invalid experience level:', experienceLevel);
-    return NextResponse.json({ error: 'Experience level must be between 1-5' }, { status: 400 });
+    return NextResponse.json({ error: 'Experience level must be between 1-4' }, { status: 400 });
   }
 
   // Geocode the address with fallback options
@@ -71,7 +65,6 @@ export async function POST(request: Request) {
       description,
       imageSrc: imageSrc || '',
       category,
-      conditionRating,
       experienceLevel,
       city,
       state,

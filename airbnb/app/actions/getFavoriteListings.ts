@@ -22,8 +22,8 @@ export default async function getFavoriteListings(): Promise<safeListing[]> {
     const safeFavorites = favorites.map((favorite: Listing) => ({
       ...favorite,
       createdAt: favorite.createdAt.toString(),
-      // conditionRating and experienceLevel should be included via ...favorite
-      // if 'Listing' type is correctly resolved and includes them.
+      // experienceLevel should be included via ...favorite
+      // if 'Listing' type is correctly resolved and includes it.
     }));
 
     return safeFavorites;

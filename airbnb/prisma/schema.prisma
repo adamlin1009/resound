@@ -21,6 +21,12 @@ model User {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   favoriteIds    String[]      @db.ObjectId
+  
+  // Profile fields
+  experienceLevel      Int?          @default(1)
+  preferredInstruments String[]      @default([])
+  bio                  String?
+  
   accounts       Account[]
   listings       Listing[]
   reservations   Reservation[]
@@ -55,7 +61,6 @@ model Listing {
   imageSrc         String
   createdAt        DateTime      @default(now())
   category         String
-  conditionRating  Int
   experienceLevel  Int
   city             String?
   state            String
@@ -83,6 +88,31 @@ model Reservation {
   canceledBy      String?           @db.ObjectId
   cancelReason    String?
   createdAt       DateTime          @default(now())
+  
+  // Rental Management Fields
+  rentalStatus    RentalStatus      @default(PENDING)
+  
+  // Pickup Details
+  pickupAddress      String?
+  pickupInstructions String?
+  pickupStartTime    DateTime?
+  pickupEndTime      DateTime?
+  pickupConfirmedByOwner   Boolean @default(false)
+  pickupConfirmedByRenter  Boolean @default(false)
+  pickupConfirmedAt  DateTime?
+  
+  // Return Details
+  returnAddress      String?
+  returnInstructions String?
+  returnDeadline     DateTime?
+  returnConfirmedByOwner   Boolean @default(false)
+  returnConfirmedByRenter  Boolean @default(false)
+  returnConfirmedAt  DateTime?
+  
+  // Additional fields
+  ownerNotes         String?
+  renterNotes        String?
+  
   user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   listing         Listing           @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }
@@ -116,6 +146,16 @@ enum ReservationStatus {
   ACTIVE
   COMPLETED
   CANCELED
+}
+
+enum RentalStatus {
+  PENDING           // Payment made, awaiting owner setup
+  READY_FOR_PICKUP  // Owner has set pickup details
+  PICKED_UP         // Instrument collected
+  IN_PROGRESS       // Active rental
+  AWAITING_RETURN   // Near return date
+  RETURNED          // Instrument returned
+  COMPLETED         // Rental fully completed
 }
 
 model Conversation {

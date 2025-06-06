@@ -18,7 +18,7 @@ export async function sendEmail({ to, subject, html }: EmailData) {
 
   try {
     // When you install Resend, uncomment this:
-    /*
+    
     const { Resend } = require('resend');
     const resend = new Resend(process.env.RESEND_API_KEY);
     
@@ -35,7 +35,7 @@ export async function sendEmail({ to, subject, html }: EmailData) {
     }
 
     return { success: true, data };
-    */
+    
 
     // For now, just log the email
     console.log(`📧 Email to ${to}: ${subject}`);
@@ -112,5 +112,51 @@ export const emailTemplates = {
     <p>Your booking for "${data.listingTitle}" has been canceled by ${data.canceledBy}.</p>
     <p><strong>Refund Policy:</strong> As per our no-refunds policy, no refund will be processed for this cancellation.</p>
     <p>Thanks for understanding.</p>
+  `,
+
+  rentalDetailsReady: (data: {
+    renterName: string;
+    listingTitle: string;
+    pickupAddress: string;
+    pickupStartTime: string;
+    pickupEndTime: string;
+    returnDeadline: string;
+    reservationId: string;
+  }) => `
+    <h2>Rental Details Ready! 📍</h2>
+    <p>Hi ${data.renterName},</p>
+    <p>Great news! The owner has set up the pickup and return details for your rental of "${data.listingTitle}".</p>
+    <div style="background: #f9f9f9; padding: 16px; border-radius: 8px; margin: 16px 0;">
+      <h3>Pickup Information</h3>
+      <p><strong>Address:</strong> ${data.pickupAddress}</p>
+      <p><strong>Pickup Window:</strong> ${data.pickupStartTime} to ${data.pickupEndTime}</p>
+      <p><strong>Return By:</strong> ${data.returnDeadline}</p>
+    </div>
+    <p>Please log in to your Resound account to view complete details and confirm pickup.</p>
+    <p><a href="${process.env.NEXTAUTH_URL}/rentals/${data.reservationId}/manage" style="background: #f59e0b; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">View Rental Details</a></p>
+    <p>Thanks for using Resound!</p>
+  `,
+
+  pickupConfirmed: (data: {
+    userName: string;
+    listingTitle: string;
+    confirmedBy: string;
+  }) => `
+    <h2>Pickup Confirmed! ✅</h2>
+    <p>Hi ${data.userName},</p>
+    <p>${data.confirmedBy} has confirmed the pickup for "${data.listingTitle}".</p>
+    <p>The rental is now officially in progress. Enjoy the instrument!</p>
+    <p>Remember to coordinate the return as the deadline approaches.</p>
+  `,
+
+  returnConfirmed: (data: {
+    userName: string;
+    listingTitle: string;
+    confirmedBy: string;
+  }) => `
+    <h2>Return Confirmed! ✅</h2>
+    <p>Hi ${data.userName},</p>
+    <p>${data.confirmedBy} has confirmed the return of "${data.listingTitle}".</p>
+    <p>The rental has been completed successfully. Thank you for using Resound!</p>
   `
 };

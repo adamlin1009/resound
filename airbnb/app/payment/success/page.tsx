@@ -14,16 +14,21 @@ const PaymentSuccessPage = () => {
   const [countdown, setCountdown] = useState(5);
   const [isProcessing, setIsProcessing] = useState(true);
   const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
+  const [reservationId, setReservationId] = useState<string | null>(null);
 
   useEffect(() => {
-    const startCountdown = () => {
+    const startCountdown = (resId: string | null) => {
       const timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
             // Use setTimeout to avoid state update during render
             setTimeout(() => {
-              router.push("/rentals");
+              if (resId) {
+                router.push(`/rentals/${resId}/manage`);
+              } else {
+                router.push("/rentals");
+              }
             }, 0);
             return 0;
           }
@@ -44,7 +49,8 @@ const PaymentSuccessPage = () => {
           // If payment succeeded and reservation exists, start countdown
           if (response.data.payment.status === "SUCCEEDED" && response.data.reservation) {
             setIsProcessing(false);
-            startCountdown();
+            setReservationId(response.data.reservation.id);
+            startCountdown(response.data.reservation.id);
           } else {
             // Retry after 2 seconds if still processing
             setTimeout(checkPayment, 2000);
@@ -60,7 +66,7 @@ const PaymentSuccessPage = () => {
     } else {
       // No session ID, just redirect
       setIsProcessing(false);
-      startCountdown();
+      startCountdown(null);
     }
   }, [searchParams, router]);
 
@@ -83,15 +89,21 @@ const PaymentSuccessPage = () => {
         <div className="pt-24">
           <EmptyState
             title="Payment Successful!"
-            subtitle={`Your instrument rental has been confirmed. Redirecting to your rentals in ${countdown} seconds...`}
+            subtitle={`Your instrument rental has been confirmed. Redirecting to your rental details in ${countdown} seconds...`}
             showReset={false}
           />
           <div className="flex justify-center mt-4">
             <button
-              onClick={() => router.push("/rentals")}
+              onClick={() => {
+                if (reservationId) {
+                  router.push(`/rentals/${reservationId}/manage`);
+                } else {
+                  router.push("/rentals");
+                }
+              }}
               className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition"
             >
-              Go to My Rentals Now
+              Go to Rental Details Now
             </button>
           </div>
         </div>

@@ -65,11 +65,20 @@ function ListingCard({
   }, [reservation]);
 
   const isCanceled = reservation?.status === "CANCELED";
+  const isCompleted = reservation?.status === "COMPLETED";
+  const isInactive = isCanceled || isCompleted;
 
   return (
     <div
-      onClick={() => router.push(`/listings/${data.id}`)}
-      className={`col-span-1 cursor-pointer group ${isCanceled ? 'opacity-50' : ''}`}
+      onClick={() => {
+        // If this card represents a reservation, go to the rental management page
+        if (reservation) {
+          router.push(`/rentals/${reservation.id}/manage`);
+        } else {
+          router.push(`/listings/${data.id}`);
+        }
+      }}
+      className={`col-span-1 cursor-pointer group ${isInactive ? 'opacity-50' : ''}`}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.5 }}
@@ -108,10 +117,19 @@ function ListingCard({
                 CANCELED
               </span>
             )}
+            {isCompleted && (
+              <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                COMPLETED
+              </span>
+            )}
           </div>
           <div className="flex flex-row gap-2 text-sm text-neutral-600">
-            <span>Condition: {data.conditionRating}/10</span>
-            <span>Level: {data.experienceLevel === 1 ? 'Beginner' : data.experienceLevel === 2 ? 'Intermediate' : data.experienceLevel === 3 ? 'Advanced' : data.experienceLevel === 4 ? 'Expert' : 'Professional'}</span>
+            <span>Min. Level: {
+              data.experienceLevel === 1 ? 'Beginner' : 
+              data.experienceLevel === 2 ? 'Intermediate' : 
+              data.experienceLevel === 3 ? 'Advanced' : 
+              'Professional'
+            }</span>
           </div>
           <div className="font-medium text-neutral-700">
             {locationDisplay}
@@ -121,7 +139,7 @@ function ListingCard({
               ${price} {!reservation && <div className="font-light"> per day</div>}
             </div>
           </div>
-          {onAction && actionLabel && !isCanceled && (
+          {onAction && actionLabel && !isInactive && (
             <Button
               disabled={disabled}
               small

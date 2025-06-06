@@ -120,7 +120,6 @@ function ListingClient({ reservations = [], listing, currentUser, hasPaidReserva
               user={listing.user}
               category={category}
               description={listing.description}
-              conditionRating={listing.conditionRating}
               experienceLevel={listing.experienceLevel}
               city={listing.city}
               state={listing.state}

@@ -16,7 +16,6 @@ export default async function getListingWithAddress(listingId: string): Promise<
     return {
       ...listing,
       createdAt: listing.createdAt.toISOString(),
-      conditionRating: listing.conditionRating,
       experienceLevel: listing.experienceLevel,
     };
   } catch (error: any) {

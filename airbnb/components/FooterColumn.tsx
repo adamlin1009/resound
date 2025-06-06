@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "framer-motion";
+import Link from "next/link";
 
 type Props = {
     index: number;
@@ -8,23 +8,48 @@ type Props = {
   };
 
 function FooterColumn({ index, data }: Props) {
-    const columnItems = data.map((item, itemIndex) => 
-        itemIndex === 0 
-        ? <h5 key={itemIndex} className="font-bold">{item}</h5>
-        : <p key={itemIndex}>{item}</p>);
+    // Map of footer text to routes
+    const linkMap: { [key: string]: string } = {
+      "About": "/about",
+      "How it works": "/how-it-works",
+      "Contact us": "/contact",
+      "Help Center": "/help",
+      "Safety": "/safety",
+      "Report an issue": "/report",
+      "List your instrument": "/instruments",
+      "Host resources": "/host-resources",
+      "Host responsibilities": "/host-responsibilities",
+      "Terms of Service": "/terms",
+      "Privacy Policy": "/privacy",
+      "Cancellation policy": "/cancellation-policy"
+    };
+
+    const columnItems = data.map((item, itemIndex) => {
+        if (itemIndex === 0) {
+            return <h5 key={itemIndex} className="font-bold">{item}</h5>;
+        }
+        
+        const link = linkMap[item];
+        if (link) {
+            return (
+                <Link 
+                    key={itemIndex} 
+                    href={link}
+                    className="block hover:underline cursor-pointer"
+                >
+                    {item}
+                </Link>
+            );
+        }
+        
+        return <p key={itemIndex}>{item}</p>;
+    });
 
     return (
       <div className="space-y-4 text-xs text-gray-800">
-        <motion.div
-          initial={{
-            x: index % 2 === 0 ? -200 : 200,
-            opacity: 0,
-          }}
-          transition={{ duration: 1 }}
-          whileInView={{ opacity: 1, x: 0 }}
-        >
+        <div>
           {columnItems}
-        </motion.div>
+        </div>
       </div>
     );
 }

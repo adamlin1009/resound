@@ -21,7 +21,6 @@ const Map = dynamic(() => import("../Map"), {
 type Props = {
   user: SafeUser;
   description: string;
-  conditionRating: number;
   experienceLevel: number;
   category:
     | {
@@ -41,7 +40,6 @@ type Props = {
 function ListingInfo({
   user,
   description,
-  conditionRating,
   experienceLevel,
   category,
   city,
@@ -102,8 +100,13 @@ function ListingInfo({
           <Avatar src={user?.image} userName={user?.name} />
         </div>
         <div className="flex flex-row items-center gap-4 font-light text-neutral-500">
-          <p>Condition: {conditionRating}/10</p>
-          <p>Level: {experienceLevel === 1 ? 'Beginner' : experienceLevel === 2 ? 'Intermediate' : experienceLevel === 3 ? 'Advanced' : experienceLevel === 4 ? 'Expert' : 'Professional'}</p>
+          <p>Min. Level: {
+            experienceLevel === 1 ? 'Beginner' : 
+            experienceLevel === 2 ? 'Intermediate' : 
+            experienceLevel === 3 ? 'Advanced' : 
+            experienceLevel === 4 ? 'Professional' :
+            'Beginner'
+          }</p>
         </div>
         {currentUser && currentUser.id !== user.id && hasPaidReservation && (
           <div className="mt-4">
@@ -126,7 +129,7 @@ function ListingInfo({
         />
       )}
       <hr />
-      <div className="flex flex-col">
+      {/* <div className="flex flex-col">
         <p className="text-4xl font-serif font-bold text-amber-700">
           resound<span className="text-amber-900">protect</span>
         </p>
@@ -138,7 +141,7 @@ function ListingInfo({
           Learn more
         </p>
       </div>
-      <hr />
+      <hr /> */}
       <p className="text-lg font-light text-neutral-500">{description}</p>
       <hr />
       <p className="text-xl font-semibold">Pickup location</p>

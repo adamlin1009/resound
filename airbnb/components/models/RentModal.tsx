@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 
 import Heading from "../Heading";
 import CategoryInput from "../inputs/CategoryInput";
-import Counter from "../inputs/Counter";
 import AddressInput from "../inputs/AddressInput";
 import ExactAddressInput from "../inputs/ExactAddressInput";
 import ImageUpload from "../inputs/ImageUpload";
@@ -49,7 +48,6 @@ function RentModal({}: Props) {
       state: "",
       zipCode: "",
       exactAddress: "",
-      conditionRating: 1,
       experienceLevel: 1,
       imageSrc: "",
       price: 1,
@@ -63,7 +61,6 @@ function RentModal({}: Props) {
   const state = watch("state");
   const zipCode = watch("zipCode");
   const exactAddress = watch("exactAddress");
-  const conditionRating = watch("conditionRating");
   const experienceLevel = watch("experienceLevel");
   const imageSrc = watch("imageSrc");
 
@@ -201,25 +198,31 @@ function RentModal({}: Props) {
       <div className="flex flex-col gap-8">
         <Heading
           title="Share some details about your instrument"
-          subtitle="What features does it have?"
+          subtitle="Set the minimum skill level required"
         />
-        <Counter
-          title="Condition"
-          subtitle="Rate the condition (1-10, 10 being perfect)"
-          value={conditionRating}
-          onChange={(value) => setCustomValue("conditionRating", value)}
-          min={1}
-          max={10}
-        />
-        <hr />
-        <Counter
-          title="Experience Level"
-          subtitle="Suitable for what skill level? (1=Beginner, 5=Professional)"
-          value={experienceLevel}
-          onChange={(value) => setCustomValue("experienceLevel", value)}
-          min={1}
-          max={5}
-        />
+        <div>
+          <label className="text-sm font-medium text-gray-700 block mb-2">
+            Minimum required skill level
+          </label>
+          <p className="text-sm text-gray-500 mb-4">
+            Only users at this level or higher can rent
+          </p>
+          <select
+            value={experienceLevel}
+            onChange={(e) => setCustomValue("experienceLevel", Number(e.target.value))}
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+          >
+            <option value={1}>Beginner</option>
+            <option value={2}>Intermediate</option>
+            <option value={3}>Advanced</option>
+            <option value={4}>Professional</option>
+          </select>
+        </div>
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+          <p className="text-sm text-amber-800">
+            <strong>Example:</strong> If you set {experienceLevel === 1 ? 'Beginner' : experienceLevel === 2 ? 'Intermediate' : experienceLevel === 3 ? 'Advanced' : 'Professional'}, only users at that level or higher can rent.
+          </p>
+        </div>
       </div>
     );
   }

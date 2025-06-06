@@ -26,7 +26,6 @@ export default async function Home({ searchParams }: HomeProps) {
 
     params = {
       userId: awaitParams.get("userId") || undefined,
-      conditionRating: getNum("conditionRating"),
       experienceLevel: getNum("experienceLevel"),
       city: awaitParams.get("city") || undefined,
       state: awaitParams.get("state") || undefined,
@@ -42,7 +41,6 @@ export default async function Home({ searchParams }: HomeProps) {
     // Already an object (from client navigation)
     params = {
       userId: awaitParams.userId,
-      conditionRating: awaitParams.conditionRating ? Number(awaitParams.conditionRating) : undefined,
       experienceLevel: awaitParams.experienceLevel ? Number(awaitParams.experienceLevel) : undefined,
       city: awaitParams.city,
       state: awaitParams.state,

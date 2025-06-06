@@ -41,7 +41,7 @@ export default async function getReservation(params: IParams) {
     const safeReservations: SafeReservation[] = filteredReservations.map(
       (reservation) => {
         // Using `as any` as a workaround for persistent TypeScript errors
-        // This assumes conditionRating and experienceLevel are present at runtime.
+        // This assumes experienceLevel is present at runtime.
         const rListing: any = reservation.listing;
         
         const mappedListing: safeListing = {
@@ -51,7 +51,6 @@ export default async function getReservation(params: IParams) {
           imageSrc: rListing.imageSrc,
           createdAt: rListing.createdAt.toISOString(),
           category: rListing.category,
-          conditionRating: rListing.conditionRating,
           experienceLevel: rListing.experienceLevel,
           city: rListing.city,
           state: rListing.state,

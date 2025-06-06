@@ -41,7 +41,9 @@ interface MessagesStore {
   fetchConversations: () => Promise<void>;
   selectConversation: (conversationId: string) => Promise<void>;
   sendMessage: (conversationId: string, content: string) => Promise<void>;
-  startConversation: (listingId: string) => Promise<string>;
+  startConversation: (listingId: string, ownerId?: string, renterId?: string) => Promise<string>;
+  refreshCurrentConversation: () => Promise<void>;
+  reset: () => void;
 }
 
 const useMessages = create<MessagesStore>((set, get) => ({
@@ -54,7 +56,13 @@ const useMessages = create<MessagesStore>((set, get) => ({
     try {
       const response = await fetch('/api/conversations');
       const conversations = await response.json();
-      set({ conversations });
+      
+      // Ensure we don't have duplicates (just in case)
+      const uniqueConversations = conversations.filter((conv: Conversation, index: number, self: Conversation[]) =>
+        index === self.findIndex((c) => c.id === conv.id)
+      );
+      
+      set({ conversations: uniqueConversations });
     } catch (error) {
       console.error('Error fetching conversations:', error);
     } finally {
@@ -92,24 +100,23 @@ const useMessages = create<MessagesStore>((set, get) => ({
       }
       
       // Update conversations list
-      set({
-        conversations: conversations.map(conv =>
-          conv.id === conversationId
-            ? { ...conv, messages: [...conv.messages, message] }
-            : conv
-        )
-      });
+      const updatedConversations = conversations.map(conv =>
+        conv.id === conversationId
+          ? { ...conv, messages: [...conv.messages, message] }
+          : conv
+      );
+      set({ conversations: updatedConversations });
     } catch (error) {
       console.error('Error sending message:', error);
     }
   },
 
-  startConversation: async (listingId: string) => {
+  startConversation: async (listingId: string, ownerId?: string, renterId?: string) => {
     try {
       const response = await fetch('/api/conversations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ listingId }),
+        body: JSON.stringify({ listingId, ownerId, renterId }),
       });
       
       if (!response.ok) {
@@ -121,13 +128,59 @@ const useMessages = create<MessagesStore>((set, get) => ({
       set({ currentConversation: conversation });
       
       const { conversations } = get();
-      set({ conversations: [conversation, ...conversations] });
+      // Check if conversation already exists to avoid duplicates
+      const existingIndex = conversations.findIndex(c => c.id === conversation.id);
+      
+      if (existingIndex >= 0) {
+        // Update existing conversation
+        const updatedConversations = [...conversations];
+        updatedConversations[existingIndex] = conversation;
+        set({ conversations: updatedConversations });
+      } else {
+        // Add new conversation to the beginning
+        set({ conversations: [conversation, ...conversations] });
+      }
       
       return conversation.id;
     } catch (error) {
       console.error('Error starting conversation:', error);
       throw error;
     }
+  },
+  
+  refreshCurrentConversation: async () => {
+    const { currentConversation, conversations } = get();
+    if (!currentConversation) return;
+
+    try {
+      // Fetch the latest messages for the current conversation
+      const response = await fetch(`/api/conversations/${currentConversation.id}/messages`);
+      if (!response.ok) return;
+
+      const messages = await response.json();
+      
+      // Update current conversation with new messages
+      const updatedConversation = {
+        ...currentConversation,
+        messages
+      };
+      
+      set({ currentConversation: updatedConversation });
+      
+      // Also update in conversations list
+      const updatedConversations = conversations.map(conv =>
+        conv.id === currentConversation.id
+          ? updatedConversation
+          : conv
+      );
+      set({ conversations: updatedConversations });
+    } catch (error) {
+      console.error('Error refreshing messages:', error);
+    }
+  },
+
+  reset: () => {
+    set({ conversations: [], currentConversation: null, isLoading: false });
   },
 }));
 

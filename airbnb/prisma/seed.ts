@@ -88,7 +88,7 @@ async function main() {
       description: "Beautiful 19th century Stradivarius copy in excellent condition. Perfect for advanced students and professionals. Comes with bow and case. Rich, warm tone with excellent projection.",
       imageSrc: "",
       category: "Strings",
-      conditionRating: 9,
+      
       experienceLevel: 4,
       city: "New York",
       state: "NY",
@@ -102,7 +102,7 @@ async function main() {
       description: "Well-maintained student violin, perfect for those just starting their musical journey. Includes shoulder rest, rosin, and hard case. Recently serviced with new strings.",
       imageSrc: "",
       category: "Strings",
-      conditionRating: 7,
+      
       experienceLevel: 1,
       city: "Los Angeles",
       state: "CA", 
@@ -116,7 +116,7 @@ async function main() {
       description: "Contemporary electric violin perfect for rock, jazz, and experimental music. Built-in pickup system with volume and tone controls. Includes bow and cable.",
       imageSrc: "",
       category: "Strings",
-      conditionRating: 9,
+      
       experienceLevel: 3,
       city: "Chicago",
       state: "IL",
@@ -132,7 +132,7 @@ async function main() {
       description: "Legendary Martin D-28 dreadnought guitar. The choice of professionals worldwide. Incredible bass response and crisp highs. Comes with deluxe hard case.",
       imageSrc: "",
       category: "Strings",
-      conditionRating: 9,
+      
       experienceLevel: 4,
       city: "Philadelphia",
       state: "PA",
@@ -146,7 +146,7 @@ async function main() {
       description: "Classic American Fender Stratocaster in sunburst finish. Versatile tone suitable for any genre. Includes amp and cable for complete setup.",
       imageSrc: "",
       category: "Strings",
-      conditionRating: 8,
+      
       experienceLevel: 3,
       city: "Phoenix",
       state: "AZ",
@@ -160,7 +160,7 @@ async function main() {
       description: "Handcrafted classical guitar with cedar top and rosewood back. Perfect intonation and balance. Ideal for classical, flamenco, and fingerstyle playing.",
       imageSrc: "",
       category: "Strings",
-      conditionRating: 9,
+      
       experienceLevel: 4,
       city: "Charlotte",
       state: "NC",
@@ -176,7 +176,7 @@ async function main() {
       description: "Beautiful German workshop cello with rich, deep tone. Perfect for orchestral and chamber music. Includes bow, case, and rosin. Recently set up.",
       imageSrc: "",
       category: "Strings",
-      conditionRating: 9,
+      
       experienceLevel: 4,
       city: "Nashville",
       state: "TN",
@@ -190,7 +190,7 @@ async function main() {
       description: "Quality student cello perfect for intermediate players. Good projection and comfortable playability. Includes fiberglass bow and soft case.",
       imageSrc: "",
       category: "Strings",
-      conditionRating: 7,
+      
       experienceLevel: 2,
       city: "Atlanta",
       state: "GA",
@@ -206,7 +206,7 @@ async function main() {
       description: "Classic Fender Jazz Bass with versatile tone controls. Great for jazz, rock, funk, and R&B. Active electronics with 9V battery. Includes gig bag and cable.",
       imageSrc: "",
       category: "Strings",
-      conditionRating: 8,
+      
       experienceLevel: 3,
       city: "Las Vegas",
       state: "NV",
@@ -220,7 +220,7 @@ async function main() {
       description: "Full-size orchestral double bass with powerful, deep tone. Perfect for symphony orchestra and jazz ensemble work. Includes German bow and padded cover.",
       imageSrc: "",
       category: "Strings",
-      conditionRating: 9,
+      
       experienceLevel: 4,
       city: "Boston",
       state: "MA",
@@ -236,7 +236,7 @@ async function main() {
       description: "Stunning Yamaha C3 grand piano available for rent. 6'1\" size perfect for recitals and recordings. Regularly tuned and maintained. Delivery and setup included.",
       imageSrc: "",
       category: "Keyboards",
-      conditionRating: 10,
+      
       experienceLevel: 5,
       city: "San Francisco",
       state: "CA",
@@ -250,7 +250,7 @@ async function main() {
       description: "Beautiful Kawai upright piano with a warm, balanced tone. Perfect for apartments or smaller spaces. Recently tuned. Bench included.",
       imageSrc: "",
       category: "Keyboards",
-      conditionRating: 8,
+      
       experienceLevel: 3,
       city: "Seattle",
       state: "WA",
@@ -264,7 +264,7 @@ async function main() {
       description: "Iconic Steinway Model M grand piano (5'7\"). Concert-quality instrument with incredible dynamic range. Professional tuning and maintenance. Perfect for serious performances.",
       imageSrc: "",
       category: "Keyboards",
-      conditionRating: 10,
+      
       experienceLevel: 5,
       city: "Austin",
       state: "TX",
@@ -278,7 +278,7 @@ async function main() {
       description: "Professional digital piano with weighted keys and authentic piano sound. Perfect for students and professionals who need portability. Includes sustain pedal and stand.",
       imageSrc: "",
       category: "Keyboards",
-      conditionRating: 9,
+      
       experienceLevel: 2,
       city: "Portland",
       state: "OR",
@@ -294,7 +294,7 @@ async function main() {
       description: "The holy grail of saxophones - vintage Selmer Mark VI. Recently overhauled. Includes mouthpiece and reeds. Perfect intonation and legendary tone.",
       imageSrc: "",
       category: "Woodwinds",
-      conditionRating: 9,
+      
       experienceLevel: 4,
       city: "New Orleans",
       state: "LA",
@@ -308,7 +308,7 @@ async function main() {
       description: "Professional tenor saxophone with rich, powerful sound. Perfect for jazz ensembles and solo work. Includes case, mouthpiece, and cleaning kit.",
       imageSrc: "",
       category: "Woodwinds",
-      conditionRating: 9,
+      
       experienceLevel: 4,
       city: "Kansas City",
       state: "MO",
@@ -324,7 +324,7 @@ async function main() {
       description: "Handcrafted Powell flute with silver-plated head joint. Exceptional response and tone quality. Perfect for orchestral and chamber music.",
       imageSrc: "",
       category: "Woodwinds",
-      conditionRating: 9,
+      
       experienceLevel: 4,
       city: "Milwaukee",
       state: "WI",
@@ -338,7 +338,7 @@ async function main() {
       description: "Quality student flute with closed holes and plateau keys. Easy to play and maintain. Perfect for band students and beginners. Recently serviced.",
       imageSrc: "",
       category: "Woodwinds",
-      conditionRating: 8,
+      
       experienceLevel: 1,
       city: "Oklahoma City",
       state: "OK",
@@ -354,7 +354,7 @@ async function main() {
       description: "World-renowned Buffet R13 clarinet used by professionals globally. Rich, warm tone with excellent projection. Grenadilla wood construction.",
       imageSrc: "",
       category: "Woodwinds",
-      conditionRating: 9,
+      
       experienceLevel: 4,
       city: "San Francisco",
       state: "CA",
@@ -370,7 +370,7 @@ async function main() {
       description: "Professional Bach Stradivarius trumpet with incredible projection and tone. The choice of orchestral and jazz professionals worldwide. Recently serviced.",
       imageSrc: "",
       category: "Brass",
-      conditionRating: 9,
+      
       experienceLevel: 4,
       city: "Salt Lake City",
       state: "UT",
@@ -384,7 +384,7 @@ async function main() {
       description: "Well-maintained student trumpet perfect for school band and lessons. Easy playing action and good intonation. Includes case and mouthpiece.",
       imageSrc: "",
       category: "Brass",
-      conditionRating: 8,
+      
       experienceLevel: 1,
       city: "Richmond",
       state: "VA",
@@ -398,7 +398,7 @@ async function main() {
       description: "Yamaha professional trumpet with excellent build quality and reliability. Perfect for classical and jazz performance. Gold brass bell for warm tone.",
       imageSrc: "",
       category: "Brass",
-      conditionRating: 8,
+      
       experienceLevel: 3,
       city: "Sacramento",
       state: "CA",
@@ -414,7 +414,7 @@ async function main() {
       description: "Complete Pearl Export 5-piece drum kit with cymbals and hardware. Perfect for rock, pop, and jazz. Recently tuned with new heads.",
       imageSrc: "",
       category: "Percussion",
-      conditionRating: 8,
+      
       experienceLevel: 2,
       city: "Seattle",
       state: "WA",
@@ -428,7 +428,7 @@ async function main() {
       description: "Ludwig Supraphonic snare drum with classic bright, cutting tone. Perfect for recording and live performance. Includes stand and sticks.",
       imageSrc: "",
       category: "Percussion",
-      conditionRating: 9,
+      
       experienceLevel: 3,
       city: "Denver",
       state: "CO",
@@ -442,7 +442,7 @@ async function main() {
       description: "Roland electronic drum kit perfect for practice and recording. Mesh heads for realistic feel. Includes module with hundreds of sounds and songs.",
       imageSrc: "",
       category: "Percussion",
-      conditionRating: 9,
+      
       experienceLevel: 2,
       city: "Austin",
       state: "TX",

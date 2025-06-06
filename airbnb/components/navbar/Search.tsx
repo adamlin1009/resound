@@ -44,30 +44,54 @@ function Search({}: Props) {
     if (startDate && endDate) {
       const start = new Date(startDate as string);
       const end = new Date(endDate as string);
-      let diff = differenceInDays(end, start);
+      let diff = differenceInDays(end, start) + 1; // Make it inclusive
 
-      if (diff === 0) {
-        diff = 1;
+      if (diff === 1) {
+        return "1 Day";
+      }
+      
+      if (diff >= 30) {
+        const months = Math.floor(diff / 30);
+        if (months === 1) {
+          return "1 Month";
+        }
+        return `${months} Months`;
       }
 
       return `${diff} Days`;
     }
 
-    return "Any time";
+    return "Dates";
   }, [startDate, endDate]);
+
+  const instrumentLabel = useMemo(() => {
+    const instrumentType = params?.get("instrumentType");
+    const category = params?.get("category");
+    
+    if (instrumentType) {
+      return instrumentType;
+    }
+    if (category) {
+      return category;
+    }
+    return "Instrument";
+  }, [params]);
 
   return (
     <div
       onClick={searchModel.onOpen}
-      className="border-[1px] w-full md:w-auto py-2 rounded-full shadow-sm hover:shadow-md transition cursor-pointer"
+      className="border-[1px] w-full md:w-auto py-2 rounded-full shadow-sm hover:shadow-md transition cursor-pointer min-w-fit"
     >
       <div className="flex flex-row items-center justify-between">
-        <div className="text-sm font-semibold px-6">{locationLabel}</div>
-        <div className="hidden sm:block text-sm font-semibold px-6 border-x-[1px] border-gray-200 flex-1 text-center">
+        <div className="text-sm font-semibold px-6">{instrumentLabel}</div>
+        <div className="hidden sm:block text-sm font-semibold px-6 border-l-[1px] border-gray-200 flex-1 text-center">
+          {locationLabel}
+        </div>
+        <div className="hidden md:block text-sm font-semibold px-6 border-l-[1px] border-gray-200 flex-1 text-center whitespace-nowrap">
           {durationLabel}
         </div>
-        <div className="text-sm pl-6 pr-2 text-gray-600 flex items-center gap-3">
-          <div className="hidden sm:block">Find instrument</div>
+        <div className="text-sm pl-6 pr-2 text-gray-600 flex items-center gap-3 border-l-[1px] border-gray-200">
+          <div className="hidden sm:block">Search</div>
           <div className="p-2 bg-amber-700 rounded-full text-white">
             <BiSearch size={18} />
           </div>

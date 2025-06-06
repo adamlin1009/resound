@@ -60,7 +60,7 @@ function RegisterModal({}: Props) {
     <div className="flex flex-col gap-4">
       <Heading
         title="Welcome to Resound"
-        subtitle="Create an Account!"
+        subtitle="Create an account!"
         center
       />
       <div className="flex justify-center mt-4">

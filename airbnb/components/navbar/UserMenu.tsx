@@ -91,6 +91,11 @@ function UserMenu({ currentUser }: Props) {
                   label="My instruments"
                 />
                 <MenuItem onClick={onRent} label="Lend your instrument" />
+                <hr />
+                <MenuItem
+                  onClick={() => router.push("/profile")}
+                  label="My profile"
+                />
                 {currentUser?.isAdmin && (
                   <>
                     <hr />

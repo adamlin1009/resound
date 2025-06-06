@@ -43,7 +43,14 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized to cancel this reservation" }, { status: 403 });
     }
 
-    // Note: No status check since Reservation model doesn't have status field
+    // Check if reservation is already canceled or completed
+    if (reservation.status === "CANCELED") {
+      return NextResponse.json({ error: "This reservation has already been canceled" }, { status: 400 });
+    }
+
+    if (reservation.status === "COMPLETED") {
+      return NextResponse.json({ error: "Cannot cancel a completed reservation" }, { status: 400 });
+    }
 
     // Update reservation with cancellation details (no refunds)
     const updatedReservation = await prisma.reservation.update({

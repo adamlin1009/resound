@@ -396,6 +396,59 @@ GOOGLE_PLACES_API_KEY=                # For autocomplete
 6. **Mobile-First Design**
 7. **Accessibility First**
 
+### Recent Major Updates (January 2025)
+
+#### 1. **Enhanced Admin Panel**
+- Full-featured admin dashboard at `/admin`
+- Three main sections: Dashboard (stats), Users (management), Listings (moderation)
+- Key metrics tracking: total users, listings, reservations, revenue
+- Admin privilege management with confirmation modals
+- Secure admin-only routes with `checkAdminUser` action
+
+#### 2. **Confirmation Modal System**
+- New reusable modal component: `ConfirmModal`
+- Zustand store: `useConfirmModal` hook
+- Used for destructive actions (delete listings, cancel reservations)
+- Customizable titles, messages, and action buttons
+- Integrated throughout admin and user interfaces
+
+#### 3. **Improved Messaging System**
+- Real-time messaging between owners and renters
+- Split-view interface in `/messages`
+- Conversation management with avatar display
+- Message state management via `useMessages` hook
+- Start conversations directly from listing pages
+
+#### 4. **Advanced Location Search**
+- Three search modes:
+  - Nationwide (no location filter)
+  - Radius-based (with miles parameter)
+  - Exact location match
+- Geocoding support for all listings
+- Batch geocoding script: `scripts/geocodeExistingListings.js`
+- Radius search testing: `scripts/testRadiusSearch.js`
+
+#### 5. **Performance Optimizations**
+- Optimized `getListings` with conditional query building
+- Efficient location-based filtering
+- Improved instrument search across multiple fields
+- Better database query patterns
+- Post-query filtering for complex searches
+
+#### 6. **UI/UX Improvements**
+- Fixed authentication modal flow
+- Better error handling with toast notifications
+- Consistent confirmation patterns for destructive actions
+- Improved avatar display system
+- Enhanced mobile responsiveness
+
+#### 7. **Infrastructure Updates**
+- New API endpoints for geocoding
+- Enhanced payment flow with better Stripe integration
+- Improved email system error handling
+- Better cancellation flow with reason tracking
+- Database schema optimizations
+
 ### Common Tasks
 
 #### Adding a New Feature:
@@ -414,5 +467,17 @@ GOOGLE_PLACES_API_KEY=                # For autocomplete
 4. Check database connections
 5. Test API routes directly
 6. Review Prisma queries
+
+#### Working with the Admin Panel:
+1. Grant admin access: `node scripts/makeAdmin.js user@email.com`
+2. Access admin panel at `/admin`
+3. Use confirmation modals for all destructive actions
+4. Check `checkAdminUser` for authorization patterns
+
+#### Managing Locations:
+1. Run `node scripts/geocodeExistingListings.js` for existing data
+2. New listings are automatically geocoded
+3. Test radius search: `node scripts/testRadiusSearch.js`
+4. Use `GOOGLE_PLACES_API_KEY` for autocomplete
 
 This comprehensive guide should help you understand and work effectively with the Resound codebase.
