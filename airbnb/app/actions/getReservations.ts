@@ -21,7 +21,12 @@ export default async function getReservation(params: IParams) {
     // Don't filter by status for now due to enum issues
 
     const reservations = await prisma.reservation.findMany({
-      where: query,
+      where: {
+        ...query,
+        listing: {
+          isNot: null  // Ensure listing exists to prevent query errors
+        }
+      },
       include: {
         listing: {
           include: {
@@ -41,14 +46,7 @@ export default async function getReservation(params: IParams) {
     }
 
     // Don't filter out canceled reservations - we'll show them greyed out
-    // Filter out reservations with null listings (orphaned data)
-    const orphanedCount = reservations.filter(r => r.listing === null).length;
-    if (orphanedCount > 0) {
-      console.warn(`Found ${orphanedCount} orphaned reservations (listings deleted)`);
-    }
-    const filteredReservations = reservations.filter(reservation => reservation.listing !== null);
-
-    const safeReservations: SafeReservation[] = filteredReservations.map(
+    const safeReservations: SafeReservation[] = reservations.map(
       (reservation) => {
         // Using `as any` as a workaround for persistent TypeScript errors
         // This assumes experienceLevel is present at runtime.
