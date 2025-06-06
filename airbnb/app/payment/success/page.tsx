@@ -6,7 +6,7 @@ import EmptyState from "@/components/EmptyState";
 import Loader from "@/components/Loader";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const PaymentSuccessPage = () => {
   const router = useRouter();
@@ -15,6 +15,8 @@ const PaymentSuccessPage = () => {
   const [isProcessing, setIsProcessing] = useState(true);
   const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
   const [reservationId, setReservationId] = useState<string | null>(null);
+  const retryCountRef = useRef(0);
+  const MAX_RETRIES = 10; // Maximum 10 retries (20 seconds total)
 
   useEffect(() => {
     const startCountdown = (resId: string | null) => {
@@ -51,14 +53,28 @@ const PaymentSuccessPage = () => {
             setIsProcessing(false);
             setReservationId(response.data.reservation.id);
             startCountdown(response.data.reservation.id);
-          } else {
-            // Retry after 2 seconds if still processing
+          } else if (retryCountRef.current < MAX_RETRIES) {
+            // Retry after 2 seconds if still processing and under retry limit
+            retryCountRef.current += 1;
             setTimeout(checkPayment, 2000);
+          } else {
+            // Max retries reached, redirect to rentals page
+            console.warn("Max retries reached, payment status:", response.data.payment.status);
+            setIsProcessing(false);
+            startCountdown(null);
           }
         } catch (error) {
           console.error("Error checking payment:", error);
-          // Retry after 2 seconds
-          setTimeout(checkPayment, 2000);
+          if (retryCountRef.current < MAX_RETRIES) {
+            // Retry after 2 seconds
+            retryCountRef.current += 1;
+            setTimeout(checkPayment, 2000);
+          } else {
+            // Max retries reached, redirect to rentals page
+            console.error("Max retries reached with error");
+            setIsProcessing(false);
+            startCountdown(null);
+          }
         }
       };
 

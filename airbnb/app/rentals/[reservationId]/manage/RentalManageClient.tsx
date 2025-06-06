@@ -179,7 +179,7 @@ const RentalManageClient: React.FC<RentalManageClientProps> = ({
                 <Button
                   label="View Listing"
                   onClick={() => router.push(`/listings/${listing.id}`)}
-                  secondary
+                  outline
                 />
               </div>
             </div>

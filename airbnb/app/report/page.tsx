@@ -225,11 +225,13 @@ const ReportPage = () => {
               </div>
               
               <div className="pt-4">
-                <Button
+                <button
                   type="submit"
-                  label={isLoading ? "Submitting Report..." : "Submit Report"}
                   disabled={isLoading || !issueType}
-                />
+                  className="relative disabled:opacity-70 disabled:cursor-not-allowed rounded-lg hover:opacity-80 transition w-full bg-amber-700 text-white py-3 font-semibold"
+                >
+                  {isLoading ? "Submitting Report..." : "Submit Report"}
+                </button>
               </div>
             </form>
           </div>

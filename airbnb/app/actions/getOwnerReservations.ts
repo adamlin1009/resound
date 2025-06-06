@@ -6,7 +6,10 @@ export default async function getOwnerReservations() {
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
-      return [];
+      return {
+        reservations: [],
+        pendingSetups: 0,
+      };
     }
 
     // Get all reservations for listings owned by the current user

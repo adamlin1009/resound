@@ -126,15 +126,27 @@ const RentalSetupModal: React.FC<RentalSetupModalProps> = ({
         errors={errors}
         required
       />
-      <Input
-        id="pickupInstructions"
-        label="Pickup Instructions (optional)"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-        multiline
-        placeholder="e.g., Ring doorbell, parking available in driveway, etc."
-      />
+      <div className="w-full relative">
+        <textarea
+          id="pickupInstructions"
+          disabled={isLoading}
+          {...register("pickupInstructions")}
+          placeholder="e.g., Ring doorbell, parking available in driveway, etc."
+          className={`peer w-full p-4 pt-6 font-light bg-white border-2 rounded-md outline-none transition disabled:opacity-70 disabled:cursor-not-allowed pl-4 ${
+            errors.pickupInstructions ? "border-red-500" : "border-neutral-300"
+          } ${
+            errors.pickupInstructions ? "focus:border-red-500" : "focus:border-black"
+          }`}
+          rows={3}
+        />
+        <label
+          className={`absolute text-md duration-150 transform -translate-y-3 top-5 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 ${
+            errors.pickupInstructions ? "text-red-500" : "text-zinc-400"
+          }`}
+        >
+          Pickup Instructions (optional)
+        </label>
+      </div>
     </div>
   );
 
@@ -184,7 +196,6 @@ const RentalSetupModal: React.FC<RentalSetupModalProps> = ({
           disabled={isLoading}
           register={register}
           errors={errors}
-          placeholder={pickupAddress}
         />
         <div>
           <label className="block text-sm font-medium mb-2">
@@ -197,23 +208,48 @@ const RentalSetupModal: React.FC<RentalSetupModalProps> = ({
             disabled={isLoading}
           />
         </div>
-        <Input
-          id="returnInstructions"
-          label="Return Instructions (optional)"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          multiline
-          placeholder="e.g., Please text when returning, place in case, etc."
-        />
-        <Input
-          id="ownerNotes"
-          label="Additional Notes for Renter (optional)"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          multiline
-        />
+        <div className="w-full relative">
+          <textarea
+            id="returnInstructions"
+            disabled={isLoading}
+            {...register("returnInstructions")}
+            placeholder="e.g., Please text when returning, place in case, etc."
+            className={`peer w-full p-4 pt-6 font-light bg-white border-2 rounded-md outline-none transition disabled:opacity-70 disabled:cursor-not-allowed pl-4 ${
+              errors.returnInstructions ? "border-red-500" : "border-neutral-300"
+            } ${
+              errors.returnInstructions ? "focus:border-red-500" : "focus:border-black"
+            }`}
+            rows={3}
+          />
+          <label
+            className={`absolute text-md duration-150 transform -translate-y-3 top-5 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 ${
+              errors.returnInstructions ? "text-red-500" : "text-zinc-400"
+            }`}
+          >
+            Return Instructions (optional)
+          </label>
+        </div>
+        <div className="w-full relative">
+          <textarea
+            id="ownerNotes"
+            disabled={isLoading}
+            {...register("ownerNotes")}
+            placeholder=" "
+            className={`peer w-full p-4 pt-6 font-light bg-white border-2 rounded-md outline-none transition disabled:opacity-70 disabled:cursor-not-allowed pl-4 ${
+              errors.ownerNotes ? "border-red-500" : "border-neutral-300"
+            } ${
+              errors.ownerNotes ? "focus:border-red-500" : "focus:border-black"
+            }`}
+            rows={3}
+          />
+          <label
+            className={`absolute text-md duration-150 transform -translate-y-3 top-5 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 ${
+              errors.ownerNotes ? "text-red-500" : "text-zinc-400"
+            }`}
+          >
+            Additional Notes for Renter (optional)
+          </label>
+        </div>
       </div>
     );
   }
