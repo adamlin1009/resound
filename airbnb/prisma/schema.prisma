@@ -86,8 +86,10 @@ model Reservation {
   status          ReservationStatus @default(ACTIVE)
   canceledAt      DateTime?
   canceledBy      String?           @db.ObjectId
-  cancelReason    String?
+  cancellationReason    String?
   createdAt       DateTime          @default(now())
+  expiresAt       DateTime?         // For PENDING reservations
+  stripeSessionId String?           // Link to payment session
   
   // Rental Management Fields
   rentalStatus    RentalStatus      @default(PENDING)
@@ -143,6 +145,7 @@ enum PaymentStatus {
 }
 
 enum ReservationStatus {
+  PENDING    // Hold during checkout
   ACTIVE
   COMPLETED
   CANCELED

@@ -62,13 +62,42 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 
   // Get metadata from session
   const metadata = session.metadata;
-  if (!metadata?.paymentId || !metadata?.listingId || !metadata?.userId) {
+  if (!metadata?.paymentId || !metadata?.reservationId || !metadata?.listingId || !metadata?.userId) {
     console.error("Missing required metadata in session:", session.id);
+    return;
+  }
+
+  // Check if we've already processed this session (idempotency check)
+  const existingPayment = await prisma.payment.findUnique({
+    where: { id: metadata.paymentId },
+    select: { status: true }
+  });
+
+  if (existingPayment?.status === "SUCCEEDED") {
+    console.log("Session already processed successfully:", session.id);
     return;
   }
 
   // Start a transaction to ensure data consistency
   const result = await prisma.$transaction(async (tx) => {
+    // Check if reservation still exists and is pending
+    const existingReservation = await tx.reservation.findUnique({
+      where: { id: metadata.reservationId },
+    });
+
+    if (!existingReservation) {
+      throw new Error("Reservation not found");
+    }
+
+    if (existingReservation.status !== "PENDING") {
+      // If the reservation is already ACTIVE, this is likely a duplicate webhook
+      if (existingReservation.status === "ACTIVE" && existingReservation.stripeSessionId === session.id) {
+        console.log("Reservation already active for this session, skipping:", session.id);
+        return null;
+      }
+      throw new Error(`Reservation status is ${existingReservation.status}, expected PENDING`);
+    }
+
     // Update payment status
     const payment = await tx.payment.update({
       where: { id: metadata.paymentId },
@@ -86,19 +115,22 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       }
     });
 
-    // Create reservation
-    const reservation = await tx.reservation.create({
+    // Update reservation to ACTIVE
+    const reservation = await tx.reservation.update({
+      where: { id: metadata.reservationId },
       data: {
-        userId: metadata.userId,
-        listingId: metadata.listingId,
-        startDate: new Date(metadata.startDate),
-        endDate: new Date(metadata.endDate),
-        totalPrice: session.amount_total! / 100, // Convert from cents to dollars
+        status: "ACTIVE",
+        stripeSessionId: session.id,
       },
     });
 
     return { payment, reservation };
   });
+
+  // Skip email notifications if this was a duplicate webhook
+  if (!result) {
+    return;
+  }
 
   // Send email notifications
   try {
@@ -160,15 +192,27 @@ async function handleCheckoutSessionExpired(session: Stripe.Checkout.Session) {
   console.log("Processing expired session:", session.id);
 
   const metadata = session.metadata;
-  if (!metadata?.paymentId) {
+  if (!metadata?.paymentId || !metadata?.reservationId) {
     return;
   }
 
-  // Update payment status to canceled
-  await prisma.payment.update({
-    where: { id: metadata.paymentId },
-    data: { status: "CANCELED" },
+  await prisma.$transaction(async (tx) => {
+    // Update payment status to canceled
+    await tx.payment.update({
+      where: { id: metadata.paymentId },
+      data: { status: "CANCELED" },
+    });
+
+    // Cancel the pending reservation
+    await tx.reservation.update({
+      where: { id: metadata.reservationId },
+      data: { 
+        status: "CANCELED",
+        canceledAt: new Date(),
+        cancellationReason: "Payment session expired"
+      },
+    });
   });
 
-  console.log("Payment marked as canceled for expired session:", session.id);
+  console.log("Payment and reservation canceled for expired session:", session.id);
 }

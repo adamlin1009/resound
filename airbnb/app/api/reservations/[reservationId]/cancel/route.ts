@@ -52,15 +52,28 @@ export async function POST(
       return NextResponse.json({ error: "Cannot cancel a completed reservation" }, { status: 400 });
     }
 
-    // Update reservation with cancellation details (no refunds)
-    const updatedReservation = await prisma.reservation.update({
-      where: { id: reservationId },
-      data: {
-        status: "CANCELED",
-        canceledAt: new Date(),
-        canceledBy: currentUser.id,
-        cancelReason: reason || "User requested cancellation"
+    // Use transaction to ensure atomicity
+    const updatedReservation = await prisma.$transaction(async (tx) => {
+      // Update reservation with cancellation details (no refunds)
+      const updated = await tx.reservation.update({
+        where: { id: reservationId },
+        data: {
+          status: "CANCELED",
+          canceledAt: new Date(),
+          canceledBy: currentUser.id,
+          cancellationReason: reason || "User requested cancellation"
+        }
+      });
+
+      // If there's an associated payment, update its status
+      if (reservation.stripeSessionId) {
+        await tx.payment.updateMany({
+          where: { stripeSessionId: reservation.stripeSessionId },
+          data: { status: "CANCELED" }
+        });
       }
+
+      return updated;
     });
 
     return NextResponse.json({

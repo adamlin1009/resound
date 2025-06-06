@@ -396,6 +396,38 @@ GOOGLE_PLACES_API_KEY=                # For autocomplete
 6. **Mobile-First Design**
 7. **Accessibility First**
 
+### Security Improvements (January 2025)
+
+#### 1. **Race Condition Prevention**
+- Implemented date conflict checking for reservation creation
+- Added transaction boundaries for all critical operations
+- Created reservation hold system during checkout (15-minute expiry)
+- Double-checking conflicts within database transactions
+
+#### 2. **Enhanced Authorization**
+- Fixed `getReservations` to enforce proper user permissions
+- Users can only view their own reservations or listings they own
+- Admin users have full access to all reservations
+- Consistent permission checks across all endpoints
+
+#### 3. **Improved Data Integrity**
+- Listing deletion prevented when active/future reservations exist
+- Payment and reservation synchronization via atomic transactions
+- Idempotent webhook handling to prevent duplicate processing
+- Proper cascade handling for related data
+
+#### 4. **Reservation Hold System**
+- Creates PENDING reservations during checkout
+- Automatically expires after 15 minutes if payment not completed
+- Prevents double-booking during payment processing
+- Seamless conversion to ACTIVE upon successful payment
+
+#### 5. **Transaction Safety**
+- All critical operations wrapped in database transactions
+- Atomic updates for reservation status changes
+- Rollback capability for failed operations
+- Consistent state management across payment flows
+
 ### Recent Major Updates (January 2025)
 
 #### 1. **Enhanced Admin Panel**

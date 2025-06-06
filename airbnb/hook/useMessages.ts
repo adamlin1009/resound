@@ -55,7 +55,17 @@ const useMessages = create<MessagesStore>((set, get) => ({
     set({ isLoading: true });
     try {
       const response = await fetch('/api/conversations');
-      const conversations = await response.json();
+      const data = await response.json();
+      
+      // Check if the response is an error
+      if (!response.ok || data.error) {
+        console.error('Error fetching conversations:', data.error || 'Unknown error');
+        set({ conversations: [] });
+        return;
+      }
+      
+      // Ensure data is an array
+      const conversations = Array.isArray(data) ? data : [];
       
       // Ensure we don't have duplicates (just in case)
       const uniqueConversations = conversations.filter((conv: Conversation, index: number, self: Conversation[]) =>
@@ -65,6 +75,7 @@ const useMessages = create<MessagesStore>((set, get) => ({
       set({ conversations: uniqueConversations });
     } catch (error) {
       console.error('Error fetching conversations:', error);
+      set({ conversations: [] });
     } finally {
       set({ isLoading: false });
     }

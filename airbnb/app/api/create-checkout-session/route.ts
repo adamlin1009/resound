@@ -1,6 +1,7 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
 import { stripe, formatAmountForStripe } from "@/lib/stripe";
+import { createReservationHold } from "@/lib/reservationUtils";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -34,6 +35,23 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Listing not found" },
         { status: 404 }
+      );
+    }
+
+    // Create a reservation hold to prevent double-booking
+    let reservation;
+    try {
+      reservation = await createReservationHold(
+        currentUser.id,
+        listingId,
+        new Date(startDate),
+        new Date(endDate),
+        totalPrice
+      );
+    } catch (error: any) {
+      return NextResponse.json(
+        { error: error.message || "These dates are no longer available" },
+        { status: 409 }
       );
     }
 
@@ -73,6 +91,7 @@ export async function POST(request: Request) {
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel`,
       metadata: {
         paymentId: payment.id,
+        reservationId: reservation.id,
         listingId: listingId,
         userId: currentUser.id,
         startDate: startDate,
@@ -80,11 +99,17 @@ export async function POST(request: Request) {
       },
     });
 
-    // Update payment with session ID
-    await prisma.payment.update({
-      where: { id: payment.id },
-      data: { stripeSessionId: session.id },
-    });
+    // Update payment and reservation with session ID
+    await prisma.$transaction([
+      prisma.payment.update({
+        where: { id: payment.id },
+        data: { stripeSessionId: session.id },
+      }),
+      prisma.reservation.update({
+        where: { id: reservation.id },
+        data: { stripeSessionId: session.id },
+      }),
+    ]);
 
     return NextResponse.json({
       sessionId: session.id,

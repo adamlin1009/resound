@@ -1,4 +1,5 @@
 import prisma from "@/lib/prismadb";
+import getCurrentUser from "./getCurrentUser";
 import { SafeReservation, safeListing, SafeUser } from "@/types";
 // import { Listing } from "@prisma/client"; // No longer strictly needed with `as any`
 
@@ -10,12 +11,44 @@ interface IParams {
 
 export default async function getReservation(params: IParams) {
   try {
+    const currentUser = await getCurrentUser();
+    
+    // If no user is logged in, return empty array
+    if (!currentUser) {
+      return [];
+    }
+
     const { listingId, userId, authorId } = params;
     const query: any = {};
 
-    if (listingId) query.listingId = listingId;
-    if (userId) query.userId = userId;
-    if (authorId) query.listing = { userId: authorId };
+    // Build query based on user permissions
+    if (listingId) {
+      query.listingId = listingId;
+    }
+    
+    if (userId) {
+      // Only allow users to query their own reservations unless they're admin
+      if (userId !== currentUser.id && !currentUser.isAdmin) {
+        return [];
+      }
+      query.userId = userId;
+    }
+    
+    if (authorId) {
+      // Only allow authors to query their own listings' reservations unless they're admin
+      if (authorId !== currentUser.id && !currentUser.isAdmin) {
+        return [];
+      }
+      query.listing = { userId: authorId };
+    }
+
+    // If no specific query params, return user's own reservations
+    if (!listingId && !userId && !authorId) {
+      query.OR = [
+        { userId: currentUser.id },
+        { listing: { userId: currentUser.id } }
+      ];
+    }
 
     // Show all reservations except canceled ones
     // Don't filter by status for now due to enum issues
