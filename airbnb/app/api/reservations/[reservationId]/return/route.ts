@@ -1,0 +1,105 @@
+import { NextResponse } from "next/server";
+import getCurrentUser from "@/app/actions/getCurrentUser";
+import prisma from "@/lib/prismadb";
+
+interface IParams {
+  reservationId?: string;
+}
+
+export async function POST(
+  request: Request,
+  { params }: { params: IParams }
+) {
+  try {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const { reservationId } = params;
+
+    if (!reservationId) {
+      return NextResponse.json(
+        { error: "Invalid reservation ID" },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const { action } = body; // 'confirm' or 'unconfirm'
+
+    // Get the reservation with listing details
+    const reservation = await prisma.reservation.findUnique({
+      where: {
+        id: reservationId,
+      },
+      include: {
+        listing: true,
+      },
+    });
+
+    if (!reservation) {
+      return NextResponse.json(
+        { error: "Reservation not found" },
+        { status: 404 }
+      );
+    }
+
+    // Check if current user is either the renter or the owner
+    const isRenter = reservation.userId === currentUser.id;
+    const isOwner = reservation.listing.userId === currentUser.id;
+
+    if (!isRenter && !isOwner) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 403 }
+      );
+    }
+
+    // Update return confirmation based on who is confirming
+    const updateData: any = {};
+    
+    if (isRenter) {
+      updateData.returnConfirmedByRenter = action === 'confirm';
+    } else if (isOwner) {
+      updateData.returnConfirmedByOwner = action === 'confirm';
+    }
+
+    // If both parties have confirmed, update rental status and timestamp
+    const updatedReservation = await prisma.reservation.update({
+      where: {
+        id: reservationId,
+      },
+      data: updateData,
+    });
+
+    // Check if both parties have confirmed
+    if (updatedReservation.returnConfirmedByOwner && updatedReservation.returnConfirmedByRenter) {
+      await prisma.reservation.update({
+        where: {
+          id: reservationId,
+        },
+        data: {
+          returnConfirmedAt: new Date(),
+          rentalStatus: 'COMPLETED',
+          status: 'COMPLETED',
+        },
+      });
+    }
+
+    return NextResponse.json({
+      message: action === 'confirm' ? 'Return confirmed' : 'Return confirmation removed',
+      reservation: updatedReservation,
+    });
+  } catch (error) {
+    console.error("Error updating return confirmation:", error);
+    return NextResponse.json(
+      { error: "Failed to update return confirmation" },
+      { status: 500 }
+    );
+  }
+}

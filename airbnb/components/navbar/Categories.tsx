@@ -11,74 +11,39 @@ import Container from "../Container";
 
 export const categories = [
   {
-    label: "Guitar",
-    icon: FaGuitar,
-    description: "Acoustic and electric guitars available!",
-  },
-  {
-    label: "Piano",
-    icon: GiPianoKeys,
-    description: "Grand, upright, and digital pianos!",
-  },
-  {
-    label: "Drums",
-    icon: FaDrum,
-    description: "Full drum kits and percussion instruments!",
-  },
-  {
-    label: "Violin",
+    label: "Strings",
     icon: GiViolin,
-    description: "String instruments including violins and violas!",
+    description: "Violins, guitars, cellos, basses, and more!",
   },
   {
-    label: "Saxophone",
+    label: "Percussion",
+    icon: FaDrum,
+    description: "Drums, timpani, xylophones, and percussion!",
+  },
+  {
+    label: "Woodwinds",
     icon: GiSaxophone,
-    description: "Saxophones and other woodwind instruments!",
+    description: "Flutes, clarinets, oboes, saxophones, and more!",
   },
   {
-    label: "Trumpet",
+    label: "Brass",
     icon: GiTrumpet,
-    description: "Brass instruments including trumpets and trombones!",
+    description: "Trumpets, trombones, tubas, french horns, and more!",
   },
   {
-    label: "Keyboard",
-    icon: MdPiano,
-    description: "Synthesizers and electronic keyboards!",
+    label: "Keyboards",
+    icon: GiPianoKeys,
+    description: "Pianos, organs, synthesizers, and keyboards!",
   },
   {
-    label: "Bass",
-    icon: FaMusic,
-    description: "Electric and acoustic bass guitars!",
-  },
-  {
-    label: "Flute",
-    icon: GiFlute,
-    description: "Flutes and other wind instruments!",
-  },
-  {
-    label: "Microphone",
-    icon: GiMicrophone,
-    description: "Professional microphones and recording equipment!",
-  },
-  {
-    label: "DJ Equipment",
+    label: "Electronic",
     icon: GiSoundWaves,
-    description: "Turntables, mixers, and DJ controllers!",
+    description: "DJ equipment, interfaces, and electronic instruments!",
   },
   {
-    label: "Audio Interface",
-    icon: BsSpeaker,
-    description: "Recording interfaces and studio equipment!",
-  },
-  {
-    label: "Ukulele",
-    icon: BsMusicNote,
-    description: "Ukuleles and other small string instruments!",
-  },
-  {
-    label: "Amplifier",
-    icon: BsSpeaker,
-    description: "Guitar and bass amplifiers!",
+    label: "Recording",
+    icon: GiMicrophone,
+    description: "Microphones, interfaces, and studio equipment!",
   },
   {
     label: "Other",

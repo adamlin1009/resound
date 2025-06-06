@@ -1,22 +1,50 @@
 import { Listing, Reservation, User } from "@prisma/client";
 
-// Remove roomCount, bathroomCount, guestCount from the base Listing type for safeListing
-export type CoreListingData = Omit<Listing, "createdAt" | "roomCount" | "bathroomCount" | "guestCount">;
+// Core listing data with US location fields
+export type CoreListingData = Omit<Listing, "createdAt">;
 
-export type safeListing = CoreListingData & {
+// Public listing data (without exact address and coordinates for privacy)
+export type safeListing = Omit<CoreListingData, "exactAddress" | "latitude" | "longitude"> & {
   createdAt: string;
-  conditionRating: number;
   experienceLevel: number;
+  city: string | null;
+  state: string;
+  zipCode: string | null;
+};
+
+// Full listing data (with exact address for owners/renters)
+export type safeListingWithAddress = CoreListingData & {
+  createdAt: string;
+  experienceLevel: number;
+  city: string | null;
+  state: string;
+  zipCode: string | null;
+  exactAddress: string;
+};
+
+export type USLocation = {
+  city?: string;
+  state: string;
+  zipCode?: string;
 };
 
 export type SafeReservation = Omit<
   Reservation,
-  "createdAt" | "startDate" | "endDate" | "listing"
+  "createdAt" | "startDate" | "endDate" | "listing" | "canceledAt" | "pickupStartTime" | "pickupEndTime" | "pickupConfirmedAt" | "returnDeadline" | "returnConfirmedAt"
 > & {
   createdAt: string;
   startDate: string;
   endDate: string;
-  listing: safeListing;
+  canceledAt?: string | null;
+  pickupStartTime?: string | null;
+  pickupEndTime?: string | null;
+  pickupConfirmedAt?: string | null;
+  returnDeadline?: string | null;
+  returnConfirmedAt?: string | null;
+  listing: safeListing & {
+    user: SafeUser;
+  };
+  user: SafeUser;
 };
 
 export type SafeUser = Omit<

@@ -1,6 +1,6 @@
 "use client";
 
-import useCountries from "@/hook/useCountries";
+import useUSLocations from "@/hook/useUSLocations";
 import { SafeUser } from "@/types";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -9,7 +9,9 @@ import HeartButton from "../HeartButton";
 
 type Props = {
   title: string;
-  locationValue: string;
+  city: string | null;
+  state: string;
+  zipCode: string | null;
   imageSrc: string;
   id: string;
   currentUser?: SafeUser | null;
@@ -17,21 +19,25 @@ type Props = {
 
 function ListingHead({
   title,
-  locationValue,
+  city,
+  state,
+  zipCode,
   imageSrc,
   id,
   currentUser,
 }: Props) {
-  const { getByValue } = useCountries();
-  const location = getByValue(locationValue);
+  const { formatLocation } = useUSLocations();
+  const locationDisplay = formatLocation({ city: city || undefined, state, zipCode: zipCode || undefined });
+
+  const MotionDiv = motion.div as any;
 
   return (
     <>
       <Heading
         title={title}
-        subtitle={`${location?.region}, ${location?.label}`}
+        subtitle={locationDisplay}
       />
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{
@@ -41,16 +47,18 @@ function ListingHead({
         }}
         className="w-full h-[60vh] overflow-hidden rounded-xl relative"
       >
-        <Image
-          src={imageSrc}
-          alt="image"
-          fill
-          className="object-cover w-full"
-        />
+        {imageSrc && (
+          <Image
+            src={imageSrc}
+            alt="image"
+            fill
+            className="object-cover w-full"
+          />
+        )}
         <div className="absolute top-5 right-5">
           <HeartButton listingId={id} currentUser={currentUser} />
         </div>
-      </motion.div>
+      </MotionDiv>
     </>
   );
 }

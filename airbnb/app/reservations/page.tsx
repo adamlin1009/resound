@@ -7,6 +7,8 @@ import ReservationsClient from "./ReservationsClient";
 
 type Props = {};
 
+export const dynamic = 'force-dynamic';
+
 const ReservationsPage = async (props: Props) => {
   const currentUser = await getCurrentUser();
 
@@ -26,8 +28,8 @@ const ReservationsPage = async (props: Props) => {
     return (
       <ClientOnly>
         <EmptyState
-          title="No bookings found"
-          subtitle="Looks like you have no bookings for your instruments."
+          title="No incoming rentals"
+          subtitle="No musicians have rented your instruments yet."
         />
       </ClientOnly>
     );

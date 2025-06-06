@@ -1,14 +1,19 @@
 import prisma from "@/lib/prismadb";
 import { safeListing } from "@/types";
+import { geocodeLocation, buildLocationString, calculateDistance, Coordinates } from "@/lib/geocoding";
 
 export interface IListingsParams {
   userId?: string;
-  conditionRating?: number; // minimum condition rating
   experienceLevel?: number; // minimum experience level
   startDate?: string;
   endDate?: string;
-  locationValue?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
   category?: string;
+  instrumentType?: string; // free text instrument type search
+  radius?: number; // search radius in miles
+  nationwide?: boolean; // nationwide search
 }
 
 export default async function getListings(params: IListingsParams) {
@@ -24,20 +29,67 @@ export default async function getListings(params: IListingsParams) {
       queryParams.category = params.category;
     }
 
-    if (params.conditionRating) {
-      queryParams.conditionRating = {
-        gte: +params.conditionRating,
-      };
+    // Handle instrument type search - search in category, title, and description
+    if (params.instrumentType) {
+      queryParams.OR = [
+        {
+          category: {
+            contains: params.instrumentType,
+            mode: 'insensitive'
+          }
+        },
+        {
+          title: {
+            contains: params.instrumentType,
+            mode: 'insensitive'
+          }
+        },
+        {
+          description: {
+            contains: params.instrumentType,
+            mode: 'insensitive'
+          }
+        }
+      ];
     }
+
 
     if (params.experienceLevel) {
+      // Show instruments that require this skill level or lower
+      // E.g., if user is Advanced (3), show Beginner (1), Intermediate (2), and Advanced (3) instruments
       queryParams.experienceLevel = {
-        gte: +params.experienceLevel,
+        lte: +params.experienceLevel,
       };
     }
 
-    if (params.locationValue) {
-      queryParams.locationValue = params.locationValue;
+    // Handle location filtering
+    let searchCoordinates: Coordinates | null = null;
+    
+    if (params.nationwide) {
+      // Nationwide search - no location filter
+    } else if (params.radius && (params.city || params.zipCode)) {
+      // Radius-based search - we'll filter after querying
+      const locationString = buildLocationString(params.city, params.state, params.zipCode);
+      searchCoordinates = await geocodeLocation(locationString);
+      
+      // For radius search, we don't add location filters to queryParams
+      // We'll filter by distance after getting all listings with coordinates
+    } else {
+      // Location-specific search without radius
+      if (params.city) {
+        queryParams.city = {
+          contains: params.city,
+          mode: 'insensitive'
+        };
+      }
+
+      if (params.state) {
+        queryParams.state = params.state;
+      }
+
+      if (params.zipCode) {
+        queryParams.zipCode = params.zipCode;
+      }
     }
 
     if (params.startDate && params.endDate) {
@@ -59,19 +111,38 @@ export default async function getListings(params: IListingsParams) {
       };
     }
 
-    const listings = await prisma.listing.findMany({
+    let listings = await prisma.listing.findMany({
       where: queryParams,
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    const safeListings: safeListing[] = listings.map((list: any) => ({
-      ...list,
-      createdAt: list.createdAt.toISOString(),
-      conditionRating: list.conditionRating,
-      experienceLevel: list.experienceLevel,
-    }));
+    // Apply radius filtering if needed
+    if (searchCoordinates && params.radius) {
+      listings = listings.filter((listing: any) => {
+        if (!listing.latitude || !listing.longitude) {
+          return false; // Exclude listings without coordinates
+        }
+
+        const listingCoords: Coordinates = {
+          lat: listing.latitude,
+          lng: listing.longitude
+        };
+
+        const distance = calculateDistance(searchCoordinates!, listingCoords);
+        return distance <= params.radius!;
+      });
+    }
+
+    const safeListings: safeListing[] = listings.map((list: any) => {
+      const { exactAddress, latitude, longitude, ...publicListing } = list;
+      return {
+        ...publicListing,
+        createdAt: list.createdAt.toISOString(),
+        experienceLevel: list.experienceLevel,
+      };
+    });
 
     return safeListings;
   } catch (error: any) {

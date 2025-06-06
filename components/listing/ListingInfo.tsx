@@ -1,14 +1,14 @@
-import useCountries from "@/hook/useCountries";
-import { SafeUser } from "@/types";
+import useCountries from "../../airbnb/hook/useCountries";
+import { SafeUser } from "../../airbnb/types";
 import dynamic from "next/dynamic";
 import React from "react";
 import { IconType } from "react-icons";
-import Avatar from "../Avatar";
-import ListingCategory from "./ListingCategory";
-import Sleep from "../Sleep";
-import Offers from "../Offers";
+import Avatar from "../../airbnb/components/Avatar";
+import ListingCategory from "../../airbnb/components/listing/ListingCategory";
+import Sleep from "../../airbnb/components/Sleep";
+import Offers from "../../airbnb/components/Offers";
 
-const Map = dynamic(() => import("../Map"), {
+const Map = dynamic(() => import("../../airbnb/components/Map"), {
   ssr: false,
 });
 

@@ -59,11 +59,19 @@ function RegisterModal({}: Props) {
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <Heading
-        title="Welcome to Airbnb-Clone"
-        subtitle="Create an Account!"
+        title="Welcome to Resound"
+        subtitle="Create an account!"
         center
       />
-      <Input
+      <div className="flex justify-center mt-4">
+        <Button
+          outline
+          label="Continue with Google"
+          icon={FcGoogle}
+          onClick={() => signIn("google")}
+        />
+      </div>
+      {/* <Input
         id="email"
         label="Email Address"
         disabled={isLoading}
@@ -86,19 +94,12 @@ function RegisterModal({}: Props) {
         register={register}
         errors={errors}
         required
-      />
+      /> */}
     </div>
   );
 
   const footerContent = (
-    <div className="flex flex-col gap-4 mt-3">
-      <hr />
-      <Button
-        outline
-        label="Continue with Google"
-        icon={FcGoogle}
-        onClick={() => signIn("google")}
-      />
+    <div className="flex flex-col gap-4">
       {/* <Button
         outline
         label="Continue with Facebook"
@@ -106,7 +107,7 @@ function RegisterModal({}: Props) {
         onClick={() => signIn("facebook")}
         isColor
       /> */}
-      <div className="text-neutral-500 text-center mt-4 font-light">
+      <div className="text-neutral-500 text-center font-light">
         <div>
           Already have an account?{" "}
           <span
@@ -125,9 +126,9 @@ function RegisterModal({}: Props) {
       disabled={isLoading}
       isOpen={registerModel.isOpen}
       title="Register"
-      actionLabel="Continue"
+      actionLabel=""
       onClose={registerModel.onClose}
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={() => {}}
       body={bodyContent}
       footer={footerContent}
     />

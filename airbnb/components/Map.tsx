@@ -1,75 +1,106 @@
 "use client";
 
 import L from "leaflet";
-import React from "react";
-// Comment out Leaflet UI imports if MapContainer is not used
-// import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"; 
+import React, { useEffect, useRef } from "react";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import "leaflet/dist/leaflet.css";
 
-// Comment out image imports if Marker is not used
-// import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-// import markerIcon from "leaflet/dist/images/marker-icon.png";
-// import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import "leaflet/dist/leaflet.css"; // Keep base Leaflet CSS if needed for other parts, or comment out if truly unused
-// import Flag from "react-world-flags"; // Comment out if Popup/Flag is not used
-
-// Leaflet icon setup can also be commented out if no markers are rendered
 // @ts-ignore
-// delete L.Icon.Default.prototype._getIconUrl;
-// L.Icon.Default.mergeOptions({
-//   iconUrl: markerIcon.src,
-//   iconRetinaUrl: markerIcon2x.src,
-//   shadowUrl: markerShadow.src,
-// });
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: markerIcon.src,
+  iconRetinaUrl: markerIcon2x.src,
+  shadowUrl: markerShadow.src,
+});
 
 type Props = {
   center?: number[];
-  locationValue?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
 };
 
-function Map({ center, locationValue }: Props) {
-  // The MapContainer and its logic are commented out as per previous request.
-  // To make this a valid component for dynamic import, explicitly return null.
-  return null;
+function Map({ center, city, state, zipCode }: Props) {
+  const mapRef = useRef<L.Map | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Original commented-out map code:
-  /*
-  const mapKey = React.useMemo(() => {
-    if (center && Array.isArray(center)) {
-      return `${locationValue ?? 'default'}-${center.join('-')}`;
+  // Default to center of US if no coordinates provided
+  const mapCenter = center || [39.8283, -98.5795]; // Geographic center of US
+  const zoom = center ? 10 : 4;
+
+  useEffect(() => {
+    // Clean up any existing map
+    if (mapRef.current) {
+      mapRef.current.remove();
+      mapRef.current = null;
     }
-    return `default-map`;
-  }, [locationValue, center]);
+
+    // Add a small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      // Only create map if container exists and has dimensions
+      if (containerRef.current && containerRef.current.offsetHeight > 0) {
+        try {
+          // Create new map
+          const map = L.map(containerRef.current).setView(mapCenter as L.LatLngTuple, zoom);
+          
+          // Add tile layer
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          }).addTo(map);
+
+          // Add marker if we have coordinates
+          if (center) {
+            const marker = L.marker(center as L.LatLngTuple).addTo(map);
+            
+            // Add popup content
+            const popupContent = `
+              <div style="text-align: center;">
+                <div style="font-weight: 600;">
+                  ${city && state ? `${city}, ${state}` : state || 'Location'}
+                </div>
+                ${zipCode ? `<div style="font-size: 14px; color: #666;">${zipCode}</div>` : ''}
+              </div>
+            `;
+            marker.bindPopup(popupContent);
+          }
+
+          mapRef.current = map;
+          
+          // Force invalidate size after a brief delay
+          setTimeout(() => {
+            if (mapRef.current) {
+              mapRef.current.invalidateSize();
+            }
+          }, 100);
+        } catch (error) {
+          console.error('Error initializing map:', error);
+        }
+      }
+    }, 100);
+
+    // Cleanup function
+    return () => {
+      clearTimeout(timer);
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, [center, city, state, zipCode, mapCenter, zoom]);
 
   return (
-    <MapContainer
-      key={mapKey}
-      center={(center as L.LatLngExpression) || [51, -0.09]}
-      zoom={center ? 4 : 2}
-      scrollWheelZoom={false}
+    <div 
+      ref={containerRef}
       className="h-[35vh] rounded-lg"
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-      {locationValue ? (
-        <>
-          {center && (
-            <Marker position={center as L.LatLngExpression}>
-              <Popup>
-                <div className="flex justify-center items-center animate-bounce">
-                  <Flag code={locationValue} className="w-10" />
-                </div>
-              </Popup>
-            </Marker>
-          )}
-        </>
-      ) : (
-        <>{center && <Marker position={center as L.LatLngExpression} />}</>
-      )}
-    </MapContainer>
+      style={{ 
+        zIndex: 0,
+        minHeight: '280px',
+        width: '100%'
+      }}
+    />
   );
-  */
 }
 
 export default Map;

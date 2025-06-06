@@ -7,6 +7,8 @@ import FavoritesClient from "./FavoritesClient";
 
 type Props = {};
 
+export const dynamic = 'force-dynamic';
+
 const FavoritePage = async (props: Props) => {
   const currentUser = await getCurrentUser();
   const listings = await getFavoriteListings();
@@ -24,7 +26,7 @@ const FavoritePage = async (props: Props) => {
       <ClientOnly>
         <EmptyState
           title="No favorites found"
-          subtitle="Looks like you have no favorite listings."
+          subtitle="Looks like you have no favorite instruments."
         />
       </ClientOnly>
     );

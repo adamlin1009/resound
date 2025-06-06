@@ -17,6 +17,9 @@ export default async function getReservation(params: IParams) {
     if (userId) query.userId = userId;
     if (authorId) query.listing = { userId: authorId };
 
+    // Show all reservations except canceled ones
+    // Don't filter by status for now due to enum issues
+
     const reservations = await prisma.reservation.findMany({
       where: query,
       include: {
@@ -32,10 +35,13 @@ export default async function getReservation(params: IParams) {
       return [];
     }
 
-    const safeReservations: SafeReservation[] = reservations.map(
+    // Don't filter out canceled reservations - we'll show them greyed out
+    const filteredReservations = reservations;
+
+    const safeReservations: SafeReservation[] = filteredReservations.map(
       (reservation) => {
         // Using `as any` as a workaround for persistent TypeScript errors
-        // This assumes conditionRating and experienceLevel are present at runtime.
+        // This assumes experienceLevel is present at runtime.
         const rListing: any = reservation.listing;
         
         const mappedListing: safeListing = {
@@ -45,9 +51,10 @@ export default async function getReservation(params: IParams) {
           imageSrc: rListing.imageSrc,
           createdAt: rListing.createdAt.toISOString(),
           category: rListing.category,
-          conditionRating: rListing.conditionRating,
           experienceLevel: rListing.experienceLevel,
-          locationValue: rListing.locationValue,
+          city: rListing.city,
+          state: rListing.state,
+          zipCode: rListing.zipCode,
           userId: rListing.userId,
           price: rListing.price,
         };

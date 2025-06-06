@@ -1,7 +1,9 @@
 import prisma from "@/lib/prismadb";
 import getCurrentUser from "./getCurrentUser";
+import { safeListing } from "@/types";
+import { Listing } from "@prisma/client";
 
-export default async function getFavoriteListings() {
+export default async function getFavoriteListings(): Promise<safeListing[]> {
   try {
     const currentUser = await getCurrentUser();
 
@@ -9,7 +11,7 @@ export default async function getFavoriteListings() {
       return [];
     }
 
-    const favorites = await prisma.listing.findMany({
+    const favorites: Listing[] = await prisma.listing.findMany({
       where: {
         id: {
           in: [...(currentUser.favoriteIds || [])],
@@ -17,12 +19,14 @@ export default async function getFavoriteListings() {
       },
     });
 
-    const safeFavorite = favorites.map((favorite) => ({
+    const safeFavorites = favorites.map((favorite: Listing) => ({
       ...favorite,
       createdAt: favorite.createdAt.toString(),
+      // experienceLevel should be included via ...favorite
+      // if 'Listing' type is correctly resolved and includes it.
     }));
 
-    return safeFavorite;
+    return safeFavorites;
   } catch (error: any) {
     throw new Error(error.message);
   }

@@ -39,7 +39,7 @@ function ListingReservation({
       />
       <hr />
       <div className="p-4">
-        <Button disabled={disabled} label="Book Instrument" onClick={onSubmit} />
+        <Button disabled={disabled} label="Proceed to Payment" onClick={onSubmit} />
       </div>
       <hr />
       <div className="p-4 flex flex-row items-center justify-between font-semibold text-lg">

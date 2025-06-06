@@ -27,9 +27,10 @@ type Props = {
     user: SafeUser;
   };
   currentUser?: SafeUser | null;
+  hasPaidReservation?: boolean;
 };
 
-function ListingClient({ reservations = [], listing, currentUser }: Props) {
+function ListingClient({ reservations = [], listing, currentUser, hasPaidReservation = false }: Props) {
   const router = useRouter();
   const loginModal = useLoginModel();
 
@@ -60,24 +61,27 @@ function ListingClient({ reservations = [], listing, currentUser }: Props) {
     setIsLoading(true);
 
     axios
-      .post("/api/reservations", {
+      .post("/api/create-checkout-session", {
         totalPrice,
         startDate: dateRange.startDate,
         endDate: dateRange.endDate,
         listingId: listing?.id,
       })
-      .then(() => {
-        toast.success("Success!");
-        setDateRange(initialDateRange);
-        router.push("/trips");
+      .then((response) => {
+        const { url } = response.data;
+        if (url) {
+          // Redirect to Stripe checkout
+          window.location.href = url;
+        } else {
+          toast.error("Failed to create checkout session");
+          setIsLoading(false);
+        }
       })
       .catch(() => {
-        toast.error("Something Went Wrong");
-      })
-      .finally(() => {
+        toast.error("Something went wrong. Please try again.");
         setIsLoading(false);
       });
-  }, [totalPrice, dateRange, listing?.id, router, currentUser, loginModal]);
+  }, [totalPrice, dateRange, listing?.id, currentUser, loginModal]);
 
   useEffect(() => {
     if (dateRange.startDate && dateRange.endDate) {
@@ -105,7 +109,9 @@ function ListingClient({ reservations = [], listing, currentUser }: Props) {
           <ListingHead
             title={listing.title}
             imageSrc={listing.imageSrc}
-            locationValue={listing.locationValue}
+            city={listing.city}
+            state={listing.state}
+            zipCode={listing.zipCode}
             id={listing.id}
             currentUser={currentUser}
           />
@@ -114,9 +120,13 @@ function ListingClient({ reservations = [], listing, currentUser }: Props) {
               user={listing.user}
               category={category}
               description={listing.description}
-              conditionRating={listing.conditionRating}
               experienceLevel={listing.experienceLevel}
-              locationValue={listing.locationValue}
+              city={listing.city}
+              state={listing.state}
+              zipCode={listing.zipCode}
+              listingId={listing.id}
+              currentUser={currentUser}
+              hasPaidReservation={hasPaidReservation}
             />
             <div className="order-first mb-10 md:order-last md:col-span-3">
               <ListingReservation

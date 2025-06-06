@@ -19,13 +19,13 @@ function ImageUpload({ onChange, value }: Props) {
     (result: any) => {
       onChange(result.info.secure_url);
     },
-    [onchange]
+    [onChange]
   );
 
   return (
     <CldUploadWidget
-      onUpload={handleCallback}
-      uploadPreset="cptcecyi"
+      onSuccess={handleCallback}
+      uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
       options={{
         maxFiles: 1,
       }}

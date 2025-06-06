@@ -71,22 +71,40 @@ function UserMenu({ currentUser }: Props) {
             {currentUser ? (
               <>
                 <MenuItem
-                  onClick={() => router.push("/trips")}
+                  onClick={() => router.push("/rentals")}
                   label="My rentals"
+                />
+                <MenuItem
+                  onClick={() => router.push("/reservations")}
+                  label="Incoming rentals"
                 />
                 <MenuItem
                   onClick={() => router.push("/favorites")}
                   label="My favorites"
                 />
                 <MenuItem
-                  onClick={() => router.push("/reservations")}
-                  label="My bookings"
+                  onClick={() => router.push("/messages")}
+                  label="Messages"
                 />
                 <MenuItem
-                  onClick={() => router.push("/properties")}
+                  onClick={() => router.push("/instruments")}
                   label="My instruments"
                 />
                 <MenuItem onClick={onRent} label="Lend your instrument" />
+                <hr />
+                <MenuItem
+                  onClick={() => router.push("/profile")}
+                  label="My profile"
+                />
+                {currentUser?.isAdmin && (
+                  <>
+                    <hr />
+                    <MenuItem
+                      onClick={() => router.push("/admin")}
+                      label="Admin Panel"
+                    />
+                  </>
+                )}
                 <hr />
                 <MenuItem onClick={() => signOut()} label="Logout" />
               </>

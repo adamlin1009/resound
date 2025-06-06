@@ -9,6 +9,8 @@ interface HomeProps {
   searchParams: Promise<URLSearchParams | IListingsParams>;
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home({ searchParams }: HomeProps) {
   // Await searchParams because in Next.js 15 it is provided as a Promise
   const awaitParams: any = await searchParams;
@@ -24,23 +26,31 @@ export default async function Home({ searchParams }: HomeProps) {
 
     params = {
       userId: awaitParams.get("userId") || undefined,
-      conditionRating: getNum("conditionRating"),
       experienceLevel: getNum("experienceLevel"),
-      locationValue: awaitParams.get("locationValue") || undefined,
+      city: awaitParams.get("city") || undefined,
+      state: awaitParams.get("state") || undefined,
+      zipCode: awaitParams.get("zipCode") || undefined,
       startDate: awaitParams.get("startDate") || undefined,
       endDate: awaitParams.get("endDate") || undefined,
       category: awaitParams.get("category") || undefined,
+      instrumentType: awaitParams.get("instrumentType") || undefined,
+      radius: getNum("radius"),
+      nationwide: awaitParams.get("nationwide") === "true",
     };
   } else {
     // Already an object (from client navigation)
     params = {
       userId: awaitParams.userId,
-      conditionRating: awaitParams.conditionRating ? Number(awaitParams.conditionRating) : undefined,
       experienceLevel: awaitParams.experienceLevel ? Number(awaitParams.experienceLevel) : undefined,
-      locationValue: awaitParams.locationValue,
+      city: awaitParams.city,
+      state: awaitParams.state,
+      zipCode: awaitParams.zipCode,
       startDate: awaitParams.startDate,
       endDate: awaitParams.endDate,
       category: awaitParams.category,
+      instrumentType: awaitParams.instrumentType,
+      radius: awaitParams.radius ? Number(awaitParams.radius) : undefined,
+      nationwide: awaitParams.nationwide === "true" || awaitParams.nationwide === true,
     };
   }
 

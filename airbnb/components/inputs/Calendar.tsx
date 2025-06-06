@@ -15,14 +15,21 @@ type Props = {
 function Calendar({ value, onChange, disabledDates }: Props) {
   return (
     <DateRange
-      rangeColors={["#262626"]}
+      rangeColors={["#d97706"]}
       ranges={[value]}
       date={new Date()}
       onChange={onChange}
       direction="vertical"
+      months={1}
       showDateDisplay={false}
       minDate={new Date()}
       disabledDates={disabledDates}
+      monthDisplayFormat="MMMM yyyy"
+      weekdayDisplayFormat="EEE"
+      showMonthAndYearPickers={true}
+      moveRangeOnFirstSelection={false}
+      editableDateInputs={true}
+      showMonthArrow={true}
     />
   );
 }

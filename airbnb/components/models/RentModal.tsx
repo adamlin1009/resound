@@ -10,8 +10,8 @@ import { toast } from "react-toastify";
 
 import Heading from "../Heading";
 import CategoryInput from "../inputs/CategoryInput";
-import Counter from "../inputs/Counter";
-import CountrySelect from "../inputs/CountrySelect";
+import AddressInput from "../inputs/AddressInput";
+import ExactAddressInput from "../inputs/ExactAddressInput";
 import ImageUpload from "../inputs/ImageUpload";
 import Input from "../inputs/Input";
 import { categories } from "../navbar/Categories";
@@ -44,8 +44,10 @@ function RentModal({}: Props) {
   } = useForm<FieldValues>({
     defaultValues: {
       category: "",
-      location: null,
-      conditionRating: 1,
+      city: "",
+      state: "",
+      zipCode: "",
+      exactAddress: "",
       experienceLevel: 1,
       imageSrc: "",
       price: 1,
@@ -55,8 +57,10 @@ function RentModal({}: Props) {
   });
 
   const category = watch("category");
-  const location = watch("location");
-  const conditionRating = watch("conditionRating");
+  const city = watch("city");
+  const state = watch("state");
+  const zipCode = watch("zipCode");
+  const exactAddress = watch("exactAddress");
   const experienceLevel = watch("experienceLevel");
   const imageSrc = watch("imageSrc");
 
@@ -65,7 +69,7 @@ function RentModal({}: Props) {
       dynamic(() => import("../Map"), {
         ssr: false,
       }),
-    [location]
+    []
   );
 
   const setCustomValue = (id: string, value: any) => {
@@ -94,14 +98,16 @@ function RentModal({}: Props) {
     axios
       .post("/api/listings", data)
       .then(() => {
-        toast.success("Listing Created!");
+        toast.success("Instrument Listed!");
         router.refresh();
         reset();
         setStep(STEPS.CATEGORY);
         rentModel.onClose();
       })
-      .catch(() => {
-        toast.error("Something Went Wrong");
+      .catch((error) => {
+        console.error('Listing creation error:', error);
+        const errorMessage = error.response?.data?.error || "Something went wrong";
+        toast.error(errorMessage);
       })
       .finally(() => {
         setIsLoading(false);
@@ -130,7 +136,7 @@ function RentModal({}: Props) {
         title="Which type of instrument are you lending?"
         subtitle="Pick a category"
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto scrollbar-thin scrollbar-thumb-[#FF5A5F]">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto scrollbar-thin scrollbar-thumb-amber-600">
         {categories.map((item, index) => (
           <div key={index} className="col-span-1">
             <CategoryInput
@@ -150,13 +156,39 @@ function RentModal({}: Props) {
       <div className="flex flex-col gap-8">
         <Heading
           title="Where is your instrument located?"
-          subtitle="Help musicians find you!"
+          subtitle="Enter your full address - we'll only show the general area publicly"
         />
-        <CountrySelect
-          value={location}
-          onChange={(value) => setCustomValue("location", value)}
+        <ExactAddressInput
+          value={exactAddress}
+          onChange={(value) => {
+            setCustomValue("exactAddress", value);
+            // Auto-parse address to extract city, state, zip
+            const addressParts = value.split(',').map(part => part.trim());
+            if (addressParts.length >= 3) {
+              const cityPart = addressParts[addressParts.length - 3];
+              const statePart = addressParts[addressParts.length - 2];
+              const zipMatch = value.match(/\b(\d{5})\b/);
+              
+              if (cityPart) setCustomValue("city", cityPart);
+              if (statePart) {
+                // Extract state abbreviation
+                const stateMatch = statePart.match(/([A-Z]{2})/);
+                if (stateMatch) setCustomValue("state", stateMatch[1]);
+              }
+              if (zipMatch) setCustomValue("zipCode", zipMatch[1]);
+            }
+          }}
+          placeholder="123 Main Street, Apt 4B, Irvine, CA 92602"
         />
-        <Map center={location?.latlng} />
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <div className="text-amber-600 mt-0.5">🔒</div>
+            <div className="text-sm text-amber-800">
+              <p className="font-medium mb-1">Privacy Protection</p>
+              <p>We only show your general area (city and zip code) to potential renters. Your exact address is kept private and only shared with confirmed bookings for pickup coordination.</p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -166,21 +198,31 @@ function RentModal({}: Props) {
       <div className="flex flex-col gap-8">
         <Heading
           title="Share some details about your instrument"
-          subtitle="What features does it have?"
+          subtitle="Set the minimum skill level required"
         />
-        <Counter
-          title="Condition"
-          subtitle="Rate the condition (1-10, 10 being perfect)"
-          value={conditionRating}
-          onChange={(value) => setCustomValue("conditionRating", value)}
-        />
-        <hr />
-        <Counter
-          title="Experience Level"
-          subtitle="Suitable for what skill level? (1=Beginner, 5=Professional)"
-          value={experienceLevel}
-          onChange={(value) => setCustomValue("experienceLevel", value)}
-        />
+        <div>
+          <label className="text-sm font-medium text-gray-700 block mb-2">
+            Minimum required skill level
+          </label>
+          <p className="text-sm text-gray-500 mb-4">
+            Only users at this level or higher can rent
+          </p>
+          <select
+            value={experienceLevel}
+            onChange={(e) => setCustomValue("experienceLevel", Number(e.target.value))}
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+          >
+            <option value={1}>Beginner</option>
+            <option value={2}>Intermediate</option>
+            <option value={3}>Advanced</option>
+            <option value={4}>Professional</option>
+          </select>
+        </div>
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+          <p className="text-sm text-amber-800">
+            <strong>Example:</strong> If you set {experienceLevel === 1 ? 'Beginner' : experienceLevel === 2 ? 'Intermediate' : experienceLevel === 3 ? 'Advanced' : 'Professional'}, only users at that level or higher can rent.
+          </p>
+        </div>
       </div>
     );
   }
