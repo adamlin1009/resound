@@ -6,12 +6,9 @@ import EmptyState from '@/components/EmptyState';
 
 import RentalManageClient from './RentalManageClient';
 
-interface IParams {
-  reservationId?: string;
-}
-
-const RentalManagePage = async ({ params }: { params: IParams }) => {
-  const reservation = await getReservationById(params);
+const RentalManagePage = async ({ params }: { params: Promise<{ reservationId: string }> }) => {
+  const resolvedParams = await params;
+  const reservation = await getReservationById(resolvedParams);
   const currentUser = await getCurrentUser();
 
   if (!reservation) {

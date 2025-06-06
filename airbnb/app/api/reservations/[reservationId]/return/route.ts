@@ -2,13 +2,9 @@ import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
 
-interface IParams {
-  reservationId?: string;
-}
-
 export async function POST(
   request: Request,
-  { params }: { params: IParams }
+  { params }: { params: Promise<{ reservationId: string }> }
 ) {
   try {
     const currentUser = await getCurrentUser();
@@ -20,7 +16,7 @@ export async function POST(
       );
     }
 
-    const { reservationId } = params;
+    const { reservationId } = await params;
 
     if (!reservationId) {
       return NextResponse.json(

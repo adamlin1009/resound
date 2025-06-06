@@ -57,7 +57,8 @@ const ProfileClient: React.FC<ProfileClientProps> = ({ currentUser }) => {
         preferredInstruments,
       });
     }
-  }, [debouncedName]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedName, autoSave]);
 
   useEffect(() => {
     if (debouncedBio !== currentUser.bio) {
@@ -69,7 +70,8 @@ const ProfileClient: React.FC<ProfileClientProps> = ({ currentUser }) => {
         preferredInstruments,
       });
     }
-  }, [debouncedBio]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedBio, autoSave]);
 
   // Immediate save for non-text inputs
   const handleExperienceLevelChange = (value: number) => {
@@ -229,7 +231,7 @@ const ProfileClient: React.FC<ProfileClientProps> = ({ currentUser }) => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Preferred Instruments</h3>
             <p className="text-sm text-gray-500">
-              Select the instruments you're interested in renting
+              Select the instruments you&apos;re interested in renting
             </p>
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">

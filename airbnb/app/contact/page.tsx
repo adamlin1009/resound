@@ -174,11 +174,13 @@ const ContactPage = () => {
               </div>
               
               <div className="pt-4">
-                <Button
+                <button
                   type="submit"
-                  label={isLoading ? "Sending..." : "Send Message"}
                   disabled={isLoading}
-                />
+                  className="relative disabled:opacity-70 disabled:cursor-not-allowed rounded-lg hover:opacity-80 transition w-full bg-amber-700 text-white py-3 font-semibold"
+                >
+                  {isLoading ? "Sending..." : "Send Message"}
+                </button>
               </div>
             </form>
           </div>

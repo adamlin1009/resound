@@ -4,13 +4,9 @@ import prisma from "@/lib/prismadb";
 import { sendEmail, emailTemplates } from "@/lib/email";
 import { format } from "date-fns";
 
-interface IParams {
-  reservationId?: string;
-}
-
 export async function PUT(
   request: Request,
-  { params }: { params: IParams }
+  { params }: { params: Promise<{ reservationId: string }> }
 ) {
   try {
     const currentUser = await getCurrentUser();
@@ -22,7 +18,7 @@ export async function PUT(
       );
     }
 
-    const { reservationId } = params;
+    const { reservationId } = await params;
 
     if (!reservationId) {
       return NextResponse.json(

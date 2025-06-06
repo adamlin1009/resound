@@ -1,5 +1,5 @@
 import prisma from "@/lib/prismadb";
-import { SafeReservation, safeListing } from "@/types";
+import { SafeReservation, safeListing, SafeUser } from "@/types";
 // import { Listing } from "@prisma/client"; // No longer strictly needed with `as any`
 
 interface IParams {
@@ -23,7 +23,12 @@ export default async function getReservation(params: IParams) {
     const reservations = await prisma.reservation.findMany({
       where: query,
       include: {
-        listing: true,
+        listing: {
+          include: {
+            user: true,
+          },
+        },
+        user: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -44,7 +49,7 @@ export default async function getReservation(params: IParams) {
         // This assumes experienceLevel is present at runtime.
         const rListing: any = reservation.listing;
         
-        const mappedListing: safeListing = {
+        const mappedListing: safeListing & { user: SafeUser } = {
           id: rListing.id,
           title: rListing.title,
           description: rListing.description,
@@ -57,6 +62,19 @@ export default async function getReservation(params: IParams) {
           zipCode: rListing.zipCode,
           userId: rListing.userId,
           price: rListing.price,
+          user: {
+            ...rListing.user,
+            createdAt: rListing.user.createdAt.toISOString(),
+            updatedAt: rListing.user.updatedAt.toISOString(),
+            emailVerified: rListing.user.emailVerified?.toISOString() || null,
+          },
+        };
+
+        const safeUser: SafeUser = {
+          ...reservation.user,
+          createdAt: reservation.user.createdAt.toISOString(),
+          updatedAt: reservation.user.updatedAt.toISOString(),
+          emailVerified: reservation.user.emailVerified?.toISOString() || null,
         };
 
         return {
@@ -64,7 +82,14 @@ export default async function getReservation(params: IParams) {
           createdAt: reservation.createdAt.toISOString(),
           startDate: reservation.startDate.toISOString(),
           endDate: reservation.endDate.toISOString(),
+          canceledAt: reservation.canceledAt?.toISOString() || null,
+          pickupStartTime: reservation.pickupStartTime?.toISOString() || null,
+          pickupEndTime: reservation.pickupEndTime?.toISOString() || null,
+          pickupConfirmedAt: reservation.pickupConfirmedAt?.toISOString() || null,
+          returnDeadline: reservation.returnDeadline?.toISOString() || null,
+          returnConfirmedAt: reservation.returnConfirmedAt?.toISOString() || null,
           listing: mappedListing,
+          user: safeUser,
         };
       }
     );

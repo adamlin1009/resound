@@ -97,7 +97,6 @@ function SearchModal({}: Props) {
     searchModel.onClose();
     router.push(url);
   }, [
-    step,
     searchModel,
     location,
     router,
@@ -257,7 +256,7 @@ function SearchModal({}: Props) {
           <option value={4}>Professional</option>
         </select>
         <p className="text-xs text-gray-500 mt-2">
-          You'll see instruments that match your level or below
+          You&apos;ll see instruments that match your level or below
         </p>
       </div>
     </div>
