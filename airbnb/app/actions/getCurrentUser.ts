@@ -20,6 +20,21 @@ export default async function getCurrentUser(): Promise<SafeUser | null> {
       where: {
         email: session.user.email as string,
       },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        emailVerified: true,
+        image: true,
+        isAdmin: true,
+        createdAt: true,
+        updatedAt: true,
+        favoriteIds: true,
+        experienceLevel: true,
+        preferredInstruments: true,
+        bio: true,
+        // Explicitly exclude hashedPassword for security
+      },
     });
 
     if (!currentUser) {

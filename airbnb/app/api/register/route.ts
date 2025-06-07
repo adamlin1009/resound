@@ -1,6 +1,7 @@
 import prisma from "@/lib/prismadb";
 import bcrypt from "bcrypt";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { withRateLimit, rateLimiters } from "@/lib/rateLimiter";
 
 // Email validation regex
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -8,7 +9,8 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Password validation: min 8 chars, 1 uppercase, 1 lowercase, 1 number
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  return withRateLimit(request, rateLimiters.register, async () => {
   try {
     const body = await request.json();
     const { email, name, password } = body;
@@ -82,4 +84,5 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+  });
 }

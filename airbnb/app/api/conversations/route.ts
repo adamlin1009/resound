@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { TIME_CONSTANTS } from "@/constants";
 
 export async function GET(request: Request) {
   try {
@@ -25,16 +26,47 @@ export async function GET(request: Request) {
     
     const totalCount = await prisma.conversation.count({ where });
 
-    // First get conversations without the listing relation to avoid errors
-    const conversationsWithoutListing = await prisma.conversation.findMany({
+    // Fetch conversations with all related data in a single query
+    const conversations = await prisma.conversation.findMany({
       where,
       include: {
-        owner: true,
-        renter: true,
+        listing: {
+          select: {
+            id: true,
+            title: true,
+            imageSrc: true,
+            price: true,
+            city: true,
+            state: true,
+          }
+        },
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          }
+        },
+        renter: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          }
+        },
         messages: {
           orderBy: { createdAt: 'asc' },
           include: {
-            sender: true
+            sender: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+              }
+            }
           }
         }
       },
@@ -42,25 +74,6 @@ export async function GET(request: Request) {
       skip: skip,
       take: limit
     });
-
-    // Get listing IDs
-    const listingIds = conversationsWithoutListing.map(c => c.listingId);
-    
-    // Fetch listings separately
-    const listings = await prisma.listing.findMany({
-      where: {
-        id: { in: listingIds }
-      }
-    });
-    
-    // Create a map for quick lookup
-    const listingMap = new Map(listings.map(l => [l.id, l]));
-    
-    // Combine the data
-    const conversations = conversationsWithoutListing.map(conv => ({
-      ...conv,
-      listing: listingMap.get(conv.listingId) || null
-    }));
     
     // Filter out conversations with deleted listings and transform the data
     const safeConversations = conversations
@@ -168,14 +181,14 @@ export async function POST(request: Request) {
       }, { status: 403 });
     }
 
-    // For completed reservations, allow messaging for 30 days after end date
+    // For completed reservations, allow messaging for MESSAGE_EXPIRY_DAYS after end date
     if (validReservation.status === 'COMPLETED') {
       const thirtyDaysAfterEnd = new Date(validReservation.endDate);
-      thirtyDaysAfterEnd.setDate(thirtyDaysAfterEnd.getDate() + 30);
+      thirtyDaysAfterEnd.setDate(thirtyDaysAfterEnd.getDate() + TIME_CONSTANTS.MESSAGE_EXPIRY_DAYS);
       
       if (new Date() > thirtyDaysAfterEnd) {
         return NextResponse.json({ 
-          error: "Cannot start new conversations more than 30 days after rental completion" 
+          error: `Cannot start new conversations more than ${TIME_CONSTANTS.MESSAGE_EXPIRY_DAYS} days after rental completion` 
         }, { status: 403 });
       }
     }

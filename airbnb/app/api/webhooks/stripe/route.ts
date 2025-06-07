@@ -101,10 +101,21 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         stripeSessionId: session.id,
       },
       include: {
-        user: true,
+        user: {
+          select: {
+            email: true,
+            name: true,
+          }
+        },
         listing: {
-          include: {
-            user: true
+          select: {
+            title: true,
+            user: {
+              select: {
+                email: true,
+                name: true,
+              }
+            }
           }
         }
       }

@@ -1,6 +1,7 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
 import { NextRequest, NextResponse } from "next/server";
+import { withRateLimit, rateLimiters } from "@/lib/rateLimiter";
 
 // Define the expected shape of the context parameter for the route handlers
 interface RouteContext {
@@ -10,6 +11,7 @@ interface RouteContext {
 }
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ listingId: string }> }) {
+  return withRateLimit(request, rateLimiters.favorites, async () => {
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -39,12 +41,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   });
 
   return NextResponse.json(user);
+  });
 }
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ listingId: string }> }
 ) {
+  return withRateLimit(request, rateLimiters.favorites, async () => {
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -74,4 +78,5 @@ export async function DELETE(
   });
 
   return NextResponse.json(user);
+  });
 }

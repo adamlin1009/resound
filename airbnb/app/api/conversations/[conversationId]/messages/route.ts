@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { TIME_CONSTANTS } from "@/constants";
 
 interface IParams {
   conversationId: string;
@@ -95,14 +96,14 @@ export async function POST(
         }, { status: 403 });
       }
 
-      // For completed reservations, allow messaging for 30 days after end date
+      // For completed reservations, allow messaging for MESSAGE_EXPIRY_DAYS after end date
       if (paidReservation.status === 'COMPLETED') {
         const thirtyDaysAfterEnd = new Date(paidReservation.endDate);
-        thirtyDaysAfterEnd.setDate(thirtyDaysAfterEnd.getDate() + 30);
+        thirtyDaysAfterEnd.setDate(thirtyDaysAfterEnd.getDate() + TIME_CONSTANTS.MESSAGE_EXPIRY_DAYS);
         
         if (new Date() > thirtyDaysAfterEnd) {
           return NextResponse.json({ 
-            error: "Messaging period has expired for this rental (30 days after completion)" 
+            error: `Messaging period has expired for this rental (${TIME_CONSTANTS.MESSAGE_EXPIRY_DAYS} days after completion)` 
           }, { status: 403 });
         }
       }

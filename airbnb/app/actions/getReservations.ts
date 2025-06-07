@@ -126,11 +126,58 @@ export default async function getReservations(params: IParams): Promise<IReserva
       where: whereClause,
       include: {
         listing: {
-          include: {
-            user: true,
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            imageSrc: true,
+            category: true,
+            experienceLevel: true,
+            city: true,
+            state: true,
+            zipCode: true,
+            userId: true,
+            price: true,
+            createdAt: true,
+            pickupStartTime: true,
+            pickupEndTime: true,
+            returnStartTime: true,
+            returnEndTime: true,
+            availableDays: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                emailVerified: true,
+                image: true,
+                isAdmin: true,
+                createdAt: true,
+                updatedAt: true,
+                favoriteIds: true,
+                experienceLevel: true,
+                preferredInstruments: true,
+                bio: true,
+              }
+            },
           },
         },
-        user: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            emailVerified: true,
+            image: true,
+            isAdmin: true,
+            createdAt: true,
+            updatedAt: true,
+            favoriteIds: true,
+            experienceLevel: true,
+            preferredInstruments: true,
+            bio: true,
+          }
+        },
       },
       orderBy: {
         createdAt: "desc",

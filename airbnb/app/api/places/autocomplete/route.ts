@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { GEO_CONSTANTS, CACHE_CONSTANTS } from '@/constants';
 
 const GOOGLE_PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
-const GOOGLE_PLACES_API_URL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-const GOOGLE_PLACE_DETAILS_URL = 'https://maps.googleapis.com/maps/api/place/details/json';
 
 async function getPlaceDetails(placeId: string): Promise<{ zipCode?: string; city?: string; state?: string }> {
   try {
@@ -12,7 +11,7 @@ async function getPlaceDetails(placeId: string): Promise<{ zipCode?: string; cit
       key: GOOGLE_PLACES_API_KEY!,
     });
 
-    const response = await fetch(`${GOOGLE_PLACE_DETAILS_URL}?${queryParams}`);
+    const response = await fetch(`${GEO_CONSTANTS.GOOGLE_PLACE_DETAILS_URL}?${queryParams}`);
     if (!response.ok) return {};
 
     const data = await response.json();
@@ -89,8 +88,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Make request to Google Places API
-    const response = await fetch(`${GOOGLE_PLACES_API_URL}?${queryParams}`, {
-      next: { revalidate: 3600 } // Cache for 1 hour
+    const response = await fetch(`${GEO_CONSTANTS.GOOGLE_PLACES_AUTOCOMPLETE_URL}?${queryParams}`, {
+      next: { revalidate: CACHE_CONSTANTS.PLACES_CACHE_SECONDS } // Cache for 1 hour
     });
 
     if (!response.ok) {

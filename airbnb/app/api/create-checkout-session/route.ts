@@ -2,9 +2,11 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
 import { stripe, formatAmountForStripe } from "@/lib/stripe";
 import { createReservationHold } from "@/lib/reservationUtils";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { withRateLimit, rateLimiters } from "@/lib/rateLimiter";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  return withRateLimit(request, rateLimiters.checkout, async () => {
   try {
     const currentUser = await getCurrentUser();
 
@@ -133,4 +135,5 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+  });
 }

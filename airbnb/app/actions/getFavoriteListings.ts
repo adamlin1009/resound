@@ -11,19 +11,36 @@ export default async function getFavoriteListings(): Promise<safeListing[]> {
       return [];
     }
 
-    const favorites: Listing[] = await prisma.listing.findMany({
+    const favorites = await prisma.listing.findMany({
       where: {
         id: {
           in: [...(currentUser.favoriteIds || [])],
         },
       },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        imageSrc: true,
+        category: true,
+        experienceLevel: true,
+        city: true,
+        state: true,
+        zipCode: true,
+        userId: true,
+        price: true,
+        createdAt: true,
+        pickupStartTime: true,
+        pickupEndTime: true,
+        returnStartTime: true,
+        returnEndTime: true,
+        availableDays: true,
+      },
     });
 
-    const safeFavorites = favorites.map((favorite: Listing) => ({
+    const safeFavorites = favorites.map((favorite) => ({
       ...favorite,
       createdAt: favorite.createdAt.toString(),
-      // experienceLevel should be included via ...favorite
-      // if 'Listing' type is correctly resolved and includes it.
     }));
 
     return safeFavorites;

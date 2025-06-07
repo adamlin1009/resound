@@ -141,39 +141,97 @@ export default async function getListings(params: IListingsParams): Promise<ILis
       };
     }
 
-    // Get total count for pagination (before applying skip/take)
-    const totalCount = await prisma.listing.count({
-      where: queryParams,
-    });
+    // For radius search, we need to get all listings with coordinates first
+    // then filter by distance, then paginate
+    let finalListings: any[];
+    let totalCount: number;
 
-    let listings = await prisma.listing.findMany({
-      where: queryParams,
-      orderBy: {
-        createdAt: "desc",
-      },
-      skip: skip,
-      take: limit,
-    });
-
-    // Apply radius filtering if needed
     if (searchCoordinates && params.radius) {
-      listings = listings.filter((listing: any) => {
-        if (!listing.latitude || !listing.longitude) {
-          return false; // Exclude listings without coordinates
-        }
+      // Get all listings with coordinates for radius filtering
+      const allListings = await prisma.listing.findMany({
+        where: {
+          ...queryParams,
+          latitude: { not: null },
+          longitude: { not: null },
+        },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          imageSrc: true,
+          category: true,
+          experienceLevel: true,
+          city: true,
+          state: true,
+          zipCode: true,
+          latitude: true,
+          longitude: true,
+          userId: true,
+          price: true,
+          createdAt: true,
+          pickupStartTime: true,
+          pickupEndTime: true,
+          returnStartTime: true,
+          returnEndTime: true,
+          availableDays: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
 
+      // Filter by radius
+      const filteredByRadius = allListings.filter((listing) => {
         const listingCoords: Coordinates = {
-          lat: listing.latitude,
-          lng: listing.longitude
+          lat: listing.latitude!,
+          lng: listing.longitude!
         };
-
         const distance = calculateDistance(searchCoordinates!, listingCoords);
         return distance <= params.radius!;
       });
+
+      // Apply pagination to filtered results
+      totalCount = filteredByRadius.length;
+      finalListings = filteredByRadius.slice(skip, skip + limit);
+    } else {
+      // Regular query with pagination
+      totalCount = await prisma.listing.count({
+        where: queryParams,
+      });
+
+      finalListings = await prisma.listing.findMany({
+        where: queryParams,
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          imageSrc: true,
+          category: true,
+          experienceLevel: true,
+          city: true,
+          state: true,
+          zipCode: true,
+          userId: true,
+          price: true,
+          createdAt: true,
+          pickupStartTime: true,
+          pickupEndTime: true,
+          returnStartTime: true,
+          returnEndTime: true,
+          availableDays: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip: skip,
+        take: limit,
+      });
     }
 
-    const safeListings: safeListing[] = listings.map((list: any) => {
-      const { exactAddress, latitude, longitude, ...publicListing } = list;
+    // Convert to safe listings (remove sensitive fields)
+    const safeListings: safeListing[] = finalListings.map((list) => {
+      // Remove sensitive fields that shouldn't be exposed
+      const { latitude, longitude, ...publicListing } = list;
       return {
         ...publicListing,
         createdAt: list.createdAt.toISOString(),
@@ -186,13 +244,11 @@ export default async function getListings(params: IListingsParams): Promise<ILis
       };
     });
 
-    // Calculate actual count after radius filtering
-    const filteredCount = searchCoordinates && params.radius ? safeListings.length : totalCount;
-    const totalPages = Math.ceil(filteredCount / limit);
+    const totalPages = Math.ceil(totalCount / limit);
 
     return {
       listings: safeListings,
-      totalCount: filteredCount,
+      totalCount,
       page,
       limit,
       totalPages,

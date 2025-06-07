@@ -1,4 +1,5 @@
 import prisma from "@/lib/prismadb";
+import { TIME_CONSTANTS } from "@/constants";
 
 export async function checkReservationConflict(
   listingId: string,
@@ -62,7 +63,7 @@ export async function createReservationHold(
   });
 
   // Create a pending reservation that expires in 15 minutes
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+  const expiresAt = new Date(Date.now() + TIME_CONSTANTS.RESERVATION_EXPIRY_MINUTES * TIME_CONSTANTS.MILLISECONDS_PER_MINUTE);
 
   // Combine dates with times
   const pickupDateTime = pickupTime ? new Date(`${startDate.toISOString().split('T')[0]}T${pickupTime}:00`) : null;

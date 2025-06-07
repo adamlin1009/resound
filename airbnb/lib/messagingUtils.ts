@@ -1,4 +1,5 @@
 import { Reservation } from "@prisma/client";
+import { TIME_CONSTANTS } from "@/constants";
 
 export function getMessagingStatus(reservation: Reservation | null) {
   if (!reservation) {
@@ -32,10 +33,10 @@ export function getMessagingStatus(reservation: Reservation | null) {
   // COMPLETED reservations can message for 30 days after end date
   if (reservation.status === "COMPLETED") {
     const thirtyDaysAfterEnd = new Date(reservation.endDate);
-    thirtyDaysAfterEnd.setDate(thirtyDaysAfterEnd.getDate() + 30);
+    thirtyDaysAfterEnd.setDate(thirtyDaysAfterEnd.getDate() + TIME_CONSTANTS.MESSAGE_EXPIRY_DAYS);
     
     if (now <= thirtyDaysAfterEnd) {
-      const daysRemaining = Math.ceil((thirtyDaysAfterEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      const daysRemaining = Math.ceil((thirtyDaysAfterEnd.getTime() - now.getTime()) / TIME_CONSTANTS.MILLISECONDS_PER_DAY);
       return {
         canMessage: true,
         reason: `Rental completed - ${daysRemaining} days remaining to message`,
@@ -44,7 +45,7 @@ export function getMessagingStatus(reservation: Reservation | null) {
     } else {
       return {
         canMessage: false,
-        reason: "Messaging period expired (30 days after rental)",
+        reason: `Messaging period expired (${TIME_CONSTANTS.MESSAGE_EXPIRY_DAYS} days after rental)`,
         expiresAt: thirtyDaysAfterEnd
       };
     }
@@ -70,7 +71,7 @@ export function formatMessagingExpiry(expiresAt: Date | null): string {
   if (!expiresAt) return "";
   
   const now = new Date();
-  const daysRemaining = Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  const daysRemaining = Math.ceil((expiresAt.getTime() - now.getTime()) / TIME_CONSTANTS.MILLISECONDS_PER_DAY);
   
   if (daysRemaining < 0) {
     return "Messaging expired";

@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { GEO_CONSTANTS, CACHE_CONSTANTS } from '@/constants';
+import { withRateLimit, rateLimiters } from '@/lib/rateLimiter';
 
 const GOOGLE_GEOCODING_API_KEY = process.env.GOOGLE_PLACES_API_KEY; // Using same key
-const GOOGLE_GEOCODING_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json';
 
 export async function GET(request: NextRequest) {
+  return withRateLimit(request, rateLimiters.geocoding, async () => {
   try {
     const searchParams = request.nextUrl.searchParams;
     const address = searchParams.get('address');
@@ -27,8 +29,8 @@ export async function GET(request: NextRequest) {
     });
 
     // Make request to Google Geocoding API
-    const response = await fetch(`${GOOGLE_GEOCODING_API_URL}?${queryParams}`, {
-      next: { revalidate: 86400 } // Cache for 24 hours
+    const response = await fetch(`${GEO_CONSTANTS.GOOGLE_MAPS_GEOCODE_URL}?${queryParams}`, {
+      next: { revalidate: CACHE_CONSTANTS.GEOCODE_CACHE_SECONDS } // Cache for 24 hours
     });
 
     if (!response.ok) {
@@ -57,4 +59,5 @@ export async function GET(request: NextRequest) {
     console.error('Geocoding error:', error);
     return NextResponse.json({ coordinates: null });
   }
+  });
 }

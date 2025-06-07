@@ -1,4 +1,5 @@
 // Geocoding utilities for location-based searches
+import { GEO_CONSTANTS } from "@/constants";
 
 export interface Coordinates {
   lat: number;
@@ -36,7 +37,7 @@ export async function geocodeLocation(address: string): Promise<Coordinates | nu
 
   try {
     const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${process.env.GOOGLE_PLACES_API_KEY}`
+      `${GEO_CONSTANTS.GOOGLE_MAPS_GEOCODE_URL}?address=${encodeURIComponent(address)}&key=${process.env.GOOGLE_PLACES_API_KEY}`
     );
 
     const data = await response.json();
@@ -62,7 +63,7 @@ export function calculateDistance(
   coord1: Coordinates,
   coord2: Coordinates
 ): number {
-  const R = 3959; // Earth's radius in miles
+  const R = GEO_CONSTANTS.EARTH_RADIUS_MILES; // Earth's radius in miles
   const dLat = toRad(coord2.lat - coord1.lat);
   const dLon = toRad(coord2.lng - coord1.lng);
   
