@@ -1,30 +1,45 @@
 import prisma from "@/lib/prismadb";
+import getCurrentUser from "./getCurrentUser";
 
 interface IParams {
   listingId: string;
-  userId: string;
 }
 
-export default async function checkUserPayment(params: IParams) {
+export default async function checkUserPayment(params: IParams): Promise<{
+  hasReservation: boolean;
+  hasSuccessfulPayment: boolean;
+  canContact: boolean;
+}> {
   try {
-    const { listingId, userId } = params;
+    const { listingId } = params;
+    
+    // Get authenticated user
+    const currentUser = await getCurrentUser();
+    
+    if (!currentUser) {
+      return {
+        hasReservation: false,
+        hasSuccessfulPayment: false,
+        canContact: false
+      };
+    }
 
-    // Check if user has any successful reservations for this listing
+    // Check if authenticated user has any successful reservations for this listing
     const reservation = await prisma.reservation.findFirst({
       where: {
         listingId: listingId,
-        userId: userId
+        userId: currentUser.id
       },
       include: {
         listing: true
       }
     });
 
-    // Also check if user has any successful payments for this listing
+    // Also check if authenticated user has any successful payments for this listing
     const payment = await prisma.payment.findFirst({
       where: {
         listingId: listingId,
-        userId: userId,
+        userId: currentUser.id,
         status: "SUCCEEDED"
       }
     });
@@ -35,7 +50,6 @@ export default async function checkUserPayment(params: IParams) {
       canContact: !!reservation || !!payment
     };
   } catch (error: any) {
-    console.error("Error checking user payment:", error);
     return {
       hasReservation: false,
       hasSuccessfulPayment: false,

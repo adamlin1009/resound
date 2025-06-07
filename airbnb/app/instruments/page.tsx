@@ -19,9 +19,9 @@ const InstrumentsPage = async (props: Props) => {
     );
   }
 
-  const listings = await getListings({ userId: currentUser.id });
+  const response = await getListings({ userId: currentUser.id });
 
-  if (listings.length === 0) {
+  if (response.listings.length === 0) {
     return (
       <ClientOnly>
         <EmptyState
@@ -34,7 +34,7 @@ const InstrumentsPage = async (props: Props) => {
   return (
     <ClientOnly>
       <InstrumentsClient 
-        listings={listings} 
+        listings={response.listings} 
         currentUser={currentUser}
       />
     </ClientOnly>

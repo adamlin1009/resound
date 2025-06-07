@@ -111,7 +111,7 @@ async function handleSetup(
           }),
         });
       } catch (emailError) {
-        console.error('Failed to send email notification:', emailError);
+        // Failed to send email notification
         // Continue anyway - don't fail the request just because email failed
       }
     }

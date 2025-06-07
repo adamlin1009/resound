@@ -2,21 +2,32 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Get pagination parameters from query string
+    const { searchParams } = new URL(request.url);
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '20')));
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination
+    const where = {
+      OR: [
+        { ownerId: currentUser.id },
+        { renterId: currentUser.id }
+      ]
+    };
+    
+    const totalCount = await prisma.conversation.count({ where });
+
     // First get conversations without the listing relation to avoid errors
     const conversationsWithoutListing = await prisma.conversation.findMany({
-      where: {
-        OR: [
-          { ownerId: currentUser.id },
-          { renterId: currentUser.id }
-        ]
-      },
+      where,
       include: {
         owner: true,
         renter: true,
@@ -27,7 +38,9 @@ export async function GET() {
           }
         }
       },
-      orderBy: { updatedAt: 'desc' }
+      orderBy: { updatedAt: 'desc' },
+      skip: skip,
+      take: limit
     });
 
     // Get listing IDs
@@ -83,12 +96,16 @@ export async function GET() {
         }))
       }));
 
-    return NextResponse.json(safeConversations);
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return NextResponse.json({
+      conversations: safeConversations,
+      totalCount,
+      page,
+      limit,
+      totalPages
+    });
   } catch (error: any) {
-    console.error("Error getting conversations:", error);
-    console.error("Error details:", error.message);
-    console.error("Error stack:", error.stack);
-    
     // Return more specific error in development
     const errorMessage = process.env.NODE_ENV === 'development' 
       ? error.message || "Internal server error"

@@ -7,15 +7,36 @@ interface IParams {
   listingId?: string;
   userId?: string;
   authorId?: string;
+  page?: number;
+  limit?: number;
 }
 
-export default async function getReservation(params: IParams) {
+export interface IReservationsResponse {
+  reservations: SafeReservation[];
+  totalCount: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export default async function getReservations(params: IParams): Promise<IReservationsResponse> {
   try {
+    // Pagination defaults
+    const page = Math.max(1, params.page || 1);
+    const limit = Math.min(100, Math.max(1, params.limit || 50)); // Default 50, max 100
+    const skip = (page - 1) * limit;
+    
     const currentUser = await getCurrentUser();
     
-    // If no user is logged in, return empty array
+    // If no user is logged in, return empty response
     if (!currentUser) {
-      return [];
+      return {
+        reservations: [],
+        totalCount: 0,
+        page,
+        limit,
+        totalPages: 0,
+      };
     }
 
     const { listingId, userId, authorId } = params;
@@ -29,7 +50,13 @@ export default async function getReservation(params: IParams) {
     if (userId) {
       // Only allow users to query their own reservations unless they're admin
       if (userId !== currentUser.id && !currentUser.isAdmin) {
-        return [];
+        return {
+          reservations: [],
+          totalCount: 0,
+          page,
+          limit,
+          totalPages: 0,
+        };
       }
       query.userId = userId;
     }
@@ -37,7 +64,13 @@ export default async function getReservation(params: IParams) {
     if (authorId) {
       // Only allow authors to query their own listings' reservations unless they're admin
       if (authorId !== currentUser.id && !currentUser.isAdmin) {
-        return [];
+        return {
+          reservations: [],
+          totalCount: 0,
+          page,
+          limit,
+          totalPages: 0,
+        };
       }
       // Don't set query.listing here - it will be handled in whereClause construction
     }
@@ -84,6 +117,11 @@ export default async function getReservation(params: IParams) {
       };
     }
 
+    // Get total count for pagination
+    const totalCount = await prisma.reservation.count({
+      where: whereClause,
+    });
+
     const reservations = await prisma.reservation.findMany({
       where: whereClause,
       include: {
@@ -97,11 +135,18 @@ export default async function getReservation(params: IParams) {
       orderBy: {
         createdAt: "desc",
       },
+      skip: skip,
+      take: limit,
     });
 
     if (!reservations) {
-      console.warn("getReservation: No reservations found for params:", params);
-      return [];
+      return {
+        reservations: [],
+        totalCount: 0,
+        page,
+        limit,
+        totalPages: 0,
+      };
     }
 
     // Don't filter out canceled reservations - we'll show them greyed out
@@ -163,9 +208,22 @@ export default async function getReservation(params: IParams) {
       }
     );
 
-    return safeReservations;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return {
+      reservations: safeReservations,
+      totalCount,
+      page,
+      limit,
+      totalPages,
+    };
   } catch (error: any) {
-    console.error("Error in getReservation for params:", params, error);
-    return [];
+    return {
+      reservations: [],
+      totalCount: 0,
+      page: params.page || 1,
+      limit: params.limit || 50,
+      totalPages: 0,
+    };
   }
 }

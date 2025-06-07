@@ -62,7 +62,6 @@ export async function GET(
       } : null,
     });
   } catch (error) {
-    console.error("Error fetching payment:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

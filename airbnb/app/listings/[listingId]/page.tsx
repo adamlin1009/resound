@@ -1,7 +1,7 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import getListingById from "@/app/actions/getListingById";
 import getListingWithAddress from "@/app/actions/getListingWithAddress";
-import getReservation from "@/app/actions/getReservations";
+import getReservations from "@/app/actions/getReservations";
 import ClientOnly from "@/components/ClientOnly";
 import EmptyState from "@/components/EmptyState";
 import ListingClient from "@/components/ListingClient";
@@ -15,7 +15,7 @@ const ListingPage = async ({ params }: { params: Promise<IParams> }) => {
   const { listingId } = await params;
 
   const listing = await getListingById({ listingId });
-  const reservations = await getReservation({ listingId });
+  const reservationsResponse = await getReservations({ listingId });
   const currentUser = await getCurrentUser();
 
   if (!listing) {
@@ -69,7 +69,7 @@ const ListingPage = async ({ params }: { params: Promise<IParams> }) => {
       <ListingClient
         listing={listing}
         currentUser={currentUser}
-        reservations={reservations}
+        reservations={reservationsResponse.reservations}
         hasPaidReservation={hasPaidReservation}
         exactAddress={listingWithAddress?.exactAddress}
       />

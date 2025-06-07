@@ -54,10 +54,10 @@ export default async function Home({ searchParams }: HomeProps) {
     };
   }
 
-  const listings = await getListings(params);
+  const response = await getListings(params);
   const currentUser = await getCurrentUser();
 
-  if (listings.length === 0) {
+  if (response.listings.length === 0) {
     return (
       <ClientOnly>
         <EmptyState showReset />
@@ -69,7 +69,7 @@ export default async function Home({ searchParams }: HomeProps) {
     <ClientOnly>
       <Container>
         <div className="pt-24 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-8 overflow-x-hidden">
-          {listings.map((listing) => (
+          {response.listings.map((listing) => (
             <ListingCard
               key={listing.id}
               data={listing}

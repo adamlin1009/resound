@@ -14,10 +14,24 @@ export interface IListingsParams {
   instrumentType?: string; // free text instrument type search
   radius?: number; // search radius in miles
   nationwide?: boolean; // nationwide search
+  page?: number; // page number (1-based)
+  limit?: number; // items per page
 }
 
-export default async function getListings(params: IListingsParams) {
+export interface IListingsResponse {
+  listings: safeListing[];
+  totalCount: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export default async function getListings(params: IListingsParams): Promise<IListingsResponse> {
   try {
+    // Pagination defaults
+    const page = Math.max(1, params.page || 1);
+    const limit = Math.min(100, Math.max(1, params.limit || 20)); // Default 20, max 100
+    const skip = (page - 1) * limit;
     // Create a new object with only the properties that exist in params
     const queryParams: any = {};
     
@@ -127,11 +141,18 @@ export default async function getListings(params: IListingsParams) {
       };
     }
 
+    // Get total count for pagination (before applying skip/take)
+    const totalCount = await prisma.listing.count({
+      where: queryParams,
+    });
+
     let listings = await prisma.listing.findMany({
       where: queryParams,
       orderBy: {
         createdAt: "desc",
       },
+      skip: skip,
+      take: limit,
     });
 
     // Apply radius filtering if needed
@@ -165,9 +186,18 @@ export default async function getListings(params: IListingsParams) {
       };
     });
 
-    return safeListings;
+    // Calculate actual count after radius filtering
+    const filteredCount = searchCoordinates && params.radius ? safeListings.length : totalCount;
+    const totalPages = Math.ceil(filteredCount / limit);
+
+    return {
+      listings: safeListings,
+      totalCount: filteredCount,
+      page,
+      limit,
+      totalPages,
+    };
   } catch (error: any) {
-    console.error("Error fetching listings:", error);
     throw new Error(error.message);
   }
 }

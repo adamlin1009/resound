@@ -14,7 +14,6 @@ export default async function checkAdminUser() {
 
     return currentUser;
   } catch (error) {
-    console.error("Error checking admin user:", error);
     return null;
   }
 }

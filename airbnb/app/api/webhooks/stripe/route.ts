@@ -26,7 +26,6 @@ export async function POST(request: Request) {
       process.env.STRIPE_WEBHOOK_SECRET!
     );
   } catch (error) {
-    console.error("Webhook signature verification failed:", error);
     return NextResponse.json(
       { error: "Invalid signature" },
       { status: 400 }
@@ -44,12 +43,12 @@ export async function POST(request: Request) {
         break;
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        // Unhandled event type - not an error, just ignore
+        break;
     }
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    console.error("Error processing webhook:", error);
     return NextResponse.json(
       { error: "Webhook processing failed" },
       { status: 500 }
@@ -58,12 +57,10 @@ export async function POST(request: Request) {
 }
 
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
-  console.log("Processing successful payment for session:", session.id);
 
   // Get metadata from session
   const metadata = session.metadata;
   if (!metadata?.paymentId || !metadata?.reservationId || !metadata?.listingId || !metadata?.userId) {
-    console.error("Missing required metadata in session:", session.id);
     return;
   }
 
@@ -74,7 +71,6 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   });
 
   if (existingPayment?.status === "SUCCEEDED") {
-    console.log("Session already processed successfully:", session.id);
     return;
   }
 
@@ -92,7 +88,6 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     if (existingReservation.status !== "PENDING") {
       // If the reservation is already ACTIVE, this is likely a duplicate webhook
       if (existingReservation.status === "ACTIVE" && existingReservation.stripeSessionId === session.id) {
-        console.log("Reservation already active for this session, skipping:", session.id);
         return null;
       }
       throw new Error(`Reservation status is ${existingReservation.status}, expected PENDING`);
@@ -181,15 +176,12 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       });
     }
   } catch (emailError) {
-    console.error("Error sending notification emails:", emailError);
     // Don't fail the webhook if email fails
   }
 
-  console.log("Successfully created reservation:", result.reservation.id);
 }
 
 async function handleCheckoutSessionExpired(session: Stripe.Checkout.Session) {
-  console.log("Processing expired session:", session.id);
 
   const metadata = session.metadata;
   if (!metadata?.paymentId || !metadata?.reservationId) {
@@ -214,5 +206,4 @@ async function handleCheckoutSessionExpired(session: Stripe.Checkout.Session) {
     });
   });
 
-  console.log("Payment and reservation canceled for expired session:", session.id);
 }

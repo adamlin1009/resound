@@ -82,6 +82,12 @@ model Listing {
   reservations     Reservation[]
   payments         Payment[]
   conversations    Conversation[]
+  
+  // Indexes for performance
+  @@index([userId])
+  @@index([category])
+  @@index([city, state, zipCode])
+  @@index([latitude, longitude])
 }
 
 model Reservation {
@@ -127,6 +133,12 @@ model Reservation {
   
   user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   listing         Listing           @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  
+  // Indexes for performance
+  @@index([listingId])
+  @@index([userId])
+  @@index([status])
+  @@index([startDate, endDate])
 }
 
 model Payment {
@@ -144,6 +156,11 @@ model Payment {
   
   user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   listing           Listing        @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  
+  // Indexes for performance
+  @@index([userId])
+  @@index([listingId])
+  @@index([status])
 }
 
 enum PaymentStatus {
@@ -185,6 +202,10 @@ model Conversation {
   messages  Message[]
   
   @@unique([listingId, ownerId, renterId])
+  
+  // Indexes for performance
+  @@index([ownerId])
+  @@index([renterId])
 }
 
 model Message {
@@ -196,6 +217,10 @@ model Message {
   
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  
+  // Indexes for performance
+  @@index([conversationId])
+  @@index([createdAt])
 }
 
 // This tells Prisma where to find the seed script

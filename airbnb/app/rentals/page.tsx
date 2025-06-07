@@ -2,7 +2,7 @@ import ClientOnly from "@/components/ClientOnly";
 import EmptyState from "@/components/EmptyState";
 import React from "react";
 import getCurrentUser from "../actions/getCurrentUser";
-import getReservation from "../actions/getReservations";
+import getReservations from "../actions/getReservations";
 import RentalsClient from "./RentalsClient";
 
 export const dynamic = 'force-dynamic';
@@ -20,11 +20,11 @@ const RentalsPage = async (props: Props) => {
     );
   }
 
-  const reservations = await getReservation({
+  const reservationsResponse = await getReservations({
     userId: currentUser.id,
   });
 
-  if (reservations.length === 0) {
+  if (reservationsResponse.reservations.length === 0) {
     return (
       <ClientOnly>
         <EmptyState
@@ -37,7 +37,7 @@ const RentalsPage = async (props: Props) => {
 
   return (
     <ClientOnly>
-      <RentalsClient reservations={reservations} currentUser={currentUser} />
+      <RentalsClient reservations={reservationsResponse.reservations} currentUser={currentUser} />
     </ClientOnly>
   );
 };

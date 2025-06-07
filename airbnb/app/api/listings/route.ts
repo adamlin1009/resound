@@ -39,8 +39,6 @@ export async function POST(request: Request) {
   if (!exactAddress) missingFields.push('exactAddress');
   
   if (missingFields.length > 0) {
-    console.error('Missing required fields:', missingFields);
-    console.error('Received data:', { title, description, category, state, city, exactAddress });
     return NextResponse.json({ 
       error: `Missing required fields: ${missingFields.join(', ')}`,
       missingFields 
@@ -50,13 +48,11 @@ export async function POST(request: Request) {
   // Validate price
   const priceNum = parseInt(price, 10);
   if (!price || isNaN(priceNum) || priceNum <= 0) {
-    console.error('Invalid price:', price);
     return NextResponse.json({ error: 'Price must be a positive number' }, { status: 400 });
   }
 
   // Validate experience level (removed condition rating validation)
   if (!experienceLevel || experienceLevel < 1 || experienceLevel > 4) {
-    console.error('Invalid experience level:', experienceLevel);
     return NextResponse.json({ error: 'Experience level must be between 1-4' }, { status: 400 });
   }
 
@@ -72,7 +68,6 @@ export async function POST(request: Request) {
       coordinates = await geocodeLocation(fallbackAddress);
     }
   } catch (error) {
-    console.error('Geocoding failed:', error);
     // Continue without coordinates rather than failing the listing creation
   }
 

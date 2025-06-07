@@ -166,9 +166,6 @@ function RentModal({}: Props) {
 
     setIsLoading(true);
 
-    // Log the data being sent
-    console.log('Submitting listing data:', data);
-
     axios
       .post("/api/listings", data)
       .then(() => {
@@ -179,8 +176,6 @@ function RentModal({}: Props) {
         rentModel.onClose();
       })
       .catch((error) => {
-        console.error('Listing creation error:', error);
-        console.error('Error response:', error.response?.data);
         const errorMessage = error.response?.data?.error || "Something went wrong";
         toast.error(errorMessage);
       })

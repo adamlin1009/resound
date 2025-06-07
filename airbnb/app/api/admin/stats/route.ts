@@ -10,23 +10,23 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get basic counts
-    const [totalUsers, totalListings, totalReservations, payments] = await Promise.all([
+    // Get basic counts and revenue aggregation
+    const [totalUsers, totalListings, totalReservations, revenueResult] = await Promise.all([
       prisma.user.count(),
       prisma.listing.count(),
       prisma.reservation.count(),
-      prisma.payment.findMany({
+      prisma.payment.aggregate({
         where: {
           status: "SUCCEEDED"
         },
-        select: {
+        _sum: {
           amount: true
         }
       })
     ]);
 
-    // Calculate total revenue
-    const totalRevenue = payments.reduce((sum, payment) => sum + payment.amount, 0);
+    // Extract total revenue from aggregation result
+    const totalRevenue = revenueResult._sum.amount || 0;
 
     return NextResponse.json({
       totalUsers,
@@ -35,7 +35,6 @@ export async function GET() {
       totalRevenue
     });
   } catch (error) {
-    console.error("Error fetching admin stats:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
