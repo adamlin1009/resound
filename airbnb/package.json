@@ -15,7 +15,8 @@
     "test:coverage": "jest --coverage",
     "test:api": "jest --testPathPattern=api",
     "test:db": "jest --testPathPattern=__tests__/db",
-    "test:e2e": "jest --testPathPattern=e2e"
+    "test:e2e": "jest --testPathPattern=e2e",
+    "analyze": "ANALYZE=true npm run build"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.5",
@@ -57,6 +58,7 @@
     "zustand": "^4.3.7"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.3.3",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",

@@ -64,6 +64,8 @@ function ListingHead({
             alt="image"
             fill
             className="object-cover w-full"
+            priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
           />
         )}
         <div className="absolute top-5 right-5">

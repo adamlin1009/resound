@@ -4,7 +4,7 @@ import useRentModal from "@/hook/useRentModal";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { FieldPath, PathValue, SubmitHandler, useForm, UseFormRegister, FieldValues } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -107,19 +107,19 @@ function RentModal() {
     []
   );
 
-  const setCustomValue = (id: keyof ListingFormValues, value: any) => {
+  const setCustomValue = useCallback((id: keyof ListingFormValues, value: any) => {
     setValue(id, value, {
       shouldValidate: true,
       shouldDirty: true,
       shouldTouch: true,
     });
-  };
+  }, [setValue]);
 
-  const onBack = () => {
+  const onBack = useCallback(() => {
     setStep((value) => value - 1);
-  };
+  }, []);
 
-  const onNext = () => {
+  const onNext = useCallback(() => {
     // Validate current step before proceeding
     if (step === STEPS.CATEGORY && !category) {
       toast.error("Please select a category");
@@ -137,7 +137,7 @@ function RentModal() {
     }
     
     setStep((value) => value + 1);
-  };
+  }, [step, category, isAddressValid, exactAddress, city, state, watch]);
 
   const onSubmit: SubmitHandler<ListingFormValues> = (data) => {
     if (step !== STEPS.PRICE) {

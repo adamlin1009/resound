@@ -109,6 +109,8 @@ function ListingCard({
                 className="object-cover h-full w-full group-hover:scale-110 transition"
                 src={data.imageSrc}
                 alt="listing"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                loading="lazy"
               />
             ) : (
               <div className="aspect-square w-full h-full bg-neutral-100 flex items-center justify-center rounded-xl">
@@ -165,4 +167,23 @@ function ListingCard({
   );
 }
 
-export default ListingCard;
+export default React.memo(ListingCard, (prevProps, nextProps) => {
+  // Custom comparison function to prevent unnecessary re-renders
+  return (
+    prevProps.data.id === nextProps.data.id &&
+    prevProps.data.price === nextProps.data.price &&
+    prevProps.data.title === nextProps.data.title &&
+    prevProps.data.imageSrc === nextProps.data.imageSrc &&
+    prevProps.data.category === nextProps.data.category &&
+    prevProps.data.experienceLevel === nextProps.data.experienceLevel &&
+    prevProps.data.city === nextProps.data.city &&
+    prevProps.data.state === nextProps.data.state &&
+    prevProps.reservation?.id === nextProps.reservation?.id &&
+    prevProps.reservation?.status === nextProps.reservation?.status &&
+    prevProps.reservation?.totalPrice === nextProps.reservation?.totalPrice &&
+    prevProps.disabled === nextProps.disabled &&
+    prevProps.actionLabel === nextProps.actionLabel &&
+    prevProps.actionId === nextProps.actionId &&
+    prevProps.currentUser?.id === nextProps.currentUser?.id
+  );
+});

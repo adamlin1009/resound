@@ -103,4 +103,13 @@ function Map({ center, city, state, zipCode }: Props) {
   );
 }
 
-export default Map;
+export default React.memo(Map, (prevProps, nextProps) => {
+  // Custom comparison to prevent unnecessary map re-renders
+  return (
+    prevProps.center?.[0] === nextProps.center?.[0] &&
+    prevProps.center?.[1] === nextProps.center?.[1] &&
+    prevProps.city === nextProps.city &&
+    prevProps.state === nextProps.state &&
+    prevProps.zipCode === nextProps.zipCode
+  );
+});
