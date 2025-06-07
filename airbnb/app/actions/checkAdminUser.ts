@@ -1,6 +1,7 @@
 import getCurrentUser from "./getCurrentUser";
+import { SafeUser } from "@/types";
 
-export default async function checkAdminUser() {
+export default async function checkAdminUser(): Promise<SafeUser | null> {
   try {
     const currentUser = await getCurrentUser();
     

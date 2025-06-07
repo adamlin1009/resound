@@ -52,7 +52,7 @@ function UserMenu({ currentUser }: Props) {
           <AiOutlineMenu />
           <div className="hidden md:block">
             {currentUser ? (
-              <Avatar src={currentUser?.image!} userName={currentUser?.name} />
+              <Avatar src={currentUser?.image} userName={currentUser?.name} />
             ) : (
               <Image
                 className="rounded-full"

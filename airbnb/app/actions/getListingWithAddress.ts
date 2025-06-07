@@ -19,7 +19,6 @@ export default async function getListingWithAddress(listingId: string): Promise<
       experienceLevel: listing.experienceLevel,
     };
   } catch (error: any) {
-    console.error("Error fetching listing with address:", error);
     throw new Error(error.message);
   }
 }

@@ -146,7 +146,7 @@ function ListingCard({
           <div className="font-medium text-neutral-700">
             {locationDisplay}
           </div>
-          <div className="flex flex-row items-center gap-">
+          <div className="flex flex-row items-center gap-1">
             <div className="flex gap-1 font-semibold">
               ${price} {!reservation && <div className="font-light"> per day</div>}
             </div>

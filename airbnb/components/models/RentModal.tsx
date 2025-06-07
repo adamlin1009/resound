@@ -5,7 +5,7 @@ import axios from "axios";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useEffect } from "react";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { FieldPath, PathValue, SubmitHandler, useForm, UseFormRegister, FieldValues } from "react-hook-form";
 import { toast } from "react-toastify";
 
 import Heading from "../Heading";
@@ -17,7 +17,23 @@ import Input from "../inputs/Input";
 import { categories } from "../navbar/Categories";
 import Modal from "./Modal";
 
-type Props = {};
+interface ListingFormValues {
+  category: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  exactAddress: string;
+  experienceLevel: number;
+  imageSrc: string;
+  price: number;
+  title: string;
+  description: string;
+  pickupStartTime: string;
+  pickupEndTime: string;
+  returnStartTime: string;
+  returnEndTime: string;
+  availableDays: string[];
+}
 
 enum STEPS {
   CATEGORY = 0,
@@ -29,7 +45,7 @@ enum STEPS {
   PRICE = 6,
 }
 
-function RentModal({}: Props) {
+function RentModal() {
   const router = useRouter();
   const rentModel = useRentModal();
   const [step, setStep] = useState(STEPS.CATEGORY);
@@ -43,7 +59,7 @@ function RentModal({}: Props) {
     watch,
     formState: { errors },
     reset,
-  } = useForm<FieldValues>({
+  } = useForm<ListingFormValues>({
     defaultValues: {
       category: "",
       city: "",
@@ -91,7 +107,7 @@ function RentModal({}: Props) {
     []
   );
 
-  const setCustomValue = (id: string, value: any) => {
+  const setCustomValue = (id: keyof ListingFormValues, value: any) => {
     setValue(id, value, {
       shouldValidate: true,
       shouldDirty: true,
@@ -123,7 +139,7 @@ function RentModal({}: Props) {
     setStep((value) => value + 1);
   };
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const onSubmit: SubmitHandler<ListingFormValues> = (data) => {
     if (step !== STEPS.PRICE) {
       return onNext();
     }
@@ -328,7 +344,7 @@ function RentModal({}: Props) {
           id="title"
           label="Title"
           disabled={isLoading}
-          register={register}
+          register={register as unknown as UseFormRegister<FieldValues>}
           errors={errors}
           required
         />
@@ -337,7 +353,7 @@ function RentModal({}: Props) {
           id="description"
           label="Description"
           disabled={isLoading}
-          register={register}
+          register={register as unknown as UseFormRegister<FieldValues>}
           errors={errors}
           required
         />
@@ -457,7 +473,7 @@ function RentModal({}: Props) {
           formatPrice
           type="number"
           disabled={isLoading}
-          register={register}
+          register={register as unknown as UseFormRegister<FieldValues>}
           errors={errors}
           required
         />

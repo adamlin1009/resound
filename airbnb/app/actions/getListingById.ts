@@ -5,12 +5,11 @@ interface IParams {
   listingId?: string;
 }
 
-export default async function getListingById(params: IParams) {
+export default async function getListingById(params: IParams): Promise<(safeListing & { user: SafeUser }) | null> {
   try {
     const { listingId } = params;
 
     if (!listingId) {
-      console.error("getListingById: listingId is missing", params);
       return null;
     }
 
@@ -24,7 +23,6 @@ export default async function getListingById(params: IParams) {
     });
 
     if (!listing || !listing.user) {
-      console.warn("getListingById: Listing or listing user not found for ID:", listingId, { listingExists: !!listing, userExists: !!listing?.user });
       return null;
     }
 
@@ -58,7 +56,6 @@ export default async function getListingById(params: IParams) {
 
     return hydratedListing;
   } catch (error: any) {
-    console.error("Error in getListingById for params:", params, error);
     return null;
   }
 }

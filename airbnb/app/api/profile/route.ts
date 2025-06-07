@@ -7,7 +7,10 @@ export async function PATCH(request: Request) {
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
-      return NextResponse.error();
+      return NextResponse.json(
+        { error: "Unauthorized", code: "UNAUTHORIZED" },
+        { status: 401 }
+      );
     }
 
     const body = await request.json();
@@ -43,9 +46,8 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json(updatedUser);
   } catch (error) {
-    console.error("Error updating profile:", error);
     return NextResponse.json(
-      { error: "Failed to update profile" },
+      { error: "Failed to update profile", code: "PROFILE_UPDATE_FAILED" },
       { status: 500 }
     );
   }

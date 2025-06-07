@@ -1,7 +1,13 @@
 import prisma from "@/lib/prismadb";
 import getCurrentUser from "./getCurrentUser";
+import { SafeReservation } from "@/types";
 
-export default async function getOwnerReservations() {
+interface IOwnerReservationsResponse {
+  reservations: SafeReservation[];
+  pendingSetups: number;
+}
+
+export default async function getOwnerReservations(): Promise<IOwnerReservationsResponse> {
   try {
     const currentUser = await getCurrentUser();
 
