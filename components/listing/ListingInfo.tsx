@@ -9,7 +9,7 @@ import dynamic from "next/dynamic";
 import React, { useMemo, useState } from "react";
 import { IconType } from "react-icons";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+import { toast } from "@/components/Toast";
 import Avatar from "../Avatar";
 import Button from "../Button";
 import ListingCategory from "./ListingCategory";
@@ -89,15 +89,22 @@ function ListingInfo({
 
     try {
       setIsContactingOwner(true);
-      await startConversation(listingId);
-      router.push('/messages');
-      toast.success("Conversation started!");
+      const conversationId = await startConversation(listingId);
+      if (conversationId) {
+        toast.success("Conversation started!");
+        // Small delay to ensure state is updated before navigation
+        setTimeout(() => {
+          router.push('/messages');
+        }, 100);
+      }
     } catch (error: any) {
-      // Error handled internally
-      if (error.message.includes("rental payment")) {
-        toast.error("You can only message the owner after making a rental payment");
+      console.error('Error starting conversation:', error);
+      if (error.message && error.message.includes("valid rental reservation")) {
+        toast.error("You need an active rental to message the owner");
+      } else if (error.message && error.message.includes("successful payment")) {
+        toast.error("You need to complete payment before messaging");
       } else {
-        toast.error("Failed to start conversation. Please try again.");
+        toast.error(error.message || "Failed to start conversation");
       }
     } finally {
       setIsContactingOwner(false);

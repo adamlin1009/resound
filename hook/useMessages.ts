@@ -64,11 +64,14 @@ const useMessages = create<MessagesStore>((set, get) => ({
         return;
       }
       
+      // The API returns an object with conversations array
+      const conversations = data.conversations || data;
+      
       // Ensure data is an array
-      const conversations = Array.isArray(data) ? data : [];
+      const conversationsArray = Array.isArray(conversations) ? conversations : [];
       
       // Ensure we don't have duplicates (just in case)
-      const uniqueConversations = conversations.filter((conv: Conversation, index: number, self: Conversation[]) =>
+      const uniqueConversations = conversationsArray.filter((conv: Conversation, index: number, self: Conversation[]) =>
         index === self.findIndex((c) => c.id === conv.id)
       );
       

@@ -45,7 +45,18 @@ const MessagesClient: React.FC<MessagesClientProps> = ({ currentUser }) => {
     return () => {
       mounted = false;
     };
-  }, [fetchConversations]); // Add fetchConversations to dependencies
+  }, []); // Run only on mount
+  
+  // Auto-select the current conversation if it exists
+  useEffect(() => {
+    if (currentConversation?.id && conversations.length > 0) {
+      const exists = conversations.find(c => c.id === currentConversation.id);
+      if (!exists) {
+        // If current conversation doesn't exist in list, clear it
+        selectConversation('');
+      }
+    }
+  }, [conversations, currentConversation?.id, selectConversation]);
 
   // Poll for new messages when a conversation is selected
   useEffect(() => {

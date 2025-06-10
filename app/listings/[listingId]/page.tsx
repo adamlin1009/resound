@@ -35,7 +35,7 @@ const ListingPage = async ({ params }: { params: Promise<IParams> }) => {
       where: {
         listingId: listingId,
         userId: currentUser.id,
-        status: { in: ['ACTIVE', 'COMPLETED'] }
+        status: { in: ['PENDING', 'ACTIVE', 'COMPLETED'] }
       }
     });
     

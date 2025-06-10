@@ -99,13 +99,17 @@ const RentalManageClient: React.FC<RentalManageClientProps> = ({
       setIsLoading(true);
       
       // Use startConversation with owner and renter IDs
-      await startConversation(listing.id, owner.id, renter.id);
+      const conversationId = await startConversation(listing.id, owner.id, renter.id);
       
-      // Navigate to messages page
-      router.push('/messages');
-      toast.success('Conversation started!');
+      if (conversationId) {
+        toast.success('Conversation started!');
+        // Small delay to ensure state is updated before navigation
+        setTimeout(() => {
+          router.push('/messages');
+        }, 100);
+      }
     } catch (error: any) {
-      // Error handled internally
+      console.error('Error starting conversation:', error);
       toast.error(error.message || 'Failed to start conversation');
     } finally {
       setIsLoading(false);
