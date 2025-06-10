@@ -3,7 +3,8 @@
     "allow": [
       "Bash(find:*)",
       "Bash(true)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(node:*)"
     ],
     "deny": []
   }
