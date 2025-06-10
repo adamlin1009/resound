@@ -29,6 +29,7 @@ type Props = {
         description: string;
       }
     | undefined;
+  instrumentType?: string | null;
   city: string | null;
   state: string;
   zipCode: string | null;
@@ -43,6 +44,7 @@ function ListingInfo({
   description,
   experienceLevel,
   category,
+  instrumentType,
   city,
   state,
   zipCode,
@@ -141,11 +143,20 @@ function ListingInfo({
       </div>
       <hr />
       {category && (
-        <ListingCategory
-          icon={category.icon}
-          label={category?.label}
-          description={category?.description}
-        />
+        <>
+          <ListingCategory
+            icon={category.icon}
+            label={category?.label}
+            description={category?.description}
+          />
+          {instrumentType && (
+            <div className="mt-2">
+              <p className="text-lg font-medium text-neutral-800">
+                Instrument: {instrumentType}
+              </p>
+            </div>
+          )}
+        </>
       )}
       <hr />
       {/* <div className="flex flex-col">

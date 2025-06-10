@@ -40,6 +40,7 @@ export default async function getListingById(params: IParams): Promise<(safeList
       imageSrc: listing.imageSrc,
       createdAt: listing.createdAt.toString(),
       category: listing.category,
+      instrumentType: listing.instrumentType,
       experienceLevel: listing.experienceLevel,
       city: listing.city,
       state: listing.state,

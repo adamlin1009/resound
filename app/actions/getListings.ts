@@ -156,6 +156,7 @@ export default async function getListings(params: IListingsParams): Promise<ILis
       description: string;
       imageSrc: string;
       category: string;
+      instrumentType: string | null;
       experienceLevel: number;
       city: string | null;
       state: string;
@@ -187,6 +188,7 @@ export default async function getListings(params: IListingsParams): Promise<ILis
           description: true,
           imageSrc: true,
           category: true,
+          instrumentType: true,
           experienceLevel: true,
           city: true,
           state: true,
@@ -234,6 +236,7 @@ export default async function getListings(params: IListingsParams): Promise<ILis
           description: true,
           imageSrc: true,
           category: true,
+          instrumentType: true,
           experienceLevel: true,
           city: true,
           state: true,

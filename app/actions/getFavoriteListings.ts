@@ -23,6 +23,7 @@ export default async function getFavoriteListings(): Promise<safeListing[]> {
         description: true,
         imageSrc: true,
         category: true,
+        instrumentType: true,
         experienceLevel: true,
         city: true,
         state: true,

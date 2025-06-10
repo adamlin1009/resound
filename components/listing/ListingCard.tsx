@@ -125,7 +125,15 @@ function ListingCard({
             {data.title}
           </div>
           <div className="font-light text-neutral-500">
-            {reservationDate || data.category}
+            {reservationDate || (
+              <>
+                {data.instrumentType ? (
+                  <span>{data.instrumentType} • {data.category}</span>
+                ) : (
+                  data.category
+                )}
+              </>
+            )}
             {isCanceled && (
               <span className="ml-2 px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">
                 CANCELED
@@ -175,6 +183,7 @@ export default React.memo(ListingCard, (prevProps, nextProps) => {
     prevProps.data.title === nextProps.data.title &&
     prevProps.data.imageSrc === nextProps.data.imageSrc &&
     prevProps.data.category === nextProps.data.category &&
+    prevProps.data.instrumentType === nextProps.data.instrumentType &&
     prevProps.data.experienceLevel === nextProps.data.experienceLevel &&
     prevProps.data.city === nextProps.data.city &&
     prevProps.data.state === nextProps.data.state &&

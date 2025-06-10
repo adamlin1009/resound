@@ -132,6 +132,7 @@ function ListingClient({ reservations = [], listing, currentUser, hasPaidReserva
               category={category}
               description={listing.description}
               experienceLevel={listing.experienceLevel}
+              instrumentType={listing.instrumentType}
               city={listing.city}
               state={listing.state}
               zipCode={listing.zipCode}
