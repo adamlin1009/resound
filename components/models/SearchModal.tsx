@@ -11,6 +11,7 @@ import { Range } from "react-date-range";
 import Heading from "../Heading";
 import Calendar from "../inputs/Calendar";
 import AddressInput from "../inputs/AddressInput";
+import InstrumentAutocomplete from "../inputs/InstrumentAutocomplete";
 import useUSLocations, { USLocationValue } from "@/hook/useUSLocations";
 import Modal from "./Modal";
 
@@ -152,12 +153,10 @@ function SearchModal({}: Props) {
         <label className="text-sm font-medium text-gray-700 block mb-2">
           What instrument are you looking for?
         </label>
-        <input
-          type="text"
+        <InstrumentAutocomplete
           value={instrumentType}
-          onChange={(e) => setInstrumentType(e.target.value)}
-          placeholder="e.g., Violin, Piano, Saxophone..."
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+          onChange={setInstrumentType}
+          placeholder="Select an instrument..."
         />
       </div>
       

@@ -47,8 +47,196 @@ export const PAYMENT_CONSTANTS = {
   CENTS_PER_DOLLAR: 100,
 } as const;
 
+// Instrument categories and types
+export const INSTRUMENT_CATEGORIES = {
+  Strings: [
+    "Violin",
+    "Viola", 
+    "Cello",
+    "Double Bass",
+    "Harp",
+    "Classical Guitar",
+    "Acoustic Guitar",
+    "Electric Guitar",
+    "Bass Guitar",
+    "Ukulele",
+    "Mandolin",
+    "Banjo",
+    "Lute",
+    "Sitar",
+    "Zither",
+    "Dulcimer",
+    "Lyre",
+    "Balalaika",
+    "Bouzouki",
+    "Autoharp"
+  ],
+  Percussion: [
+    "Drum Set",
+    "Snare Drum",
+    "Bass Drum",
+    "Timpani",
+    "Xylophone",
+    "Marimba",
+    "Vibraphone",
+    "Glockenspiel",
+    "Chimes",
+    "Cymbals",
+    "Triangle",
+    "Tambourine",
+    "Castanets",
+    "Bongos",
+    "Congas",
+    "Djembe",
+    "Tabla",
+    "Cajón",
+    "Steel Drums",
+    "Handpan",
+    "Frame Drum",
+    "Bodhrán"
+  ],
+  Woodwinds: [
+    "Flute",
+    "Piccolo",
+    "Clarinet",
+    "Bass Clarinet",
+    "Oboe",
+    "English Horn",
+    "Bassoon",
+    "Contrabassoon",
+    "Alto Saxophone",
+    "Tenor Saxophone",
+    "Soprano Saxophone",
+    "Baritone Saxophone",
+    "Recorder",
+    "Pan Flute",
+    "Harmonica",
+    "Bagpipes",
+    "Tin Whistle",
+    "Ocarina",
+    "Didgeridoo"
+  ],
+  Brass: [
+    "Trumpet",
+    "Cornet",
+    "Flugelhorn",
+    "French Horn",
+    "Trombone",
+    "Bass Trombone",
+    "Euphonium",
+    "Baritone Horn",
+    "Tuba",
+    "Sousaphone",
+    "Piccolo Trumpet",
+    "Pocket Trumpet",
+    "Wagner Tuba",
+    "Bugle",
+    "Natural Horn",
+    "Serpent",
+    "Alphorn"
+  ],
+  Keyboards: [
+    "Grand Piano",
+    "Upright Piano",
+    "Digital Piano",
+    "Keyboard",
+    "Synthesizer",
+    "Organ",
+    "Hammond Organ",
+    "Pipe Organ",
+    "Harpsichord",
+    "Clavichord",
+    "Accordion",
+    "Melodica",
+    "Celesta",
+    "Rhodes Piano",
+    "Wurlitzer",
+    "Mellotron",
+    "Harmonium"
+  ],
+  Electronic: [
+    "DJ Controller",
+    "Turntables",
+    "CDJ",
+    "Mixer",
+    "Sampler",
+    "Drum Machine",
+    "Sequencer",
+    "Theremin",
+    "Electronic Drums",
+    "MIDI Controller",
+    "Groovebox",
+    "Effects Processor",
+    "Loop Station",
+    "Vocoder",
+    "Talk Box"
+  ],
+  Recording: [
+    "Condenser Microphone",
+    "Dynamic Microphone",
+    "Ribbon Microphone",
+    "Audio Interface",
+    "Studio Monitors",
+    "Mixing Console",
+    "Preamp",
+    "Compressor",
+    "Equalizer",
+    "Reverb Unit",
+    "Field Recorder",
+    "Studio Headphones",
+    "Pop Filter",
+    "Shock Mount",
+    "Boom Stand"
+  ],
+  Other: [
+    "Kalimba",
+    "Hang Drum",
+    "Rain Stick",
+    "Ocean Drum",
+    "Singing Bowl",
+    "Gong",
+    "Wind Chimes",
+    "Jaw Harp",
+    "Kazoo",
+    "Slide Whistle",
+    "Musical Saw",
+    "Glass Harmonica",
+    "Flexatone",
+    "Washboard",
+    "Spoons"
+  ]
+} as const;
+
+// Flatten all instruments into a single array for autocomplete
+export const ALL_INSTRUMENTS = Object.entries(INSTRUMENT_CATEGORIES).flatMap(
+  ([category, instruments]) => 
+    instruments.map(instrument => ({
+      value: instrument,
+      label: instrument,
+      category: category
+    }))
+);
+
+// Create options grouped by category for react-select
+export const INSTRUMENT_OPTIONS = Object.entries(INSTRUMENT_CATEGORIES).map(
+  ([category, instruments]) => ({
+    label: category,
+    options: instruments.map(instrument => ({
+      value: instrument,
+      label: instrument,
+      category: category
+    }))
+  })
+);
+
 // Type exports for better type safety
 export type TimeConstants = typeof TIME_CONSTANTS;
 export type CacheConstants = typeof CACHE_CONSTANTS;
 export type GeoConstants = typeof GEO_CONSTANTS;
 export type PaymentConstants = typeof PAYMENT_CONSTANTS;
+export type InstrumentCategories = typeof INSTRUMENT_CATEGORIES;
+export type InstrumentOption = {
+  value: string;
+  label: string;
+  category: string;
+};
