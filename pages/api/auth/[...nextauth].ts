@@ -82,14 +82,14 @@ export const authOptions: AuthOptions = {
     jwt: async ({ token, user }) => {
       if (user) {
         token.id = user.id;
-        token.isAdmin = user.isAdmin;
+        token.isAdmin = (user as any).isAdmin;
       }
       return token;
     },
     session: async ({ session, token }) => {
       if (token && session.user) {
-        session.user.id = token.id as string;
-        session.user.isAdmin = token.isAdmin as boolean;
+        (session.user as any).id = token.id as string;
+        (session.user as any).isAdmin = token.isAdmin as boolean;
       }
       return session;
     }

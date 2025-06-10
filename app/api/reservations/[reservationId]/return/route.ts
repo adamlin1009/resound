@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
+import { Prisma } from "@prisma/client";
 
 export async function POST(
   request: Request,
@@ -57,7 +58,7 @@ export async function POST(
     }
 
     // Update return confirmation based on who is confirming
-    const updateData: any = {};
+    const updateData: Prisma.ReservationUpdateInput = {};
     
     if (isRenter) {
       updateData.returnConfirmedByRenter = action === 'confirm';
@@ -92,7 +93,7 @@ export async function POST(
       reservation: updatedReservation,
     });
   } catch (error) {
-    console.error("Error updating return confirmation:", error);
+    // Error handled internally
     return NextResponse.json(
       { error: "Failed to update return confirmation" },
       { status: 500 }

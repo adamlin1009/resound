@@ -14,7 +14,14 @@ import Button from '../Button';
 interface RentalSetupModalProps {
   isOpen: boolean;
   onClose: () => void;
-  reservation: any;
+  reservation: {
+    id: string;
+    startDate: string;
+    endDate: string;
+    listing: {
+      exactAddress?: string;
+    };
+  };
   onComplete: () => void;
 }
 

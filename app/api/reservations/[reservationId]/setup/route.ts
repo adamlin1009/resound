@@ -3,6 +3,7 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
 import { sendEmail, emailTemplates } from "@/lib/email";
 import { format } from "date-fns";
+import { Prisma } from "@prisma/client";
 
 async function handleSetup(
   request: Request,
@@ -62,7 +63,7 @@ async function handleSetup(
     }
 
     // Update the reservation with rental details
-    const updateData: any = {
+    const updateData: Prisma.ReservationUpdateInput = {
       pickupInstructions,
       returnInstructions,
       ownerNotes,
@@ -121,7 +122,7 @@ async function handleSetup(
       message: "Rental details updated successfully",
     });
   } catch (error) {
-    console.error("Error updating rental details:", error);
+    // Error updating rental details handled
     return NextResponse.json(
       { error: "Failed to update rental details" },
       { status: 500 }

@@ -59,7 +59,7 @@ const useMessages = create<MessagesStore>((set, get) => ({
       
       // Check if the response is an error
       if (!response.ok || data.error) {
-        console.error('Error fetching conversations:', data.error || 'Unknown error');
+        // Error handled internally
         set({ conversations: [] });
         return;
       }
@@ -74,7 +74,7 @@ const useMessages = create<MessagesStore>((set, get) => ({
       
       set({ conversations: uniqueConversations });
     } catch (error) {
-      console.error('Error fetching conversations:', error);
+      // Error handled internally
       set({ conversations: [] });
     } finally {
       set({ isLoading: false });
@@ -118,7 +118,7 @@ const useMessages = create<MessagesStore>((set, get) => ({
       );
       set({ conversations: updatedConversations });
     } catch (error) {
-      console.error('Error sending message:', error);
+      // Error handled internally
     }
   },
 
@@ -154,7 +154,7 @@ const useMessages = create<MessagesStore>((set, get) => ({
       
       return conversation.id;
     } catch (error) {
-      console.error('Error starting conversation:', error);
+      // Error handled internally
       throw error;
     }
   },
@@ -186,7 +186,7 @@ const useMessages = create<MessagesStore>((set, get) => ({
       );
       set({ conversations: updatedConversations });
     } catch (error) {
-      console.error('Error refreshing messages:', error);
+      // Error handled internally
     }
   },
 

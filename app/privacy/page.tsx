@@ -106,7 +106,7 @@ const PrivacyPage = () => {
               content, privacy policies, or practices of any third-party sites or services.
             </p>
 
-            <h2 className="text-2xl font-bold mb-4">9. Children's Privacy</h2>
+            <h2 className="text-2xl font-bold mb-4">9. Children&apos;s Privacy</h2>
             <p className="mb-6 text-gray-700">
               Our Service is not intended for use by children under the age of 18. We do not 
               knowingly collect personal information from children under 18. If you become 
@@ -131,8 +131,8 @@ const PrivacyPage = () => {
             <h2 className="text-2xl font-bold mb-4">12. Changes to This Policy</h2>
             <p className="mb-6 text-gray-700">
               We may update our Privacy Policy from time to time. We will notify you of any 
-              changes by posting the new Privacy Policy on this page and updating the "Last 
-              updated" date. You are advised to review this Privacy Policy periodically for 
+              changes by posting the new Privacy Policy on this page and updating the &quot;Last 
+              updated&quot; date. You are advised to review this Privacy Policy periodically for 
               any changes.
             </p>
 

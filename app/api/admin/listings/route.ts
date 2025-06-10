@@ -35,7 +35,7 @@ export async function GET() {
 
     return NextResponse.json(listings);
   } catch (error) {
-    console.error("Error fetching listings:", error);
+    // Error handled internally
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

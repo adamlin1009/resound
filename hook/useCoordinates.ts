@@ -33,7 +33,7 @@ export function useCoordinates(location: USLocationValue | null) {
       const data = await response.json();
       setCoordinates(data.coordinates);
     } catch (error) {
-      console.error('Error fetching coordinates:', error);
+      // Error handled internally
       setCoordinates(null);
     } finally {
       setIsLoading(false);

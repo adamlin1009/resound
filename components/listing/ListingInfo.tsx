@@ -93,7 +93,7 @@ function ListingInfo({
       router.push('/messages');
       toast.success("Conversation started!");
     } catch (error: any) {
-      console.error("Failed to start conversation:", error);
+      // Error handled internally
       if (error.message.includes("rental payment")) {
         toast.error("You can only message the owner after making a rental payment");
       } else {

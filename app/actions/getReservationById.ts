@@ -82,7 +82,7 @@ export default async function getReservationById(params: IParams): Promise<Reser
       isRenter,
       isOwner,
     };
-  } catch (error: any) {
-    throw new Error(error);
+  } catch (error) {
+    throw error;
   }
 }

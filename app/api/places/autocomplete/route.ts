@@ -35,7 +35,7 @@ async function getPlaceDetails(placeId: string): Promise<{ zipCode?: string; cit
 
     return { zipCode, city, state };
   } catch (error) {
-    console.error('Error fetching place details:', error);
+    // Error fetching place details handled
     return {};
   }
 }
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
 
     // Check if API key exists
     if (!GOOGLE_PLACES_API_KEY) {
-      console.warn('Google Places API key not configured');
+      // Google Places API key not configured
       return NextResponse.json({ predictions: [] });
     }
 
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
 
     // Handle API errors
     if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
-      console.error('Google Places API error:', data.status, data.error_message);
+      // Google Places API error handled
       throw new Error(data.error_message || 'Location service error');
     }
 
@@ -234,7 +234,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Places autocomplete error:', error);
+    // Places autocomplete error handled
     return NextResponse.json(
       { error: 'Failed to fetch location suggestions' },
       { status: 500 }

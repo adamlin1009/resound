@@ -1,6 +1,7 @@
 import prisma from "@/lib/prismadb";
 import { safeListing } from "@/types";
 import { geocodeLocation, buildLocationString, calculateDistance, Coordinates } from "@/lib/geocoding";
+import { Prisma } from "@prisma/client";
 
 export interface IListingsParams {
   userId?: string;
@@ -33,7 +34,7 @@ export default async function getListings(params: IListingsParams): Promise<ILis
     const limit = Math.min(100, Math.max(1, params.limit || 20)); // Default 20, max 100
     const skip = (page - 1) * limit;
     // Create a new object with only the properties that exist in params
-    const queryParams: any = {};
+    const queryParams: Prisma.ListingWhereInput = {};
     
     if (params.userId) {
       queryParams.userId = params.userId;
@@ -143,7 +144,27 @@ export default async function getListings(params: IListingsParams): Promise<ILis
 
     // For radius search, we need to get all listings with coordinates first
     // then filter by distance, then paginate
-    let finalListings: any[];
+    let finalListings: {
+      id: string;
+      title: string;
+      description: string;
+      imageSrc: string;
+      category: string;
+      experienceLevel: number;
+      city: string | null;
+      state: string;
+      zipCode: string | null;
+      latitude?: number | null;
+      longitude?: number | null;
+      userId: string;
+      price: number;
+      createdAt: Date;
+      pickupStartTime: string | null;
+      pickupEndTime: string | null;
+      returnStartTime: string | null;
+      returnEndTime: string | null;
+      availableDays: string[];
+    }[];
     let totalCount: number;
 
     if (searchCoordinates && params.radius) {
@@ -253,7 +274,7 @@ export default async function getListings(params: IListingsParams): Promise<ILis
       limit,
       totalPages,
     };
-  } catch (error: any) {
-    throw new Error(error.message);
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : "Failed to fetch listings");
   }
 }

@@ -1,7 +1,7 @@
 import prisma from "@/lib/prismadb";
 import getCurrentUser from "./getCurrentUser";
 import { SafeReservation, safeListing, SafeUser } from "@/types";
-// import { Listing } from "@prisma/client"; // No longer strictly needed with `as any`
+import { Prisma } from "@prisma/client";
 
 interface IParams {
   listingId?: string;
@@ -40,7 +40,7 @@ export default async function getReservations(params: IParams): Promise<IReserva
     }
 
     const { listingId, userId, authorId } = params;
-    const query: any = {};
+    const query: Prisma.ReservationWhereInput = {};
 
     // Build query based on user permissions
     if (listingId) {
@@ -87,7 +87,7 @@ export default async function getReservations(params: IParams): Promise<IReserva
     // Don't filter by status for now due to enum issues
 
     // Handle the query differently based on the type
-    let whereClause: any = {};
+    let whereClause: Prisma.ReservationWhereInput = {};
     
     if (authorId) {
       // For incoming rentals (where current user is the listing owner)
@@ -98,23 +98,10 @@ export default async function getReservations(params: IParams): Promise<IReserva
           }
         }
       };
-    } else if (query.listing) {
-      // If query already has listing conditions
-      whereClause = {
-        ...query,
-        listing: {
-          ...query.listing,
-          isNot: null
-        }
-      };
     } else {
-      // For other queries
-      whereClause = {
-        ...query,
-        listing: {
-          isNot: null
-        }
-      };
+      // For other queries, use the query as is
+      // The listing relation will be loaded by the include statement
+      whereClause = query;
     }
 
     // Get total count for pagination
@@ -199,9 +186,8 @@ export default async function getReservations(params: IParams): Promise<IReserva
     // Don't filter out canceled reservations - we'll show them greyed out
     const safeReservations: SafeReservation[] = reservations.map(
       (reservation) => {
-        // Using `as any` as a workaround for persistent TypeScript errors
-        // This assumes experienceLevel is present at runtime.
-        const rListing: any = reservation.listing;
+        // TypeScript properly infers the type from Prisma select
+        const rListing = reservation.listing;
         
         const mappedListing: safeListing & { user: SafeUser } = {
           id: rListing.id,
@@ -264,7 +250,7 @@ export default async function getReservations(params: IParams): Promise<IReserva
       limit,
       totalPages,
     };
-  } catch (error: any) {
+  } catch (error) {
     return {
       reservations: [],
       totalCount: 0,

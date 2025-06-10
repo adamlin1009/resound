@@ -18,7 +18,7 @@ export default async function getListingWithAddress(listingId: string): Promise<
       createdAt: listing.createdAt.toISOString(),
       experienceLevel: listing.experienceLevel,
     };
-  } catch (error: any) {
-    throw new Error(error.message);
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Unknown error');
   }
 }

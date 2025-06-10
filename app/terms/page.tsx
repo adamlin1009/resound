@@ -24,15 +24,15 @@ const TermsPage = () => {
             <div className="max-w-none">
             <h2 className="text-2xl font-bold mb-4 text-gray-900">1. Acceptance of Terms</h2>
             <p className="mb-6 text-gray-700">
-              By accessing or using Resound ("the Service"), you agree to be bound by these 
-              Terms of Service ("Terms"). If you do not agree to these Terms, please do not 
+              By accessing or using Resound (&quot;the Service&quot;), you agree to be bound by these 
+              Terms of Service (&quot;Terms&quot;). If you do not agree to these Terms, please do not 
               use the Service.
             </p>
 
             <h2 className="text-2xl font-bold mb-4 text-gray-900">2. Service Description</h2>
             <p className="mb-6 text-gray-700">
               Resound is a marketplace platform that connects musical instrument owners 
-              ("Hosts") with individuals seeking to rent instruments ("Renters"). We facilitate 
+              (&quot;Hosts&quot;) with individuals seeking to rent instruments (&quot;Renters&quot;). We facilitate 
               these connections but are not a party to the rental agreements between users.
             </p>
 
@@ -59,13 +59,13 @@ const TermsPage = () => {
               <li>You must treat rented instruments with care</li>
               <li>You must return instruments on time and in the same condition</li>
               <li>You are responsible for any damage beyond normal wear</li>
-              <li>You must comply with the Host's rental terms</li>
+              <li>You must comply with the Host&apos;s rental terms</li>
             </ul>
 
             <h2 className="text-2xl font-bold mb-4 text-gray-900">5. Payments</h2>
             <p className="mb-6 text-gray-700">
               All payments are processed through our third-party payment provider, Stripe. 
-              By using the Service, you agree to Stripe's terms and conditions. Resound 
+              By using the Service, you agree to Stripe&apos;s terms and conditions. Resound 
               charges a service fee on transactions, which will be clearly displayed before 
               booking completion.
             </p>
@@ -81,7 +81,7 @@ const TermsPage = () => {
             <p className="mb-3 text-gray-700">Users agree not to:</p>
             <ul className="list-disc pl-6 mb-6 text-gray-700 space-y-2">
               <li>Violate any laws or regulations</li>
-              <li>Infringe on others' intellectual property rights</li>
+              <li>Infringe on others&apos; intellectual property rights</li>
               <li>Harass, abuse, or harm other users</li>
               <li>Create false or misleading content</li>
               <li>Attempt to circumvent the platform for transactions</li>

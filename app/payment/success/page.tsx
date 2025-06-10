@@ -59,19 +59,19 @@ const PaymentSuccessPage = () => {
             setTimeout(checkPayment, 2000);
           } else {
             // Max retries reached, redirect to rentals page
-            console.warn("Max retries reached, payment status:", response.data.payment.status);
+            // Warning: Max retries reached
             setIsProcessing(false);
             startCountdown(null);
           }
         } catch (error) {
-          console.error("Error checking payment:", error);
+          // Error handled internally
           if (retryCountRef.current < MAX_RETRIES) {
             // Retry after 2 seconds
             retryCountRef.current += 1;
             setTimeout(checkPayment, 2000);
           } else {
             // Max retries reached, redirect to rentals page
-            console.error("Max retries reached with error");
+            // Error handled internally
             setIsProcessing(false);
             startCountdown(null);
           }

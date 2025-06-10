@@ -36,8 +36,8 @@ const HostResourcesPage = () => {
               </div>
               <h3 className="font-semibold text-lg mb-2">Prepare Your Instrument</h3>
               <p className="text-gray-600 text-sm">
-                Clean your instrument, check it's in good working condition, and gather 
-                any accessories you'll include (case, cables, music stand, etc.)
+                Clean your instrument, check it&apos;s in good working condition, and gather 
+                any accessories you&apos;ll include (case, cables, music stand, etc.)
               </p>
             </div>
             
@@ -174,7 +174,7 @@ const HostResourcesPage = () => {
               </p>
               <p>
                 <strong>Included:</strong> Hard case, neck strap, mouthpiece with ligature and cap, 
-                cleaning swab, and cork grease. I'll also include 3 Rico reeds to get you started.
+                cleaning swab, and cork grease. I&apos;ll also include 3 Rico reeds to get you started.
               </p>
               <p>
                 <strong>Requirements:</strong> Basic saxophone knowledge recommended (Experience Level 2+). 

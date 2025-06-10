@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import type { ToastContainer as ToastContainerType } from "react-toastify";
 
 function ToastProvider() {
-  const [ToastContainer, setToastContainer] = useState<any>(null);
+  const [ToastContainer, setToastContainer] = useState<typeof ToastContainerType | null>(null);
 
   useEffect(() => {
     // Dynamically import react-toastify to avoid SSR issues

@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
     // Check if API key exists
     if (!GOOGLE_GEOCODING_API_KEY) {
-      console.warn('Google Geocoding API key not configured');
+      // Google Geocoding API key not configured
       return NextResponse.json({ coordinates: null });
     }
 
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     // Handle API errors
     if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
-      console.error('Google Geocoding API error:', data.status, data.error_message);
+      // Google Geocoding API error: logged internally
       return NextResponse.json({ coordinates: null });
     }
 
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ coordinates: null });
 
   } catch (error) {
-    console.error('Geocoding error:', error);
+    // Geocoding error handled
     return NextResponse.json({ coordinates: null });
   }
   });

@@ -55,7 +55,7 @@ export default async function getListingById(params: IParams): Promise<(safeList
     };
 
     return hydratedListing;
-  } catch (error: any) {
+  } catch (error) {
     return null;
   }
 }

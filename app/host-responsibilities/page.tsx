@@ -15,7 +15,7 @@ const HostResponsibilitiesPage = () => {
             </h1>
             <p className="text-xl text-gray-700">
               As a Resound host, you play a crucial role in creating positive 
-              rental experiences. Here's what we expect from our hosts.
+              rental experiences. Here&apos;s what we expect from our hosts.
             </p>
           </div>
         </Container>
@@ -103,7 +103,7 @@ const HostResponsibilitiesPage = () => {
             <div>
               <h3 className="text-xl font-semibold mb-6 text-green-700 flex items-center gap-2">
                 <BiCheckCircle className="text-2xl" />
-                Do's
+                Do&apos;s
               </h3>
               <ul className="space-y-3 text-gray-700">
                 <li className="flex items-start gap-2">
@@ -140,7 +140,7 @@ const HostResponsibilitiesPage = () => {
             <div>
               <h3 className="text-xl font-semibold mb-6 text-red-700 flex items-center gap-2">
                 <BiXCircle className="text-2xl" />
-                Don'ts
+                Don&apos;ts
               </h3>
               <ul className="space-y-3 text-gray-700">
                 <li className="flex items-start gap-2">
@@ -165,7 +165,7 @@ const HostResponsibilitiesPage = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-500 mt-1">✗</span>
-                  <span>List instruments you don't own or have permission to rent</span>
+                  <span>List instruments you don&apos;t own or have permission to rent</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-500 mt-1">✗</span>
@@ -218,7 +218,7 @@ const HostResponsibilitiesPage = () => {
               </h3>
               <p className="text-gray-700">
                 While Resound facilitates connections between hosts and renters, we do not 
-                provide insurance coverage. Consider checking with your homeowner's or renter's 
+                provide insurance coverage. Consider checking with your homeowner&apos;s or renter&apos;s 
                 insurance about coverage for rented items, or explore specialized musical 
                 instrument insurance.
               </p>
@@ -231,7 +231,7 @@ const HostResponsibilitiesPage = () => {
               </h3>
               <p className="text-gray-700">
                 Some cities or states may have specific regulations about peer-to-peer 
-                rentals. It's your responsibility to understand and comply with local 
+                rentals. It&apos;s your responsibility to understand and comply with local 
                 laws and regulations in your area.
               </p>
             </div>
@@ -278,8 +278,8 @@ const HostResponsibilitiesPage = () => {
           <div className="text-center">
             <h2 className="text-3xl font-bold mb-6">Need Help?</h2>
             <p className="text-gray-700 mb-8 max-w-2xl mx-auto">
-              We're here to support you in your hosting journey. If you have questions 
-              about your responsibilities or need assistance, we're just a click away.
+              We&apos;re here to support you in your hosting journey. If you have questions 
+              about your responsibilities or need assistance, we&apos;re just a click away.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 

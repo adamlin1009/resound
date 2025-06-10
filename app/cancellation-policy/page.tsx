@@ -82,7 +82,7 @@ const CancellationPolicyPage = () => {
                 <ol className="space-y-2 text-gray-700">
                   <li>1. Go to your <a href="/rentals" className="text-amber-600 hover:underline">Rentals</a> page</li>
                   <li>2. Find the reservation you want to cancel</li>
-                  <li>3. Click "Cancel Reservation"</li>
+                  <li>3. Click &quot;Cancel Reservation&quot;</li>
                   <li>4. Select a cancellation reason</li>
                   <li>5. Confirm the cancellation</li>
                 </ol>
@@ -230,7 +230,7 @@ const CancellationPolicyPage = () => {
               </div>
 
               <div className="bg-white rounded-lg p-6">
-                <h3 className="font-semibold mb-2">What if the instrument isn't as described?</h3>
+                <h3 className="font-semibold mb-2">What if the instrument isn&apos;t as described?</h3>
                 <p className="text-gray-600">
                   If an instrument significantly differs from its listing description, contact 
                   us immediately. We may approve a full refund regardless of the cancellation policy.

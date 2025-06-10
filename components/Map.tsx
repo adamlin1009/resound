@@ -26,11 +26,10 @@ function Map({ center, city, state, zipCode }: Props) {
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Default to center of US if no coordinates provided
-  const mapCenter = center || [39.8283, -98.5795]; // Geographic center of US
-  const zoom = center ? 10 : 4;
-
   useEffect(() => {
+    // Default to center of US if no coordinates provided
+    const mapCenter = center || [39.8283, -98.5795]; // Geographic center of US
+    const zoom = center ? 10 : 4;
     // Clean up any existing map
     if (mapRef.current) {
       mapRef.current.remove();
@@ -75,7 +74,7 @@ function Map({ center, city, state, zipCode }: Props) {
             }
           }, 100);
         } catch (error) {
-          console.error('Error initializing map:', error);
+          // Error handled internally
         }
       }
     }, 100);
@@ -88,7 +87,7 @@ function Map({ center, city, state, zipCode }: Props) {
         mapRef.current = null;
       }
     };
-  }, [center, city, state, zipCode, mapCenter, zoom]);
+  }, [center, city, state, zipCode]);
 
   return (
     <div 

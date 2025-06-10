@@ -47,7 +47,7 @@ const ContactPage = () => {
               Contact Us
             </h1>
             <p className="text-xl text-gray-700">
-              Have a question or need help? We're here for you.
+              Have a question or need help? We&apos;re here for you.
             </p>
           </div>
         </Container>
@@ -194,7 +194,7 @@ const ContactPage = () => {
             <h2 className="text-2xl font-bold mb-4">Other ways to get help</h2>
             <div className="space-y-4 text-gray-600">
               <p>
-                <strong>For urgent safety issues:</strong> If you're experiencing an 
+                <strong>For urgent safety issues:</strong> If you&apos;re experiencing an 
                 emergency, please contact local authorities immediately.
               </p>
               <p>
@@ -203,7 +203,7 @@ const ContactPage = () => {
               </p>
               <p>
                 <strong>For account access:</strong> Try resetting your password 
-                first. If you're still having trouble, include your account email 
+                first. If you&apos;re still having trouble, include your account email 
                 in the contact form above.
               </p>
             </div>

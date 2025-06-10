@@ -33,18 +33,26 @@ export default function Toast() {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   useEffect(() => {
+    const timeoutIds = new Map<string, NodeJS.Timeout>();
+
     addToastExternal = (message: string, type: "success" | "error" | "info") => {
       const id = `toast-${toastCounter++}`;
       setToasts((prev) => [...prev, { id, message, type }]);
 
       // Auto remove after 3 seconds
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         setToasts((prev) => prev.filter((toast) => toast.id !== id));
+        timeoutIds.delete(id);
       }, 3000);
+      
+      timeoutIds.set(id, timeoutId);
     };
 
     return () => {
       addToastExternal = null;
+      // Clear all pending timeouts
+      timeoutIds.forEach((timeoutId) => clearTimeout(timeoutId));
+      timeoutIds.clear();
     };
   }, []);
 

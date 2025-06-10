@@ -100,7 +100,7 @@ const SafetyPage = () => {
               <ul className="space-y-3 text-gray-600">
                 <li className="flex items-start">
                   <span className="text-amber-500 mr-2 mt-1">•</span>
-                  <span>Read reviews and check the owner's rental history before booking</span>
+                  <span>Read reviews and check the owner&apos;s rental history before booking</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-amber-500 mr-2 mt-1">•</span>
@@ -183,7 +183,7 @@ const SafetyPage = () => {
               <li>• Trust your instincts - if something feels wrong, cancel the meeting</li>
               <li>• Test the instrument together before completing the handoff</li>
               <li>• Document the condition with photos or video</li>
-              <li>• Confirm pickup in the app once you've received the instrument</li>
+              <li>• Confirm pickup in the app once you&apos;ve received the instrument</li>
             </ul>
           </div>
         </div>
@@ -196,7 +196,7 @@ const SafetyPage = () => {
             <BiShield className="text-5xl text-red-600 mx-auto mb-4" />
             <h2 className="text-3xl font-bold mb-4">In Case of Emergency</h2>
             <p className="text-gray-700 mb-6">
-              If you're in immediate danger, contact local authorities first:
+              If you&apos;re in immediate danger, contact local authorities first:
             </p>
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <p className="text-2xl font-bold text-red-600 mb-2">911</p>

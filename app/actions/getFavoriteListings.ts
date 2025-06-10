@@ -44,7 +44,7 @@ export default async function getFavoriteListings(): Promise<safeListing[]> {
     }));
 
     return safeFavorites;
-  } catch (error: any) {
-    throw new Error(error.message);
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Unknown error');
   }
 }

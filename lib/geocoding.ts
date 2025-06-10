@@ -8,7 +8,7 @@ export interface Coordinates {
 
 export async function geocodeLocation(address: string): Promise<Coordinates | null> {
   if (!process.env.GOOGLE_PLACES_API_KEY) {
-    console.warn('Google Places API key not configured, using fallback coordinates');
+    // Warning: Google Places API key not configured, using fallback coordinates
     // Fallback coordinates for common US cities
     const cityCoordinates: { [key: string]: Coordinates } = {
       'los angeles': { lat: 34.0522, lng: -118.2437 },
@@ -50,10 +50,10 @@ export async function geocodeLocation(address: string): Promise<Coordinates | nu
       };
     }
 
-    console.warn(`Geocoding failed for address: ${address}, status: ${data.status}`);
+    // Warning: Geocoding failed for address
     return null;
   } catch (error) {
-    console.error('Geocoding error:', error);
+    // Error handled internally
     return null;
   }
 }

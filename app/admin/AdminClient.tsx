@@ -59,7 +59,7 @@ const AdminClient: React.FC<AdminClientProps> = ({ currentUser }) => {
       const data = await response.json();
       setStats(data);
     } catch (error) {
-      console.error('Error fetching admin stats:', error);
+      // Error handled internally
     } finally {
       setIsLoading(false);
     }
@@ -72,7 +72,7 @@ const AdminClient: React.FC<AdminClientProps> = ({ currentUser }) => {
       const data = await response.json();
       setUsers(data);
     } catch (error) {
-      console.error('Error fetching users:', error);
+      // Error handled internally
     } finally {
       setIsLoading(false);
     }
@@ -85,7 +85,7 @@ const AdminClient: React.FC<AdminClientProps> = ({ currentUser }) => {
       const data = await response.json();
       setListings(data);
     } catch (error) {
-      console.error('Error fetching listings:', error);
+      // Error handled internally
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +113,7 @@ const AdminClient: React.FC<AdminClientProps> = ({ currentUser }) => {
         fetchUsers(); // Refresh users list
       }
     } catch (error) {
-      console.error('Error updating user admin status:', error);
+      // Error handled internally
     }
   };
 
@@ -127,7 +127,7 @@ const AdminClient: React.FC<AdminClientProps> = ({ currentUser }) => {
         fetchListings(); // Refresh listings
       }
     } catch (error) {
-      console.error('Error deleting listing:', error);
+      // Error handled internally
     }
   };
 

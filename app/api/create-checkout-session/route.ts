@@ -70,9 +70,9 @@ export async function POST(request: NextRequest) {
         pickupTime,
         returnTime
       );
-    } catch (error: any) {
+    } catch (error) {
       return NextResponse.json(
-        { error: error.message || "These dates are no longer available" },
+        { error: error instanceof Error ? error.message : "These dates are no longer available" },
         { status: 409 }
       );
     }

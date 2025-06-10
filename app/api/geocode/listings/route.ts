@@ -1,7 +1,7 @@
 import { geocodeLocation, buildLocationString } from "@/lib/geocoding";
 import prisma from "@/lib/prismadb";
 import { NextResponse } from "next/server";
-import { checkAdminUser } from "@/app/actions/checkAdminUser";
+import checkAdminUser from "@/app/actions/checkAdminUser";
 
 export async function POST() {
   const currentUser = await checkAdminUser();

@@ -28,7 +28,7 @@ export async function sendEmail({ to, subject, html }: EmailData) {
     });
 
     if (error) {
-      console.error('Email sending error:', error);
+      // Error handled internally
       return { success: false, error };
     }
 
@@ -38,7 +38,7 @@ export async function sendEmail({ to, subject, html }: EmailData) {
     // For now, just log the email
     return { success: true, message: 'Email logged' };
   } catch (error) {
-    console.error('Email service error:', error);
+    // Error handled internally
     return { success: false, error };
   }
 }

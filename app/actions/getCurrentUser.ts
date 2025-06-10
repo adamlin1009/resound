@@ -47,7 +47,7 @@ export default async function getCurrentUser(): Promise<SafeUser | null> {
       updatedAt: currentUser.updatedAt.toISOString(),
       emailVerified: currentUser.emailVerified?.toISOString() || null,
     };
-  } catch (error: any) {
+  } catch (error) {
     return null;
   }
 }

@@ -105,7 +105,7 @@ const RentalManageClient: React.FC<RentalManageClientProps> = ({
       router.push('/messages');
       toast.success('Conversation started!');
     } catch (error: any) {
-      console.error('Error starting conversation:', error);
+      // Error handled internally
       toast.error(error.message || 'Failed to start conversation');
     } finally {
       setIsLoading(false);

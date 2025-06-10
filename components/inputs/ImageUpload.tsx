@@ -5,9 +5,8 @@ import Image from "next/image";
 import React, { useCallback } from "react";
 import { TbPhotoPlus } from "react-icons/tb";
 
-declare global {
-  var cloudinary: any;
-}
+// Cloudinary global is handled by next-cloudinary package
+// No need for manual global declaration
 
 type Props = {
   onChange: (value: string) => void;
@@ -17,7 +16,9 @@ type Props = {
 function ImageUpload({ onChange, value }: Props) {
   const handleCallback = useCallback(
     (result: any) => {
-      onChange(result.info.secure_url);
+      if (result.info?.secure_url) {
+        onChange(result.info.secure_url);
+      }
     },
     [onChange]
   );

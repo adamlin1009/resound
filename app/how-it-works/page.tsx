@@ -15,7 +15,7 @@ const HowItWorksPage = () => {
             </h1>
             <p className="text-xl text-gray-700">
               Renting musical instruments has never been easier. 
-              Here's everything you need to know.
+              Here&apos;s everything you need to know.
             </p>
           </div>
         </Container>
@@ -157,8 +157,8 @@ const HowItWorksPage = () => {
               <div>
                 <h3 className="text-xl font-semibold mb-2">2. Review and approve</h3>
                 <p className="text-gray-600 mb-3">
-                  When someone books, you'll receive a notification. 
-                  Review the renter's profile and rental history.
+                  When someone books, you&apos;ll receive a notification. 
+                  Review the renter&apos;s profile and rental history.
                 </p>
                 <ul className="text-sm text-gray-500 space-y-1">
                   <li>• Instant notifications</li>

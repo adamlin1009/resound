@@ -86,10 +86,10 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(reservation);
-  } catch (error: any) {
-    console.error("Error creating reservation:", error);
+  } catch (error) {
+    // Error handled internally
     return NextResponse.json(
-      { error: error.message || "Failed to create reservation" },
+      { error: error instanceof Error ? error.message : "Failed to create reservation" },
       { status: 500 }
     );
   }

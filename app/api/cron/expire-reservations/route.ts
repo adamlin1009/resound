@@ -27,7 +27,7 @@ export async function GET(request: Request) {
       expiredCount,
       timestamp: new Date().toISOString(),
     });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
       { error: "Failed to expire reservations" },
       { status: 500 }

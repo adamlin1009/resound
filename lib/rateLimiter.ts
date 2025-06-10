@@ -18,17 +18,41 @@ interface RateLimitEntry {
 // Storage for rate limit data
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
-// Cleanup old entries periodically
-setInterval(() => {
-  const now = Date.now();
-  rateLimitStore.forEach((entry, key) => {
-    if (entry.resetTime < now) {
-      rateLimitStore.delete(key);
-    }
-  });
-}, 60000); // Clean up every minute
+// Cleanup function
+let cleanupIntervalId: NodeJS.Timeout | null = null;
+
+function startCleanup() {
+  if (cleanupIntervalId) return; // Already running
+  
+  cleanupIntervalId = setInterval(() => {
+    const now = Date.now();
+    rateLimitStore.forEach((entry, key) => {
+      if (entry.resetTime < now) {
+        rateLimitStore.delete(key);
+      }
+    });
+  }, 60000); // Clean up every minute
+}
+
+// Start cleanup when first rate limiter is created
+function ensureCleanupRunning() {
+  if (!cleanupIntervalId && typeof window === 'undefined') {
+    startCleanup();
+  }
+}
+
+// Export cleanup function for testing/shutdown
+export function stopRateLimiterCleanup() {
+  if (cleanupIntervalId) {
+    clearInterval(cleanupIntervalId);
+    cleanupIntervalId = null;
+  }
+}
 
 export function createRateLimiter(config: RateLimitConfig) {
+  // Ensure cleanup is running
+  ensureCleanupRunning();
+  
   return async function rateLimit(request: NextRequest): Promise<NextResponse | null> {
     // Get client identifier (IP address or user ID)
     const ip = request.headers.get('x-forwarded-for') || 

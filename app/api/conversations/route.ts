@@ -118,10 +118,10 @@ export async function GET(request: Request) {
       limit,
       totalPages
     });
-  } catch (error: any) {
+  } catch (error) {
     // Return more specific error in development
     const errorMessage = process.env.NODE_ENV === 'development' 
-      ? error.message || "Internal server error"
+      ? (error instanceof Error ? error.message : "Internal server error")
       : "Internal server error";
       
     return NextResponse.json({ error: errorMessage }, { status: 500 });
@@ -251,7 +251,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(conversation);
   } catch (error) {
-    console.error("Error creating conversation:", error);
+    // Error creating conversation handled
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

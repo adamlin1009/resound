@@ -86,7 +86,7 @@ export default async function getOwnerReservations(): Promise<IOwnerReservations
       reservations: safeReservations,
       pendingSetups,
     };
-  } catch (error: any) {
-    throw new Error(error);
+  } catch (error) {
+    throw error;
   }
 }

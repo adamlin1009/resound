@@ -38,7 +38,7 @@ function InstrumentsClient({ listings, currentUser }: Props) {
               router.refresh();
             })
             .catch((error) => {
-              console.error("Delete error:", error);
+              // Error handled internally
               const errorMessage = error?.response?.data?.error || "Failed to delete listing";
               toast.error(errorMessage);
             })
@@ -56,7 +56,7 @@ function InstrumentsClient({ listings, currentUser }: Props) {
       <Heading title="My Instruments" subtitle="Manage your instrument listings" />
       
       <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
-        {listings.map((listing: any) => (
+        {listings.map((listing) => (
           <ListingCard
             key={listing.id}
             data={listing}

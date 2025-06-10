@@ -49,7 +49,7 @@ export default async function checkUserPayment(params: IParams): Promise<{
       hasSuccessfulPayment: !!payment,
       canContact: !!reservation || !!payment
     };
-  } catch (error: any) {
+  } catch (error) {
     return {
       hasReservation: false,
       hasSuccessfulPayment: false,

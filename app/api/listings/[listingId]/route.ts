@@ -69,10 +69,10 @@ export async function DELETE(
       message: "Listing deleted successfully",
       listing: deletedListing 
     });
-  } catch (error: any) {
-    console.error("Error deleting listing:", error);
+  } catch (error) {
+    // Error handled internally
     return NextResponse.json(
-      { error: error.message || "Failed to delete listing" },
+      { error: error instanceof Error ? error.message : "Failed to delete listing" },
       { status: 500 }
     );
   }

@@ -42,7 +42,7 @@ const AboutPage = () => {
                 musicians, creating opportunities for both owners and renters.
               </p>
               <p>
-                Whether you're a student needing a violin for lessons, a professional 
+                Whether you&apos;re a student needing a violin for lessons, a professional 
                 seeking a specific instrument for a performance, or an owner looking to 
                 share your collection, Resound connects you with the right people.
               </p>
@@ -129,7 +129,7 @@ const AboutPage = () => {
               <ul className="space-y-3 text-gray-600">
                 <li className="flex items-start">
                   <span className="text-amber-500 mr-2">✓</span>
-                  Earn income from instruments you're not using
+                  Earn income from instruments you&apos;re not using
                 </li>
                 <li className="flex items-start">
                   <span className="text-amber-500 mr-2">✓</span>

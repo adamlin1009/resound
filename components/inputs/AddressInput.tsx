@@ -87,7 +87,7 @@ export default function AddressInput({ value, onChange, placeholder = "Enter cit
       setIsOpen(data.predictions?.length > 0);
     } catch (err: any) {
       if (err.name !== 'AbortError') {
-        console.error('Error fetching predictions:', err);
+        // Error handled internally
         setError('Unable to load suggestions');
         setPredictions([]);
       }

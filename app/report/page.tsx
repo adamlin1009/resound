@@ -72,7 +72,7 @@ const ReportPage = () => {
           <div className="flex items-center justify-center gap-3">
             <BiAlarm className="text-2xl" />
             <p className="font-medium">
-              If you're in immediate danger, please contact local emergency services (911) first.
+              If you&apos;re in immediate danger, please contact local emergency services (911) first.
             </p>
           </div>
         </Container>

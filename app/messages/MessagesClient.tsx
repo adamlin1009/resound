@@ -45,7 +45,7 @@ const MessagesClient: React.FC<MessagesClientProps> = ({ currentUser }) => {
     return () => {
       mounted = false;
     };
-  }, []); // Remove fetchConversations from deps to avoid infinite loops
+  }, [fetchConversations]); // Add fetchConversations to dependencies
 
   // Poll for new messages when a conversation is selected
   useEffect(() => {
@@ -62,7 +62,7 @@ const MessagesClient: React.FC<MessagesClientProps> = ({ currentUser }) => {
     return () => {
       clearInterval(interval);
     };
-  }, [currentConversation?.id]); // Only depend on conversation ID
+  }, [currentConversation?.id, refreshCurrentConversation]); // Add refreshCurrentConversation to dependencies
 
   // Scroll to bottom when messages change
   useEffect(() => {

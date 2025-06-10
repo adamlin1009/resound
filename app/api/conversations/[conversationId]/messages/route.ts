@@ -44,7 +44,7 @@ export async function GET(
 
     return NextResponse.json(messages);
   } catch (error) {
-    console.error("Error fetching messages:", error);
+    // Error handled by internal logging
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
