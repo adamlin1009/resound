@@ -13,16 +13,16 @@ type Props = {
 };
 
 // Custom styles for react-select to match the design system
-const customStyles: StylesConfig<InstrumentOption, false, GroupBase<InstrumentOption>> = {
+const customStyles = (error: boolean): StylesConfig<InstrumentOption, false, GroupBase<InstrumentOption>> => ({
   control: (provided, state) => ({
     ...provided,
     minHeight: "48px",
     borderRadius: "0.5rem",
-    borderColor: state.selectProps.error ? "#ef4444" : state.isFocused ? "#d97706" : "#e5e7eb",
+    borderColor: error ? "#ef4444" : state.isFocused ? "#d97706" : "#e5e7eb",
     borderWidth: "2px",
     boxShadow: state.isFocused ? "0 0 0 1px #d97706" : "none",
     "&:hover": {
-      borderColor: state.selectProps.error ? "#ef4444" : state.isFocused ? "#d97706" : "#e5e7eb",
+      borderColor: error ? "#ef4444" : state.isFocused ? "#d97706" : "#e5e7eb",
     },
     paddingLeft: "2.5rem",
   }),
@@ -99,7 +99,7 @@ const customStyles: StylesConfig<InstrumentOption, false, GroupBase<InstrumentOp
       color: "#ef4444",
     },
   }),
-};
+});
 
 export default function InstrumentAutocomplete({ 
   value = "", 
@@ -129,12 +129,10 @@ export default function InstrumentAutocomplete({
         placeholder={placeholder}
         isClearable
         isSearchable
-        styles={customStyles}
-        // @ts-ignore - error prop for styling
-        error={error}
+        styles={customStyles(error)}
         classNamePrefix="instrument-select"
         noOptionsMessage={() => "No instruments found"}
-        formatGroupLabel={(group) => (
+        formatGroupLabel={(group: GroupBase<InstrumentOption>) => (
           <div className="flex items-center justify-between">
             <span>{group.label}</span>
             <span className="text-xs text-gray-500">
