@@ -1,4 +1,3 @@
-# resound
 <div align="center">
 
 # 🎼 Resound - Classical Instrument Rental Platform
