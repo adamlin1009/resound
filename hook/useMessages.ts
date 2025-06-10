@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { getSocket } from '@/lib/socket/client';
+import { Message as SocketMessage } from '@/lib/socket/types';
 
 interface Message {
   id: string;
@@ -38,6 +40,8 @@ interface MessagesStore {
   currentConversation: Conversation | null;
   isLoading: boolean;
   lastReadTimestamps: Record<string, string>; // conversationId -> timestamp
+  socketInitialized: boolean;
+  currentUserId: string | null; // Track current user ID
   
   fetchConversations: () => Promise<void>;
   selectConversation: (conversationId: string) => Promise<void>;
@@ -46,6 +50,9 @@ interface MessagesStore {
   refreshCurrentConversation: () => Promise<void>;
   getUnreadCount: (conversationId: string, userId: string) => number;
   markAsRead: (conversationId: string) => void;
+  initializeSocket: (currentUserId: string) => void;
+  handleNewMessage: (message: Message) => void;
+  setCurrentUser: (userId: string) => void;
   reset: () => void;
 }
 
@@ -68,6 +75,8 @@ const useMessages = create<MessagesStore>((set, get) => ({
   currentConversation: null,
   isLoading: false,
   lastReadTimestamps: getStoredTimestamps(),
+  socketInitialized: false,
+  currentUserId: null,
 
   fetchConversations: async () => {
     set({ isLoading: true });
@@ -114,11 +123,16 @@ const useMessages = create<MessagesStore>((set, get) => ({
 
   sendMessage: async (conversationId: string, content: string) => {
     try {
+      // Always use HTTP API to ensure message persistence
       const response = await fetch(`/api/conversations/${conversationId}/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content }),
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
       
       const message = await response.json();
       const { currentConversation, conversations } = get();
@@ -140,8 +154,15 @@ const useMessages = create<MessagesStore>((set, get) => ({
           : conv
       );
       set({ conversations: updatedConversations });
+      
+      // Broadcast via Socket.io to other users
+      const socket = getSocket();
+      if (socket?.connected) {
+        socket.emit('broadcastMessage', { conversationId, message });
+      }
     } catch (error) {
-      // Error handled internally
+      console.error('Error sending message:', error);
+      throw error; // Re-throw to let UI handle the error
     }
   },
 
@@ -244,8 +265,68 @@ const useMessages = create<MessagesStore>((set, get) => ({
     saveTimestamps(newTimestamps);
   },
 
+  initializeSocket: (currentUserId: string) => {
+    const { socketInitialized } = get();
+    if (socketInitialized) return;
+    
+    // Set current user ID
+    set({ currentUserId });
+    
+    const socket = getSocket();
+    
+    // Listen for new messages
+    socket.on('newMessage', (message: SocketMessage) => {
+      const { handleNewMessage } = get();
+      handleNewMessage(message);
+    });
+    
+    set({ socketInitialized: true });
+  },
+  
+  handleNewMessage: (message: Message) => {
+    const { conversations, currentConversation, currentUserId } = get();
+    
+    // Check if message already exists to prevent duplicates
+    const messageExistsInCurrent = currentConversation?.messages.some(m => m.id === message.id);
+    const messageExistsInList = conversations.some(conv => 
+      conv.messages.some(m => m.id === message.id)
+    );
+    
+    if (messageExistsInCurrent || messageExistsInList) {
+      return; // Skip duplicate messages
+    }
+    
+    // Update current conversation if the message belongs to it
+    if (currentConversation?.id === message.conversationId) {
+      set({
+        currentConversation: {
+          ...currentConversation,
+          messages: [...currentConversation.messages, message]
+        }
+      });
+    }
+    
+    // Update conversations list
+    const updatedConversations = conversations.map(conv => {
+      if (conv.id === message.conversationId) {
+        return { ...conv, messages: [...conv.messages, message] };
+      }
+      return conv;
+    });
+    
+    set({ conversations: updatedConversations });
+  },
+
+  setCurrentUser: (userId: string) => {
+    set({ currentUserId: userId });
+  },
+
   reset: () => {
-    set({ conversations: [], currentConversation: null, isLoading: false });
+    set({ conversations: [], currentConversation: null, isLoading: false, socketInitialized: false, currentUserId: null });
+    
+    // Remove socket listeners
+    const socket = getSocket();
+    socket.off('newMessage');
   },
 }));
 

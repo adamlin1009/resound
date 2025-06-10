@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { SafeUser } from "@/types";
 import useMessages from "@/hook/useMessages";
+import useSocket from "@/hook/useSocket";
 import Container from "@/components/Container";
 import Heading from "@/components/Heading";
 import EmptyState from "@/components/EmptyState";
 import Avatar from "@/components/Avatar";
+import TypingIndicator from "@/components/TypingIndicator";
 
 interface MessagesClientProps {
   currentUser: SafeUser;
@@ -21,13 +23,24 @@ const MessagesClient: React.FC<MessagesClientProps> = ({ currentUser }) => {
     selectConversation,
     sendMessage,
     refreshCurrentConversation,
-    getUnreadCount
+    getUnreadCount,
+    initializeSocket,
+    setCurrentUser
   } = useMessages();
+  
+  const { 
+    isConnected,
+    startTyping,
+    stopTyping,
+    getTypingUsers
+  } = useSocket({ conversationId: currentConversation?.id });
   
   const [newMessage, setNewMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -38,7 +51,9 @@ const MessagesClient: React.FC<MessagesClientProps> = ({ currentUser }) => {
     
     const loadConversations = async () => {
       if (mounted) {
+        setCurrentUser(currentUser.id); // Set current user in store
         await fetchConversations();
+        initializeSocket(currentUser.id); // Initialize socket with current user ID
       }
     };
     
@@ -47,7 +62,7 @@ const MessagesClient: React.FC<MessagesClientProps> = ({ currentUser }) => {
     return () => {
       mounted = false;
     };
-  }, [fetchConversations]); // Run only on mount
+  }, [fetchConversations, initializeSocket, currentUser.id, setCurrentUser]); // Run only on mount
   
   // Auto-select the current conversation if it exists
   useEffect(() => {
@@ -60,22 +75,13 @@ const MessagesClient: React.FC<MessagesClientProps> = ({ currentUser }) => {
     }
   }, [conversations, currentConversation?.id, selectConversation]);
 
-  // Poll for new messages when a conversation is selected
+  // Remove polling - Socket.io handles real-time updates now
   useEffect(() => {
     if (!currentConversation?.id) return;
 
-    // Refresh immediately when conversation changes
+    // Refresh once when conversation changes (to get latest messages)
     refreshCurrentConversation();
-
-    // Set up polling interval (every 5 seconds)
-    const interval = setInterval(() => {
-      refreshCurrentConversation();
-    }, 5000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [currentConversation?.id, refreshCurrentConversation]); // Add refreshCurrentConversation to dependencies
+  }, [currentConversation?.id, refreshCurrentConversation]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -85,6 +91,9 @@ const MessagesClient: React.FC<MessagesClientProps> = ({ currentUser }) => {
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !currentConversation || isSending) return;
     
+    // Stop typing indicator when sending
+    handleStopTyping();
+    
     setIsSending(true);
     try {
       await sendMessage(currentConversation.id, newMessage.trim());
@@ -93,6 +102,39 @@ const MessagesClient: React.FC<MessagesClientProps> = ({ currentUser }) => {
       setIsSending(false);
     }
   };
+
+  // Handle typing indicator
+  const handleStopTyping = useCallback(() => {
+    if (!currentConversation || !isTyping) return;
+    
+    setIsTyping(false);
+    stopTyping(currentConversation.id);
+    
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
+  }, [currentConversation, isTyping, stopTyping]);
+
+  const handleTyping = useCallback(() => {
+    if (!currentConversation || !isConnected) return;
+    
+    // Start typing if not already typing
+    if (!isTyping) {
+      setIsTyping(true);
+      startTyping(currentConversation.id);
+    }
+    
+    // Clear existing timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    
+    // Set new timeout to stop typing after 2 seconds of inactivity
+    typingTimeoutRef.current = setTimeout(() => {
+      handleStopTyping();
+    }, 2000);
+  }, [currentConversation, isConnected, isTyping, startTyping, handleStopTyping]);
 
   // Helper function to determine if a message starts a new group
   const isNewMessageGroup = (currentMsg: any, previousMsg: any) => {
@@ -163,7 +205,15 @@ const MessagesClient: React.FC<MessagesClientProps> = ({ currentUser }) => {
   return (
     <Container>
       <div className="pt-24">
-        <Heading title="Messages" subtitle="Your conversations" />
+        <div className="flex items-center justify-between">
+          <Heading title="Messages" subtitle="Your conversations" />
+          {isConnected && (
+            <div className="flex items-center space-x-2 text-sm text-green-600">
+              <div className="w-2 h-2 bg-green-600 rounded-full" />
+              <span>Connected</span>
+            </div>
+          )}
+        </div>
         
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 h-[600px]">
           {/* Conversations List */}
@@ -306,89 +356,114 @@ const MessagesClient: React.FC<MessagesClientProps> = ({ currentUser }) => {
                     </div>
                   ) : (
                     currentConversation.messages.map((message, index) => {
-                    const isCurrentUser = message.senderId === currentUser.id;
-                    const messageUser = isCurrentUser 
-                      ? currentUser 
-                      : (currentConversation.ownerId === currentUser.id 
+                      // Fix user identification - use message.senderId vs currentUser.id
+                      const isCurrentUser = message.senderId === currentUser.id;
+                      
+                      // Get the message user - use message.sender first, then fallback to conversation participants
+                      let messageUser;
+                      if (message.sender && message.sender.id) {
+                        messageUser = message.sender;
+                      } else if (isCurrentUser) {
+                        messageUser = {
+                          id: currentUser.id,
+                          name: currentUser.name,
+                          image: currentUser.image
+                        };
+                      } else {
+                        const otherUser = currentConversation.ownerId === currentUser.id 
                           ? currentConversation.renter 
-                          : currentConversation.owner);
-                    
-                    const previousMessage = index > 0 ? currentConversation.messages[index - 1] : null;
-                    const nextMessage = index < currentConversation.messages.length - 1 
-                      ? currentConversation.messages[index + 1] : null;
-                    
-                    const startsNewGroup = isNewMessageGroup(message, previousMessage);
-                    const isLastInGroup = !nextMessage || isNewMessageGroup(nextMessage, message);
-                    
-                    // Show timestamp for last message in group or if next message is > 5 mins away
-                    const showTimestamp = isLastInGroup || !nextMessage || 
-                      (new Date(nextMessage.createdAt).getTime() - new Date(message.createdAt).getTime() > 5 * 60 * 1000);
-                    
-                    return (
-                      <div
-                        key={message.id}
-                        className={`${startsNewGroup ? 'mt-4' : 'mt-0.5'} ${
-                          isCurrentUser ? 'pr-2' : ''
-                        }`}
-                      >
+                          : currentConversation.owner;
+                        messageUser = {
+                          id: currentConversation.ownerId === currentUser.id 
+                            ? currentConversation.renterId 
+                            : currentConversation.ownerId,
+                          name: otherUser.name,
+                          image: otherUser.image
+                        };
+                      }
+                      
+                      const previousMessage = index > 0 ? currentConversation.messages[index - 1] : null;
+                      const nextMessage = index < currentConversation.messages.length - 1 
+                        ? currentConversation.messages[index + 1] : null;
+                      
+                      const startsNewGroup = isNewMessageGroup(message, previousMessage);
+                      const isLastInGroup = !nextMessage || isNewMessageGroup(nextMessage, message);
+                      
+                      // Show timestamp for last message in group or if next message is > 5 mins away
+                      const showTimestamp = isLastInGroup || !nextMessage || 
+                        (new Date(nextMessage.createdAt).getTime() - new Date(message.createdAt).getTime() > 5 * 60 * 1000);
+                      
+                      return (
                         <div
-                          className={`flex items-end ${
-                            isCurrentUser ? 'justify-end' : 'space-x-2'
-                          }`}
+                          key={message.id}
+                          className={`${startsNewGroup ? 'mt-4' : 'mt-0.5'}`}
                         >
-                          {/* Avatar - only show for other users, not current user */}
-                          {!isCurrentUser && (
-                            <div className="flex-shrink-0 w-10">
-                              {startsNewGroup ? (
-                                <Avatar 
-                                  src={messageUser.image} 
-                                  userName={messageUser.name}
-                                  size={40}
-                                />
-                              ) : (
-                                <div className="w-10" /> // Spacer for alignment
-                              )}
-                            </div>
-                          )}
-                          
-                          {/* Message bubble */}
-                          <div className={`flex flex-col ${isCurrentUser ? 'items-end' : 'items-start'} max-w-xs`}>
-                            <div
-                              className={`px-4 py-2 ${
-                                isCurrentUser
-                                  ? 'bg-blue-500 text-white'
-                                  : 'bg-gray-100'
-                              } ${
-                                startsNewGroup && isLastInGroup
-                                  ? 'rounded-2xl'
-                                  : startsNewGroup
-                                  ? isCurrentUser 
-                                    ? 'rounded-t-2xl rounded-bl-2xl rounded-br-md'
-                                    : 'rounded-t-2xl rounded-br-2xl rounded-bl-md'
-                                  : isLastInGroup
-                                  ? isCurrentUser
-                                    ? 'rounded-b-2xl rounded-tl-2xl rounded-tr-md'
-                                    : 'rounded-b-2xl rounded-tr-2xl rounded-tl-md'
-                                  : isCurrentUser
-                                    ? 'rounded-l-2xl rounded-r-md'
-                                    : 'rounded-r-2xl rounded-l-md'
-                              }`}
-                            >
-                              {message.content}
-                            </div>
-                            
-                            {/* Timestamp - only show for last message in group */}
-                            {showTimestamp && (
-                              <div className="text-xs text-gray-500 mt-1 px-1">
-                                {formatMessageTime(message.createdAt)}
+                          <div
+                            className={`flex items-start ${
+                              isCurrentUser ? 'justify-end' : 'justify-start'
+                            }`}
+                          >
+                            {/* Avatar - only show for other users, positioned correctly */}
+                            {!isCurrentUser && (
+                              <div className="flex-shrink-0 w-10 mr-2">
+                                {startsNewGroup ? (
+                                  <Avatar 
+                                    src={messageUser?.image || null} 
+                                    userName={messageUser?.name || 'User'}
+                                    size={40}
+                                  />
+                                ) : (
+                                  <div className="w-10" /> /* Spacer for alignment */
+                                )}
                               </div>
                             )}
+                            
+                            {/* Message bubble */}
+                            <div className={`flex flex-col ${isCurrentUser ? 'items-end' : 'items-start'} max-w-xs`}>
+                              <div
+                                className={`px-4 py-2 ${
+                                  isCurrentUser
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-100'
+                                } ${
+                                  startsNewGroup && isLastInGroup
+                                    ? 'rounded-2xl'
+                                    : startsNewGroup
+                                    ? isCurrentUser 
+                                      ? 'rounded-t-2xl rounded-bl-2xl rounded-br-md'
+                                      : 'rounded-t-2xl rounded-br-2xl rounded-bl-md'
+                                    : isLastInGroup
+                                    ? isCurrentUser
+                                      ? 'rounded-b-2xl rounded-tl-2xl rounded-tr-md'
+                                      : 'rounded-b-2xl rounded-tr-2xl rounded-tl-md'
+                                    : isCurrentUser
+                                      ? 'rounded-l-2xl rounded-r-md'
+                                      : 'rounded-r-2xl rounded-l-md'
+                                }`}
+                              >
+                                {message.content}
+                              </div>
+                              
+                              {/* Timestamp - only show for last message in group */}
+                              {showTimestamp && (
+                                <div className="text-xs text-gray-500 mt-1 px-1">
+                                  {formatMessageTime(message.createdAt)}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })
+                      );
+                    })
                   )}
+                  
+                  {/* Typing indicator */}
+                  {currentConversation && (
+                    <TypingIndicator 
+                      users={getTypingUsers(currentConversation.id, currentUser.id)} 
+                    />
+                  )}
+                  
                   <div ref={messagesEndRef} />
                 </div>
                 
@@ -397,8 +472,16 @@ const MessagesClient: React.FC<MessagesClientProps> = ({ currentUser }) => {
                     <input
                       type="text"
                       value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
+                      onChange={(e) => {
+                        setNewMessage(e.target.value);
+                        if (e.target.value.trim()) {
+                          handleTyping();
+                        } else {
+                          handleStopTyping();
+                        }
+                      }}
                       onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                      onBlur={handleStopTyping}
                       placeholder="Type a message..."
                       className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />

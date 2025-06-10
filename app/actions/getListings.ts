@@ -44,11 +44,17 @@ export default async function getListings(params: IListingsParams): Promise<ILis
       queryParams.category = params.category;
     }
 
-    // Handle instrument type search - search in category, title, and description
+    // Handle instrument type search - search in instrumentType field first, then fallback to title and description
     if (params.instrumentType) {
       queryParams.OR = [
         {
-          category: {
+          instrumentType: {
+            equals: params.instrumentType,
+            mode: 'insensitive'
+          }
+        },
+        {
+          instrumentType: {
             contains: params.instrumentType,
             mode: 'insensitive'
           }

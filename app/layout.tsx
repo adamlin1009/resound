@@ -7,6 +7,7 @@ import RegisterModal from "@/components/models/RegisterModal";
 import RentModal from "@/components/models/RentModal";
 import SearchModal from "@/components/models/SearchModal";
 import Navbar from "@/components/navbar/Navbar";
+import Providers from "@/components/providers/Providers";
 import { Nunito } from "next/font/google";
 import "../styles/globals.css";
 import getCurrentUser from "./actions/getCurrentUser";
@@ -31,17 +32,19 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={font.className}>
-        <ClientOnly>
-          <Toast />
-          <SearchModal />
-          <RegisterModal />
-          <LoginModal />
-          <RentModal />
-          <ConfirmModal />
-          <Navbar currentUser={currentUser} />
-        </ClientOnly>
-        <div className="pb-20 pt-28">{children}</div>
-        <Footer />
+        <Providers currentUser={currentUser}>
+          <ClientOnly>
+            <Toast />
+            <SearchModal />
+            <RegisterModal />
+            <LoginModal />
+            <RentModal />
+            <ConfirmModal />
+            <Navbar currentUser={currentUser} />
+          </ClientOnly>
+          <div className="pb-20 pt-28">{children}</div>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

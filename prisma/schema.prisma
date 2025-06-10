@@ -61,6 +61,7 @@ model Listing {
   imageSrc         String
   createdAt        DateTime      @default(now())
   category         String
+  instrumentType   String?       // Specific instrument from the category
   experienceLevel  Int
   city             String?
   state            String
@@ -86,6 +87,7 @@ model Listing {
   // Indexes for performance
   @@index([userId])
   @@index([category])
+  @@index([instrumentType])
   @@index([city, state, zipCode])
   @@index([latitude, longitude])
 }

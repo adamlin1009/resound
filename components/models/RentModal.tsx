@@ -14,11 +14,14 @@ import AddressInput from "../inputs/AddressInput";
 import ExactAddressInput from "../inputs/ExactAddressInput";
 import ImageUpload from "../inputs/ImageUpload";
 import Input from "../inputs/Input";
+import InstrumentAutocomplete from "../inputs/InstrumentAutocomplete";
 import { categories } from "../navbar/Categories";
+import { INSTRUMENT_CATEGORIES } from "@/constants";
 import Modal from "./Modal";
 
 interface ListingFormValues {
   category: string;
+  instrumentType: string;
   city: string;
   state: string;
   zipCode: string;
@@ -37,12 +40,13 @@ interface ListingFormValues {
 
 enum STEPS {
   CATEGORY = 0,
-  LOCATION = 1,
-  INFO = 2,
-  IMAGES = 3,
-  DESCRIPTION = 4,
-  AVAILABILITY = 5,
-  PRICE = 6,
+  INSTRUMENT = 1,
+  LOCATION = 2,
+  INFO = 3,
+  IMAGES = 4,
+  DESCRIPTION = 5,
+  AVAILABILITY = 6,
+  PRICE = 7,
 }
 
 function RentModal() {
@@ -62,6 +66,7 @@ function RentModal() {
   } = useForm<ListingFormValues>({
     defaultValues: {
       category: "",
+      instrumentType: "",
       city: "",
       state: "",
       zipCode: "",
@@ -80,6 +85,7 @@ function RentModal() {
   });
 
   const category = watch("category");
+  const instrumentType = watch("instrumentType");
   const city = watch("city");
   const state = watch("state");
   const zipCode = watch("zipCode");
@@ -126,6 +132,11 @@ function RentModal() {
       return;
     }
     
+    if (step === STEPS.INSTRUMENT && !instrumentType) {
+      toast.error("Please select an instrument");
+      return;
+    }
+    
     if (step === STEPS.LOCATION && (!isAddressValid || !exactAddress || !city || !state)) {
       toast.error("Please select a valid address from the dropdown");
       return;
@@ -137,7 +148,7 @@ function RentModal() {
     }
     
     setStep((value) => value + 1);
-  }, [step, category, isAddressValid, exactAddress, city, state, watch]);
+  }, [step, category, instrumentType, isAddressValid, exactAddress, city, state, watch]);
 
   const onSubmit: SubmitHandler<ListingFormValues> = (data) => {
     if (step !== STEPS.PRICE) {
@@ -236,6 +247,44 @@ function RentModal() {
       </div>
     </div>
   );
+
+  if (step === STEPS.INSTRUMENT) {
+    // Get instruments for the selected category
+    const categoryInstruments = INSTRUMENT_CATEGORIES[category as keyof typeof INSTRUMENT_CATEGORIES] || [];
+    
+    bodyContent = (
+      <div className="flex flex-col gap-8">
+        <Heading
+          title={`Which ${category.toLowerCase()} instrument are you lending?`}
+          subtitle="Select the specific instrument type"
+        />
+        <InstrumentAutocomplete
+          value={instrumentType}
+          onChange={(value) => setCustomValue("instrumentType", value)}
+          placeholder="Search for an instrument..."
+          error={false}
+        />
+        <div className="text-sm text-gray-600">
+          <p className="font-medium mb-2">Available {category} instruments:</p>
+          <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
+            {categoryInstruments.map((instrument) => (
+              <div 
+                key={instrument}
+                className={`p-2 border rounded cursor-pointer transition-colors ${
+                  instrumentType === instrument 
+                    ? 'border-amber-600 bg-amber-50' 
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+                onClick={() => setCustomValue("instrumentType", instrument)}
+              >
+                <span className="text-xs">{instrument}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (step === STEPS.LOCATION) {
     bodyContent = (
@@ -486,8 +535,11 @@ function RentModal() {
     if (step === STEPS.LOCATION) {
       return !isAddressValid || !exactAddress || !city || !state;
     }
+    if (step === STEPS.INSTRUMENT) {
+      return !instrumentType;
+    }
     return false;
-  }, [step, isAddressValid, exactAddress, city, state]);
+  }, [step, isAddressValid, exactAddress, city, state, instrumentType]);
 
   return (
     <Modal
