@@ -11,8 +11,6 @@ interface EmailData {
 export async function sendEmail({ to, subject, html }: EmailData) {
   // Check if Resend is available
   if (!process.env.RESEND_API_KEY) {
-    console.log(`Email would be sent to ${to}: ${subject}`);
-    console.log('HTML content:', html);
     return { success: true, message: 'Email logged (no service configured)' };
   }
 
@@ -38,7 +36,6 @@ export async function sendEmail({ to, subject, html }: EmailData) {
     
 
     // For now, just log the email
-    console.log(`📧 Email to ${to}: ${subject}`);
     return { success: true, message: 'Email logged' };
   } catch (error) {
     console.error('Email service error:', error);

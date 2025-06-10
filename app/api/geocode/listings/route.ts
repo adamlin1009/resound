@@ -1,8 +1,13 @@
 import { geocodeLocation, buildLocationString } from "@/lib/geocoding";
 import prisma from "@/lib/prismadb";
 import { NextResponse } from "next/server";
+import { checkAdminUser } from "@/app/actions/checkAdminUser";
 
 export async function POST() {
+  const currentUser = await checkAdminUser();
+  if (!currentUser) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     // Get all listings without coordinates
     const listings = await prisma.listing.findMany({
@@ -21,7 +26,6 @@ export async function POST() {
       }
     });
 
-    console.log(`Found ${listings.length} listings to geocode`);
 
     let geocoded = 0;
     let failed = 0;
@@ -54,17 +58,14 @@ export async function POST() {
             }
           });
           geocoded++;
-          console.log(`✓ Geocoded listing ${listing.id}`);
         } else {
           failed++;
-          console.log(`✗ Failed to geocode listing ${listing.id}`);
         }
 
         // Add delay to respect API rate limits
         await new Promise(resolve => setTimeout(resolve, 200));
       } catch (error) {
         failed++;
-        console.error(`Error geocoding listing ${listing.id}:`, error);
       }
     }
 
@@ -77,7 +78,6 @@ export async function POST() {
     });
 
   } catch (error) {
-    console.error('Bulk geocoding error:', error);
     return NextResponse.json(
       { error: 'Failed to geocode listings' },
       { status: 500 }

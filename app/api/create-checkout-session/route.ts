@@ -48,6 +48,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate price matches expected calculation
+    const days = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24));
+    const expectedPrice = listing.price * days;
+    if (Math.abs(totalPrice - expectedPrice) > 0.01) {
+      return NextResponse.json(
+        { error: "Invalid price calculation" },
+        { status: 400 }
+      );
+    }
+
     // Create a reservation hold to prevent double-booking
     let reservation;
     try {

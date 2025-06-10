@@ -22,11 +22,28 @@ npx prisma studio      # Open Prisma Studio GUI
 node scripts/geocodeExistingListings.js  # Geocode existing listings for radius search
 node scripts/makeAdmin.js your@email.com # Make a user an admin
 
-# Testing & Debugging
+# Testing
+npm test                                 # Run all tests
+npm test -- --watch                     # Run tests in watch mode
+npm test -- --coverage                  # Run tests with coverage
+npm run test:api                        # Run API tests only
+npm run test:db                         # Run database tests only
+npm run test:e2e                        # Run E2E tests only
+
+# Debugging & Maintenance Scripts
 node scripts/testRadiusSearch.js         # Test radius search functionality
 ./scripts/test-stripe-webhook.sh         # Test Stripe webhook with local forwarding
 node scripts/checkListingData.js         # Verify listing data integrity
 node scripts/testRadiusSearchDirect.js   # Direct database radius search test
+node scripts/addReservationIndexes.js    # Add database indexes for reservations
+node scripts/findProblematicListing.js   # Find problematic listings in database
+node scripts/findSpecificListing.js      # Search for specific listing by criteria
+node scripts/fixViolaCategory.js         # Fix viola category data issues
+node scripts/migrateCategoriesToBroadFamilies.js  # Migrate instrument categories
+node scripts/searchForListing.js         # Search listings with advanced filters
+
+# Bundle Analysis
+npm run analyze                          # Analyze bundle size with Next.js Bundle Analyzer
 ```
 
 ## Architecture Overview
@@ -52,6 +69,11 @@ node scripts/testRadiusSearchDirect.js   # Direct database radius search test
 - **HTTP Client**: Axios 1.3.4
 - **Notifications**: React Toastify 9.1.3
 - **Password Encryption**: bcrypt 5.1.0
+- **Rate Limiting**: Custom in-memory implementation (lib/rateLimiter.ts)
+- **Testing**: Jest 29.7.0 with Testing Library
+- **Bundle Analysis**: Next.js Bundle Analyzer 15.3.3
+- **Select Inputs**: React Select 5.7.2
+- **Development Tools**: tsx 4.19.4 for TypeScript execution
 
 ### Core Data Models
 
@@ -165,6 +187,13 @@ node scripts/testRadiusSearchDirect.js   # Direct database radius search test
 - Renters need paid reservations to message
 - API routes enforce session checks
 
+#### Rate Limiting
+- In-memory rate limiting for single-instance deployments
+- Configurable windows and limits per endpoint
+- Different limits for: registration (5/hour), checkout (10/hour), API (100/15min)
+- Headers include retry-after and rate limit info
+- Clean up of expired entries every minute
+
 ### Location & Search System
 
 #### Geocoding Implementation
@@ -216,13 +245,14 @@ RESEND_API_KEY=                   # Email service
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-### Recent Major Updates (January 2025)
+### Recent Major Updates (June 2025)
 
 1. **Enhanced Security**
    - Race condition prevention in reservations
    - Transaction-safe payment processing
    - Improved authorization checks
    - Reservation hold system during checkout
+   - Rate limiting implementation for API endpoints
 
 2. **Admin Dashboard**
    - Full admin panel at `/admin`
@@ -241,6 +271,18 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
    - Nationwide search option
    - Geocoding for all listings
    - Batch processing scripts
+
+5. **Testing Infrastructure**
+   - Jest and Testing Library setup
+   - Component unit tests
+   - API integration tests
+   - Test utilities and mock helpers
+
+6. **Code Quality Improvements**
+   - Comprehensive code audit (Phases 1-6)
+   - Bundle size analysis tooling
+   - Additional maintenance scripts
+   - Database optimization scripts
 
 ### Common Development Tasks
 
@@ -367,19 +409,28 @@ npx prisma db pull --force
 
 ### Test-Driven Development
 
+#### Current Test Coverage
+The project has an established testing infrastructure with Jest and Testing Library:
+- **Unit Tests**: Components (ListingCard, Modal, RentModal)
+- **Integration Tests**: API routes (payment flow, registration)
+- **Server Actions**: Data access layer tests
+- **Test Utilities**: Mock helpers, test database setup, test environment config
+
 #### Testing Strategy
 ```bash
-# Unit tests (not yet implemented - priority task)
-npm test                      # Run all tests
-npm test -- --watch          # Watch mode
-npm test -- ListingCard      # Specific component
+# Run all tests
+npm test                      # Run test suite
+npm test -- --watch          # Watch mode for development
+npm test -- --coverage       # Generate coverage report
 
-# Integration tests
-npm run test:api             # API route tests
-npm run test:db              # Database operations
+# Run specific test suites
+npm run test:api             # API route tests only
+npm run test:db              # Database operation tests
+npm run test:e2e             # End-to-end user flow tests
 
-# E2E tests
-npm run test:e2e             # Full user flows
+# Run specific test files
+npm test ListingCard         # Test specific component
+npm test paymentFlow         # Test specific flow
 ```
 
 #### TDD Workflow

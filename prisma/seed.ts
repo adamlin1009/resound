@@ -488,17 +488,6 @@ async function main() {
     reservations.map(reservation => prisma.reservation.create({ data: reservation }))
   );
 
-  console.log('✅ Mock data seeded successfully!');
-  console.log(`Created ${users.length} users`);
-  console.log(`Created ${createdListings.length} instrument listings across the United States`);
-  console.log(`Created ${reservations.length} sample reservations`);
-  console.log('\n📧 Test accounts:');
-  console.log('Email: john.musician@email.com | Password: password123');
-  console.log('Email: sarah.strings@email.com | Password: password123');
-  console.log('Email: mike.piano@email.com | Password: password123');
-  console.log('Email: emma.classical@email.com | Password: password123');
-  console.log('\n🏙️ Listings span major US cities including:');
-  console.log('New York, Los Angeles, Chicago, Nashville, Boston, Seattle, Austin, Denver, and more...');
 }
 
 main()

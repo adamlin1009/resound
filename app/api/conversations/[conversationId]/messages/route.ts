@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { TIME_CONSTANTS } from "@/constants";
+import { withRateLimit, rateLimiters } from "@/lib/rateLimiter";
 
 interface IParams {
   conversationId: string;
@@ -49,9 +50,10 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<IParams> }
 ) {
+  return withRateLimit(request, rateLimiters.api, async () => {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
@@ -144,7 +146,7 @@ export async function POST(
 
     return NextResponse.json(message);
   } catch (error) {
-    console.error("Error sending message:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
+  });
 }
