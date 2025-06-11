@@ -33,7 +33,54 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { imageSrc } = body;
+    const { 
+      title,
+      description,
+      price,
+      category,
+      instrumentType,
+      experienceLevel,
+      imageSrc,
+      exactAddress,
+      city,
+      state,
+      zipCode,
+      latitude,
+      longitude,
+      pickupStartTime,
+      pickupEndTime,
+      returnStartTime,
+      returnEndTime,
+      availableDays
+    } = body;
+
+    // Build update data object with only provided fields
+    const updateData: any = {};
+
+    // Basic information
+    if (title !== undefined) updateData.title = title;
+    if (description !== undefined) updateData.description = description;
+    if (price !== undefined) updateData.price = price;
+
+    // Instrument details
+    if (category !== undefined) updateData.category = category;
+    if (instrumentType !== undefined) updateData.instrumentType = instrumentType;
+    if (experienceLevel !== undefined) updateData.experienceLevel = experienceLevel;
+
+    // Location
+    if (exactAddress !== undefined) updateData.exactAddress = exactAddress;
+    if (city !== undefined) updateData.city = city;
+    if (state !== undefined) updateData.state = state;
+    if (zipCode !== undefined) updateData.zipCode = zipCode;
+    if (latitude !== undefined) updateData.latitude = latitude;
+    if (longitude !== undefined) updateData.longitude = longitude;
+
+    // Availability
+    if (pickupStartTime !== undefined) updateData.pickupStartTime = pickupStartTime;
+    if (pickupEndTime !== undefined) updateData.pickupEndTime = pickupEndTime;
+    if (returnStartTime !== undefined) updateData.returnStartTime = returnStartTime;
+    if (returnEndTime !== undefined) updateData.returnEndTime = returnEndTime;
+    if (availableDays !== undefined) updateData.availableDays = availableDays;
 
     // Validate image array
     if (imageSrc !== undefined) {
@@ -59,14 +106,29 @@ export async function PATCH(
           { status: 400 }
         );
       }
+
+      updateData.imageSrc = imageSrc;
+    }
+
+    // Validate required fields if provided
+    if (price !== undefined && price <= 0) {
+      return NextResponse.json(
+        { error: "Price must be greater than 0" },
+        { status: 400 }
+      );
+    }
+
+    if (experienceLevel !== undefined && (experienceLevel < 1 || experienceLevel > 4)) {
+      return NextResponse.json(
+        { error: "Experience level must be between 1 and 4" },
+        { status: 400 }
+      );
     }
 
     // Update the listing
     const updatedListing = await prisma.listing.update({
       where: { id: listingId },
-      data: {
-        ...(imageSrc !== undefined && { imageSrc }),
-      },
+      data: updateData,
     });
 
     return NextResponse.json(updatedListing);

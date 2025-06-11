@@ -36,8 +36,8 @@ function Button({
     >
       {Icon && (
         <Icon
-          size={24}
-          className={`absolute left-4 top-3 ${isColor && "text-amber-600"}`}
+          size={small ? 16 : 24}
+          className={`absolute left-4 ${small ? "top-1/2 -translate-y-1/2" : "top-3"} ${isColor && "text-amber-600"}`}
         />
       )}
       {label}

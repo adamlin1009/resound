@@ -64,7 +64,9 @@ async function handleSetup(
 
     // Update the reservation with rental details
     const updateData: Prisma.ReservationUpdateInput = {
+      pickupAddress,
       pickupInstructions,
+      returnAddress,
       returnInstructions,
       ownerNotes,
     };

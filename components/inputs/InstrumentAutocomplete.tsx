@@ -4,6 +4,7 @@ import React from "react";
 import Select, { GroupBase, StylesConfig } from "react-select";
 import { FiMusic } from "react-icons/fi";
 import { INSTRUMENT_OPTIONS, InstrumentOption } from "@/constants";
+import ClientOnly from "@/components/ClientOnly";
 
 type Props = {
   value?: string;
@@ -116,35 +117,37 @@ export default function InstrumentAutocomplete({
   };
 
   return (
-    <div className="relative">
-      <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10 pointer-events-none">
-        <FiMusic size={18} />
-      </div>
-      
-      <Select<InstrumentOption, false, GroupBase<InstrumentOption>>
-        instanceId="instrument-select"
-        value={selectedOption}
-        onChange={handleChange}
-        options={INSTRUMENT_OPTIONS}
-        placeholder={placeholder}
-        isClearable
-        isSearchable
-        styles={customStyles(error)}
-        classNamePrefix="instrument-select"
-        noOptionsMessage={() => "No instruments found"}
-        formatGroupLabel={(group: GroupBase<InstrumentOption>) => (
-          <div className="flex items-center justify-between">
-            <span>{group.label}</span>
-            <span className="text-xs text-gray-500">
-              {group.options.length} instruments
-            </span>
-          </div>
+    <ClientOnly>
+      <div className="relative">
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10 pointer-events-none">
+          <FiMusic size={18} />
+        </div>
+        
+        <Select<InstrumentOption, false, GroupBase<InstrumentOption>>
+          instanceId="instrument-select"
+          value={selectedOption}
+          onChange={handleChange}
+          options={INSTRUMENT_OPTIONS}
+          placeholder={placeholder}
+          isClearable
+          isSearchable
+          styles={customStyles(error)}
+          classNamePrefix="instrument-select"
+          noOptionsMessage={() => "No instruments found"}
+          formatGroupLabel={(group: GroupBase<InstrumentOption>) => (
+            <div className="flex items-center justify-between">
+              <span>{group.label}</span>
+              <span className="text-xs text-gray-500">
+                {group.options.length} instruments
+              </span>
+            </div>
+          )}
+        />
+        
+        {error && (
+          <p className="text-red-500 text-xs mt-1">Please select an instrument</p>
         )}
-      />
-      
-      {error && (
-        <p className="text-red-500 text-xs mt-1">Please select an instrument</p>
-      )}
-    </div>
+      </div>
+    </ClientOnly>
   );
 }

@@ -94,6 +94,8 @@ async function main() {
       state: "NY",
       zipCode: "10001",
       exactAddress: "123 Carnegie Hall Way, New York, NY 10001",
+      latitude: 40.7648,
+      longitude: -73.9808,
       price: 150,
       userId: users[0].id
     },
@@ -108,6 +110,8 @@ async function main() {
       state: "CA", 
       zipCode: "90210",
       exactAddress: "456 Music Ave, Los Angeles, CA 90210",
+      latitude: 34.0901,
+      longitude: -118.4065,
       price: 35,
       userId: users[1].id
     },
@@ -122,6 +126,8 @@ async function main() {
       state: "IL",
       zipCode: "60601",
       exactAddress: "789 Electric Ave, Chicago, IL 60601",
+      latitude: 41.8781,
+      longitude: -87.6298,
       price: 85,
       userId: users[4].id
     },
@@ -138,6 +144,8 @@ async function main() {
       state: "PA",
       zipCode: "19101",
       exactAddress: "147 Martin Rd, Philadelphia, PA 19101",
+      latitude: 39.9526,
+      longitude: -75.1652,
       price: 125,
       userId: users[0].id
     },
@@ -152,6 +160,8 @@ async function main() {
       state: "AZ",
       zipCode: "85001",
       exactAddress: "258 Fender Ave, Phoenix, AZ 85001",
+      latitude: 33.4484,
+      longitude: -112.074,
       price: 85,
       userId: users[1].id
     },
@@ -166,6 +176,8 @@ async function main() {
       state: "NC",
       zipCode: "28201",
       exactAddress: "963 Classical Way, Charlotte, NC 28201",
+      latitude: 35.2271,
+      longitude: -80.8431,
       price: 115,
       userId: users[3].id
     },
@@ -182,6 +194,8 @@ async function main() {
       state: "TN",
       zipCode: "37201",
       exactAddress: "123 Music St, Nashville, TN 37201",
+      latitude: 36.1627,
+      longitude: -86.7816,
       price: 185,
       userId: users[0].id
     },
@@ -196,6 +210,8 @@ async function main() {
       state: "GA",
       zipCode: "30301",
       exactAddress: "123 Music St, Atlanta, GA 30301",
+      latitude: 33.749,
+      longitude: -84.388,
       price: 95,
       userId: users[1].id
     },
@@ -212,6 +228,8 @@ async function main() {
       state: "NV",
       zipCode: "89101",
       exactAddress: "852 Jazz Bass Dr, Las Vegas, NV 89101",
+      latitude: 36.1699,
+      longitude: -115.1398,
       price: 95,
       userId: users[4].id
     },
@@ -226,6 +244,8 @@ async function main() {
       state: "MA",
       zipCode: "02110",
       exactAddress: "200 Symphony Hall Ave, Boston, MA 02110",
+      latitude: 42.3601,
+      longitude: -71.0589,
       price: 300,
       userId: users[6].id
     },
@@ -242,6 +262,8 @@ async function main() {
       state: "CA",
       zipCode: "94102",
       exactAddress: "123 Grand Piano Blvd, San Francisco, CA 94102",
+      latitude: 37.7749,
+      longitude: -122.4194,
       price: 300,
       userId: users[2].id
     },
@@ -256,6 +278,8 @@ async function main() {
       state: "WA",
       zipCode: "98101",
       exactAddress: "456 Upright Ave, Seattle, WA 98101",
+      latitude: 47.6062,
+      longitude: -122.3321,
       price: 120,
       userId: users[3].id
     },
@@ -270,6 +294,8 @@ async function main() {
       state: "TX",
       zipCode: "73301",
       exactAddress: "789 Steinway Dr, Austin, TX 73301",
+      latitude: 30.2672,
+      longitude: -97.7431,
       price: 450,
       userId: users[2].id
     },
@@ -284,6 +310,8 @@ async function main() {
       state: "OR",
       zipCode: "97201",
       exactAddress: "654 Digital St, Portland, OR 97201",
+      latitude: 45.5152,
+      longitude: -122.6784,
       price: 75,
       userId: users[1].id
     },
@@ -300,6 +328,8 @@ async function main() {
       state: "LA",
       zipCode: "70112",
       exactAddress: "468 Selmer St, New Orleans, LA 70112",
+      latitude: 29.9511,
+      longitude: -90.0715,
       price: 175,
       userId: users[3].id
     },
@@ -314,6 +344,8 @@ async function main() {
       state: "MO",
       zipCode: "64101",
       exactAddress: "680 Tenor Ave, Kansas City, MO 64101",
+      latitude: 39.0997,
+      longitude: -94.5786,
       price: 155,
       userId: users[4].id
     },
@@ -330,6 +362,8 @@ async function main() {
       state: "WI",
       zipCode: "53201",
       exactAddress: "235 Powell St, Milwaukee, WI 53201",
+      latitude: 43.0389,
+      longitude: -87.9065,
       price: 135,
       userId: users[5].id
     },
@@ -344,6 +378,8 @@ async function main() {
       state: "OK",
       zipCode: "73101",
       exactAddress: "346 Flute Ave, Oklahoma City, OK 73101",
+      latitude: 35.4676,
+      longitude: -97.5164,
       price: 55,
       userId: users[1].id
     },
@@ -360,6 +396,8 @@ async function main() {
       state: "CA",
       zipCode: "94102",
       exactAddress: "123 Music St, San Francisco, CA 94102",
+      latitude: 37.7749,
+      longitude: -122.4194,
       price: 145,
       userId: users[5].id
     },
@@ -376,6 +414,8 @@ async function main() {
       state: "UT",
       zipCode: "84101",
       exactAddress: "802 Bach Blvd, Salt Lake City, UT 84101",
+      latitude: 40.7608,
+      longitude: -111.891,
       price: 125,
       userId: users[6].id
     },
@@ -390,6 +430,8 @@ async function main() {
       state: "VA",
       zipCode: "23218",
       exactAddress: "913 Trumpet Ln, Richmond, VA 23218",
+      latitude: 37.5407,
+      longitude: -77.436,
       price: 45,
       userId: users[7].id
     },
@@ -404,6 +446,8 @@ async function main() {
       state: "CA",
       zipCode: "95814",
       exactAddress: "124 Professional Dr, Sacramento, CA 95814",
+      latitude: 38.5816,
+      longitude: -121.4944,
       price: 85,
       userId: users[0].id
     },
@@ -420,6 +464,8 @@ async function main() {
       state: "WA",
       zipCode: "98101",
       exactAddress: "123 Music St, Seattle, WA 98101",
+      latitude: 47.6062,
+      longitude: -122.3321,
       price: 185,
       userId: users[7].id
     },
@@ -434,6 +480,8 @@ async function main() {
       state: "CO",
       zipCode: "80201",
       exactAddress: "123 Music St, Denver, CO 80201",
+      latitude: 39.7392,
+      longitude: -104.9903,
       price: 65,
       userId: users[3].id
     },
@@ -448,6 +496,8 @@ async function main() {
       state: "TX",
       zipCode: "78701",
       exactAddress: "123 Music St, Austin, TX 78701",
+      latitude: 30.2672,
+      longitude: -97.7431,
       price: 125,
       userId: users[4].id
     }

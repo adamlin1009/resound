@@ -169,7 +169,7 @@ function ListingClient({ reservations = [], listing, currentUser, hasPaidReserva
                         onImagesAdded={() => router.refresh()}
                       />
                       <p className="text-xs text-gray-500 mt-2">
-                        Share a QR code to let others upload images to your listing
+                        Scan a QR code to upload images to your listing
                       </p>
                     </div>
                   </div>

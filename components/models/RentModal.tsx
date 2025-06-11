@@ -379,6 +379,35 @@ function RentModal() {
           value={imageSrc}
           maxImages={10}
         />
+        
+        {/* QR Code Upload Info */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <div className="text-blue-600 text-xl mt-0.5">📱</div>
+            <div className="flex-1">
+              <h4 className="font-semibold text-blue-900 mb-1">
+                Want to upload photos from your phone?
+              </h4>
+              <p className="text-sm text-blue-800 mb-2">
+                After creating your listing, you&apos;ll be able to generate a QR code that lets you easily upload photos directly from your phone&apos;s camera.
+              </p>
+              <div className="flex items-center gap-2 text-xs text-blue-700">
+                <span className="bg-blue-100 px-2 py-1 rounded">🔗 Scan QR Code</span>
+                <span>→</span>
+                <span className="bg-blue-100 px-2 py-1 rounded">📸 Take Photos</span>
+                <span>→</span>
+                <span className="bg-blue-100 px-2 py-1 rounded">✅ Auto Upload</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Current Upload Status */}
+        {imageSrc.length > 0 && (
+          <div className="text-sm text-gray-600 text-center">
+            {imageSrc.length} of 10 images uploaded
+          </div>
+        )}
       </div>
     );
   }

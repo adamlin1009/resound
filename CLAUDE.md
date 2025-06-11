@@ -35,12 +35,23 @@ node scripts/testRadiusSearch.js         # Test radius search functionality
 ./scripts/test-stripe-webhook.sh         # Test Stripe webhook with local forwarding
 node scripts/checkListingData.js         # Verify listing data integrity
 node scripts/testRadiusSearchDirect.js   # Direct database radius search test
+node scripts/testRadiusSearchSimple.js   # Simple radius search test
 node scripts/addReservationIndexes.js    # Add database indexes for reservations
 node scripts/findProblematicListing.js   # Find problematic listings in database
 node scripts/findSpecificListing.js      # Search for specific listing by criteria
 node scripts/fixViolaCategory.js         # Fix viola category data issues
 node scripts/migrateCategoriesToBroadFamilies.js  # Migrate instrument categories
+node scripts/migrateInstrumentTypes.js   # Migrate instrument types to new schema
+node scripts/updateSpecificInstrumentTypes.js  # Update specific instrument types
+node scripts/verifyInstrumentTypes.js    # Verify instrument type integrity
 node scripts/searchForListing.js         # Search listings with advanced filters
+node scripts/checkRecentListings.js      # Check recently created listings
+node scripts/checkGeocodedListings.js    # Verify geocoding status
+
+# Image Management Scripts
+node scripts/analyzeCloudinaryImages.js  # Analyze Cloudinary image usage
+node scripts/migrateImagesToArraysRaw.js # Migrate images to array format
+node scripts/verifyUploadthingMigration.js # Verify Uploadthing migration status
 
 # Bundle Analysis
 npm run analyze                          # Analyze bundle size with Next.js Bundle Analyzer
@@ -50,16 +61,28 @@ npm run analyze                          # Analyze bundle size with Next.js Bund
 
 **Resound** is a classical instrument rental marketplace built as an Airbnb-style platform using Next.js 15+ with the App Router. It's specifically designed for musicians to rent high-quality instruments with features tailored to the music community.
 
+### Custom Server Setup
+
+The application uses a custom Next.js server (`server.js`) to enable:
+- Socket.io WebSocket integration for real-time messaging
+- Custom middleware for authentication
+- WebSocket event handling alongside Next.js routes
+- Graceful shutdown handling
+- Production-ready with PM2 support
+
 ### Tech Stack
 
 - **Framework**: Next.js 15.3.3 (App Router) with React 18.2.0
 - **Language**: TypeScript 5.0.3
 - **Styling**: Tailwind CSS 3.4.17 with tailwind-scrollbar plugin
+- **Utility Classes**: clsx 2.1.1, tailwind-merge 3.3.1
 - **Database**: MongoDB with Prisma ORM 4.12.0
 - **Authentication**: NextAuth.js 4.20.1 with Prisma Adapter
 - **State Management**: Zustand 4.3.7
 - **Payment Processing**: Stripe 18.2.1 with webhook support
-- **Image Management**: Uploadthing 7.7.2
+- **Image Management**: Uploadthing 7.7.2 (migrated from Cloudinary)
+- **Image Processing**: Sharp 0.34.2, Plaiceholder 3.0.0
+- **Real-time Communication**: Socket.io 4.8.1 (server and client)
 - **Email Service**: Resend 4.5.2
 - **Form Handling**: React Hook Form 7.43.9
 - **Date Handling**: date-fns 2.29.3 and react-date-range 1.4.0
@@ -70,6 +93,8 @@ npm run analyze                          # Analyze bundle size with Next.js Bund
 - **Notifications**: React Toastify 9.1.3
 - **Password Encryption**: bcrypt 5.1.0
 - **Rate Limiting**: Custom in-memory implementation (lib/rateLimiter.ts)
+- **Drag & Drop**: @dnd-kit/core 6.3.1, @dnd-kit/sortable 10.0.0
+- **QR Codes**: qrcode 1.5.4
 - **Testing**: Jest 29.7.0 with Testing Library
 - **Bundle Analysis**: Next.js Bundle Analyzer 15.3.3
 - **Select Inputs**: React Select 5.7.2
@@ -79,31 +104,42 @@ npm run analyze                          # Analyze bundle size with Next.js Bund
 
 #### User
 - Authentication: email, hashedPassword, OAuth providers
-- Profile: name, image, createdAt, updatedAt
+- Profile: name, image, experienceLevel, preferredInstruments, bio
 - Permissions: isAdmin flag
-- Relations: listings[], reservations[], favorites[], accounts[], conversations[]
+- Relations: listings[], reservations[], favorites[], accounts[], conversations[], uploadTokens[]
 
 #### Listing
-- Music-specific: conditionRating (1-10), experienceLevel (1-5), category
-- Location: location, city, state, zipCode, latitude, longitude
-- Details: title, description, price, imageSrc[], available
-- Relations: user (owner), reservations[], conversations[]
+- Music-specific: category, instrumentType, experienceLevel (1-5)
+- Location: city, state, zipCode, exactAddress, latitude, longitude
+- Details: title, description, price, imageSrc[] (array of image URLs)
+- Availability: pickupStartTime, pickupEndTime, returnStartTime, returnEndTime, availableDays[]
+- Relations: user (owner), reservations[], conversations[], uploadTokens[]
 
 #### Reservation
 - Booking: startDate, endDate, totalPrice
 - Status: PENDING | ACTIVE | COMPLETED | CANCELED
-- Metadata: cancellationReason, createdAt
-- Relations: user, listing, payment
+- Rental Status: PENDING | READY_FOR_PICKUP | PICKED_UP | IN_PROGRESS | AWAITING_RETURN | RETURNED | COMPLETED
+- Pickup Details: pickupAddress, pickupInstructions, pickupStartTime, pickupEndTime, confirmation flags
+- Return Details: returnAddress, returnInstructions, returnDeadline, returnStartTime, returnEndTime, confirmation flags
+- Metadata: cancellationReason, createdAt, expiresAt, stripeSessionId, ownerNotes, renterNotes
+- Relations: user, listing
 
 #### Payment
-- Stripe: stripeSessionId, stripePaymentIntentId
-- Details: amount, status (PENDING | SUCCEEDED | FAILED)
-- Relations: reservation
+- Stripe: stripeSessionId (unique), stripePaymentIntentId
+- Details: amount, currency, status (PENDING | PROCESSING | SUCCEEDED | FAILED | CANCELED)
+- Booking Info: startDate, endDate
+- Relations: user, listing
 
 #### Conversation & Message
-- Threading: owner-renter communication per listing
-- Persistence: 30 days post-rental completion
+- Threading: owner-renter communication per listing (unique per triplet)
+- Persistence: messages stored indefinitely
 - Content: text messages with timestamps
+- Relations: listing, owner, renter, messages[]
+
+#### UploadToken
+- Security: unique token for image upload authorization
+- Metadata: expiresAt, createdAt
+- Relations: user, listing
 
 ### API Routes Structure
 
@@ -112,6 +148,9 @@ npm run analyze                          # Analyze bundle size with Next.js Bund
 ├── auth/[...nextauth]        # NextAuth.js dynamic routes
 ├── listings/                  # CRUD operations
 │   └── [listingId]/          # Single listing operations
+│       ├── route.ts          # GET, PATCH, DELETE listing
+│       ├── images/           # Image management
+│       └── upload-token/     # Generate upload token
 ├── reservations/             # Booking management
 │   └── [reservationId]/      
 │       ├── cancel/           # Cancel with reason
@@ -127,10 +166,19 @@ npm run analyze                          # Analyze bundle size with Next.js Bund
 ├── geocode/                  # Address geocoding
 │   └── listings/             # Batch geocoding
 ├── places/autocomplete/      # Google Places integration
+├── uploadthing/              # Uploadthing integration
+│   ├── core.ts              # Upload configuration
+│   └── route.ts             # Upload endpoints
+├── cron/                     # Scheduled tasks
+│   ├── expire-reservations/  # Clean up expired reservations
+│   └── cleanup-upload-tokens/ # Remove expired upload tokens
 ├── admin/                    # Admin-only endpoints
 │   ├── users/               # User management
 │   ├── listings/            # Listing moderation
-│   └── stats/               # Platform analytics
+│   ├── stats/               # Platform analytics
+│   └── images/              # Image management
+│       ├── stats/           # Image statistics
+│       └── bulk-delete/     # Bulk delete operations
 └── profile/                 # User profile updates
 ```
 
@@ -153,7 +201,15 @@ npm run analyze                          # Analyze bundle size with Next.js Bund
 - Zustand for modal states (login, register, rent, search, confirm)
 - useFavorite hook for optimistic updates
 - useMessages for conversation state
+- useSocket for real-time WebSocket connections
 - Server state via React Server Components
+
+#### Real-time Communication
+- Socket.io server integration with Next.js custom server
+- Client-side socket provider with React Context
+- Event-based messaging for conversations
+- Automatic reconnection handling
+- User authentication via socket middleware
 
 #### Payment Flow Architecture
 1. Create PENDING reservation on checkout initiation
@@ -180,19 +236,33 @@ npm run analyze                          # Analyze bundle size with Next.js Bund
 - XSS prevention through React
 - SQL injection prevention via Prisma
 
+#### Image Upload Security
+- Uploadthing integration with secure tokens
+- Time-limited upload tokens (15 minutes expiry)
+- User and listing-scoped upload permissions
+- Automatic token cleanup via cron job
+- File type and size restrictions enforced
+- Server-side validation of upload requests
+
 #### Authorization Rules
 - Users see only their reservations/listings
 - Admins have full platform access
 - Owners manage their listings
 - Renters need paid reservations to message
 - API routes enforce session checks
+- Upload tokens require authenticated users
 
 #### Rate Limiting
 - In-memory rate limiting for single-instance deployments
 - Configurable windows and limits per endpoint
-- Different limits for: registration (5/hour), checkout (10/hour), API (100/15min)
+- Different limits for: 
+  - Registration: 5 attempts per hour
+  - Checkout: 10 attempts per hour
+  - API general: 100 requests per 15 minutes
+  - Geocoding: 30 requests per minute
+  - Favorites: 60 requests per minute
 - Headers include retry-after and rate limit info
-- Clean up of expired entries every minute
+- Automatic cleanup of expired entries every minute
 
 ### Location & Search System
 
@@ -225,9 +295,10 @@ NEXTAUTH_URL=http://localhost:3000
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
-# Uploadthing
-UPLOADTHING_SECRET=
-UPLOADTHING_APP_ID=
+# Uploadthing (Image Upload Service)
+UPLOADTHING_SECRET=               # Uploadthing secret key
+UPLOADTHING_APP_ID=               # Uploadthing app ID
+UPLOADTHING_URL=                  # Optional: Custom Uploadthing URL
 
 # Stripe
 STRIPE_SECRET_KEY=sk_test_...
@@ -243,46 +314,71 @@ RESEND_API_KEY=                   # Email service
 
 # App Config
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# WebSocket (Optional)
+SOCKET_PORT=3001                  # Port for Socket.io server
 ```
 
 ### Recent Major Updates (June 2025)
 
-1. **Enhanced Security**
+1. **Image Management Migration**
+   - Migrated from Cloudinary to Uploadthing
+   - Secure token-based upload system
+   - Time-limited upload tokens (15 minutes)
+   - Admin bulk delete functionality
+   - Automatic cleanup of expired tokens
+   - Image statistics dashboard
+
+2. **Real-time Communication**
+   - Socket.io integration for live messaging
+   - WebSocket server with Next.js custom server
+   - Real-time conversation updates
+   - Typing indicators and presence
+   - Automatic reconnection handling
+
+3. **Enhanced Security**
    - Race condition prevention in reservations
    - Transaction-safe payment processing
    - Improved authorization checks
    - Reservation hold system during checkout
    - Rate limiting implementation for API endpoints
+   - Upload token security for images
 
-2. **Admin Dashboard**
+4. **Admin Dashboard Enhancements**
    - Full admin panel at `/admin`
    - User and listing management
    - Platform statistics and analytics
+   - Image management tools
+   - Bulk operations support
    - Confirmation modals for destructive actions
 
-3. **Messaging System**
-   - Real-time owner-renter communication
-   - 30-day post-rental messaging
-   - Conversation persistence
+5. **Messaging System**
+   - Real-time owner-renter communication via Socket.io
+   - Persistent conversation storage
    - Split-view interface
+   - Message history preservation
 
-4. **Location Search**
+6. **Location Search Improvements**
    - Radius-based search with miles
    - Nationwide search option
    - Geocoding for all listings
    - Batch processing scripts
+   - Search bar enhancements
 
-5. **Testing Infrastructure**
+7. **Testing Infrastructure**
    - Jest and Testing Library setup
    - Component unit tests
    - API integration tests
    - Test utilities and mock helpers
+   - Comprehensive test coverage
 
-6. **Code Quality Improvements**
-   - Comprehensive code audit (Phases 1-6)
-   - Bundle size analysis tooling
+8. **Code Quality & Performance**
+   - Comprehensive security audit (Phases 1-6)
+   - Bundle size optimization
    - Additional maintenance scripts
-   - Database optimization scripts
+   - Database optimization with indexes
+   - Image processing with Sharp
+   - Drag-and-drop functionality with @dnd-kit
 
 ### Common Development Tasks
 
@@ -294,6 +390,17 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 5. Create components with proper client/server split
 6. Add Zustand store if needed for UI state
 7. Update TypeScript types in `types.ts`
+8. Add Socket.io events if real-time updates needed
+9. Implement rate limiting for new endpoints
+10. Add tests for critical functionality
+
+#### Working with WebSocket/Real-time Features
+1. Define event types in `lib/socket/types.ts`
+2. Add server-side handlers in `server.js`
+3. Use `useSocket` hook in client components
+4. Handle connection state and reconnection
+5. Implement proper cleanup in useEffect
+6. Test with multiple concurrent connections
 
 #### Testing Stripe Locally
 1. Install Stripe CLI: `brew install stripe/stripe-cli/stripe`
@@ -302,20 +409,37 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 4. Copy webhook secret to `.env`
 5. Test with card: 4242 4242 4242 4242
 
+#### Working with Image Uploads (Uploadthing)
+1. Generate upload token via API: `/api/listings/[listingId]/upload-token`
+2. Use `@uploadthing/react` components for UI
+3. Configure allowed file types in `app/api/uploadthing/core.ts`
+4. Handle upload callbacks for database updates
+5. Tokens expire after 15 minutes
+6. Max file size: 4MB for images
+7. Supported formats: jpg, jpeg, png, webp
+8. Admin bulk operations via `/api/admin/images/`
+
 #### Managing Production Data
 1. Grant admin: `node scripts/makeAdmin.js email@example.com`
 2. Geocode listings: `node scripts/geocodeExistingListings.js`
 3. Test search: `node scripts/testRadiusSearch.js`
 4. Check data: `node scripts/checkListingData.js`
+5. Migrate images: `node scripts/migrateImagesToArraysRaw.js`
+6. Verify Uploadthing: `node scripts/verifyUploadthingMigration.js`
+7. Update instruments: `node scripts/migrateInstrumentTypes.js`
+8. Add indexes: `node scripts/addReservationIndexes.js`
 
 ### Performance Considerations
 
 - Dynamic imports for heavy components (maps, modals)
-- Image optimization via Next.js Image
+- Image optimization via Next.js Image and Uploadthing
 - Prisma connection pooling singleton
 - Efficient query patterns with selective fields
 - Client-side result caching
 - Static generation where applicable
+- WebSocket connection pooling
+- Image lazy loading with blur placeholders
+- Optimized bundle sizes with tree shaking
 
 ### Code Quality Standards
 

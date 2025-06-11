@@ -20,7 +20,7 @@ const PrivacyPage = () => {
       {/* Privacy Content */}
       <Container>
         <div className="py-16 max-w-4xl mx-auto">
-          <div className="prose prose-gray max-w-none">
+          <div className="max-w-none">
             <h2 className="text-2xl font-bold mb-4">1. Introduction</h2>
             <p className="mb-6 text-gray-700">
               At Resound, we take your privacy seriously. This Privacy Policy explains how we 

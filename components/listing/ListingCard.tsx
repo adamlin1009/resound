@@ -18,6 +18,8 @@ type Props = {
   actionLabel?: string;
   actionId?: string;
   currentUser?: SafeUser | null;
+  showManageButton?: boolean;
+  onManage?: () => void;
 };
 
 function ListingCard({
@@ -28,6 +30,8 @@ function ListingCard({
   actionLabel,
   actionId = "",
   currentUser,
+  showManageButton,
+  onManage,
 }: Props) {
   const router = useRouter();
   const { formatLocationShort } = useUSLocations();
@@ -168,7 +172,29 @@ function ListingCard({
               ${price} {!reservation && <div className="font-light"> per day</div>}
             </div>
           </div>
-          {onAction && actionLabel && !isInactive && (
+          {showManageButton && onManage && (
+            <div className="flex gap-2">
+              <Button
+                disabled={disabled}
+                small
+                label="Manage"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onManage();
+                }}
+              />
+              {onAction && actionLabel && (
+                <Button
+                  disabled={disabled}
+                  small
+                  outline
+                  label={actionLabel}
+                  onClick={handleCancel}
+                />
+              )}
+            </div>
+          )}
+          {!showManageButton && onAction && actionLabel && !isInactive && (
             <Button
               disabled={disabled}
               small
@@ -200,6 +226,8 @@ export default React.memo(ListingCard, (prevProps, nextProps) => {
     prevProps.disabled === nextProps.disabled &&
     prevProps.actionLabel === nextProps.actionLabel &&
     prevProps.actionId === nextProps.actionId &&
-    prevProps.currentUser?.id === nextProps.currentUser?.id
+    prevProps.currentUser?.id === nextProps.currentUser?.id &&
+    prevProps.showManageButton === nextProps.showManageButton &&
+    prevProps.onManage === nextProps.onManage
   );
 });

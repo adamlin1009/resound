@@ -227,7 +227,23 @@ function SearchModal({}: Props) {
           <h3 className="font-semibold">Rental dates (optional)</h3>
           <button
             type="button"
-            onClick={() => setShowDatePicker(!showDatePicker)}
+            onClick={() => {
+              if (!showDatePicker) {
+                // When showing the calendar, initialize with today's date if no dates are set
+                if (!dateRange.startDate && !dateRange.endDate) {
+                  const today = new Date();
+                  setDateRange({
+                    startDate: today,
+                    endDate: today,
+                    key: "selection",
+                  });
+                }
+                setShowDatePicker(true);
+              } else {
+                // When hiding the calendar, optionally clear the dates
+                setShowDatePicker(false);
+              }
+            }}
             className="text-sm text-amber-600 hover:underline"
           >
             {showDatePicker ? "Skip dates" : "Add dates"}

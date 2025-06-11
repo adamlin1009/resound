@@ -69,7 +69,7 @@ function ListingHead({
           title={title}
           onImageClick={onImageClick}
         />
-        <div className="absolute top-5 right-5 z-10">
+        <div className="absolute top-5 right-5 z-[5]">
           <HeartButton listingId={id} currentUser={currentUser} />
         </div>
       </MotionDiv>

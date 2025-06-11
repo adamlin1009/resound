@@ -65,6 +65,8 @@ function InstrumentsClient({ listings, currentUser }: Props) {
             disabled={deletingId === listing.id}
             actionLabel="Delete listing"
             currentUser={currentUser}
+            showManageButton
+            onManage={() => router.push(`/instruments/${listing.id}/manage`)}
           />
         ))}
       </div>

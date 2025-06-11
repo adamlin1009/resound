@@ -20,6 +20,8 @@ export const metadata = {
 
 const font = Nunito({
   subsets: ["latin"],
+  display: "swap",
+  fallback: ["system-ui", "arial", "sans-serif"],
 });
 
 export default async function RootLayout({
@@ -33,17 +35,19 @@ export default async function RootLayout({
     <html lang="en">
       <body className={font.className}>
         <Providers currentUser={currentUser}>
-          <ClientOnly>
-            <Toast />
-            <SearchModal />
-            <RegisterModal />
-            <LoginModal />
-            <RentModal />
-            <ConfirmModal />
-            <Navbar currentUser={currentUser} />
-          </ClientOnly>
-          <div className="pb-20 pt-28">{children}</div>
-          <Footer />
+          <div className="min-h-screen flex flex-col">
+            <ClientOnly>
+              <Toast />
+              <SearchModal />
+              <RegisterModal />
+              <LoginModal />
+              <RentModal />
+              <ConfirmModal />
+              <Navbar currentUser={currentUser} />
+            </ClientOnly>
+            <div className="flex-1 pt-28">{children}</div>
+            <Footer />
+          </div>
         </Providers>
       </body>
     </html>
