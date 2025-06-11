@@ -1,4 +1,5 @@
-import { createUploadthing, type FileRouter, UploadThingError } from "uploadthing/next";
+import { createUploadthing, type FileRouter } from "uploadthing/next";
+import { UploadThingError } from "@uploadthing/shared";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
 const f = createUploadthing();
