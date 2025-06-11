@@ -92,16 +92,25 @@ export default function ImageCarousel({
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         {onImageClick && (
-          <button
+          <div
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               onImageClick(0);
             }}
-            className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/20 transition-colors cursor-zoom-in"
+            className="absolute inset-0 flex items-center justify-center bg-transparent hover:bg-black/10 transition-colors cursor-zoom-in"
+            role="button"
+            tabIndex={0}
+            aria-label="Click to view full size image"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onImageClick(0);
+              }
+            }}
           >
-            <TbZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={40} />
-          </button>
+            <TbZoomIn className="text-white opacity-60 group-hover:opacity-100 hover:scale-110 transition-all" size={40} />
+          </div>
         )}
       </div>
     );
@@ -153,27 +162,45 @@ export default function ImageCarousel({
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           {onImageClick && (
-            <button
+            <div
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 onImageClick(currentIndex);
               }}
-              className="absolute inset-0 bg-transparent cursor-zoom-in"
-              aria-label="View full size image"
+              className="absolute inset-0 cursor-zoom-in bg-transparent hover:bg-black/5 transition-colors"
+              style={{
+                // Exclude the navigation button areas from zoom cursor
+                maskImage: `
+                  linear-gradient(to right, 
+                    transparent 0%, transparent 60px, 
+                    black 60px, black calc(100% - 60px), 
+                    transparent calc(100% - 60px), transparent 100%
+                  )
+                `
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label="Click to view full size image"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onImageClick(currentIndex);
+                }
+              }}
             />
           )}
         </motion.div>
       </AnimatePresence>
 
-      {/* Navigation buttons */}
+      {/* Navigation buttons - always visible with subtle background */}
       <button
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           handlePrevious();
         }}
-        className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 text-neutral-800 opacity-0 group-hover:opacity-100 transition hover:bg-white"
+        className="absolute left-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/40 text-white opacity-80 hover:opacity-100 hover:bg-black/60 hover:scale-110 transition-all duration-200 z-10 cursor-pointer"
         aria-label="Previous image"
       >
         <TbChevronLeft size={24} />
@@ -185,13 +212,13 @@ export default function ImageCarousel({
           e.stopPropagation();
           handleNext();
         }}
-        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 text-neutral-800 opacity-0 group-hover:opacity-100 transition hover:bg-white"
+        className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/40 text-white opacity-80 hover:opacity-100 hover:bg-black/60 hover:scale-110 transition-all duration-200 z-10 cursor-pointer"
         aria-label="Next image"
       >
         <TbChevronRight size={24} />
       </button>
 
-      {/* Zoom button */}
+      {/* Zoom button - positioned to avoid heart button overlap */}
       {onImageClick && (
         <button
           onClick={(e) => {
@@ -199,29 +226,33 @@ export default function ImageCarousel({
             e.stopPropagation();
             onImageClick(currentIndex);
           }}
-          className="absolute top-4 right-4 p-2 rounded-full bg-white/80 text-neutral-800 opacity-0 group-hover:opacity-100 transition hover:bg-white"
+          className="absolute top-4 right-16 p-2 rounded-full bg-black/40 text-white opacity-80 hover:opacity-100 hover:bg-black/60 hover:scale-110 transition-all duration-200 z-10"
           aria-label="View full size"
         >
-          <TbZoomIn size={24} />
+          <TbZoomIn size={20} />
         </button>
       )}
 
-      {/* Image counter */}
-      <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/60 text-white text-sm">
+      {/* Image counter - always visible */}
+      <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/50 text-white text-sm z-10">
         {currentIndex + 1} / {images.length}
       </div>
 
-      {/* Dots indicator */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+      {/* Dots indicator - always visible */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
         {images.map((_, index) => (
           <button
             key={index}
-            onClick={() => handleDotClick(index)}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleDotClick(index);
+            }}
             className={`
-              w-2 h-2 rounded-full transition-all
+              rounded-full transition-all duration-200
               ${index === currentIndex 
-                ? "bg-white w-8" 
-                : "bg-white/50 hover:bg-white/80"
+                ? "bg-white w-8 h-2" 
+                : "bg-white/60 hover:bg-white/90 w-2 h-2"
               }
             `}
             aria-label={`Go to image ${index + 1}`}
@@ -230,7 +261,7 @@ export default function ImageCarousel({
       </div>
 
       {/* Mobile swipe hint */}
-      <div className="absolute bottom-14 left-1/2 -translate-x-1/2 text-white text-xs bg-black/40 px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 md:hidden transition-opacity">
+      <div className="absolute bottom-14 left-1/2 -translate-x-1/2 text-white text-xs bg-black/40 px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 md:hidden transition-opacity z-10">
         Swipe to navigate
       </div>
     </div>
