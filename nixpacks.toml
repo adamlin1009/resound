@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ['nodejs', 'npm']
+
+[phases.install]
+cmds = ['npm ci --omit=dev']
+
+[phases.build]
+cmds = ['echo "Skipping build - WebSocket server only"']
+
+[start]
+cmd = 'node server.js'

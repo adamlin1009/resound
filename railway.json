@@ -1,0 +1,17 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "echo 'Skipping build - WebSocket server only'"
+  },
+  "deploy": {
+    "startCommand": "node server.js",
+    "restartPolicyType": "ALWAYS",
+    "restartPolicyMaxRetries": 10
+  },
+  "environments": {
+    "production": {
+      "NODE_ENV": "production"
+    }
+  }
+}

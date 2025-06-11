@@ -326,6 +326,66 @@ NEXTAUTH_URL=http://localhost:3000         # MUST match NEXT_PUBLIC_APP_URL
 SOCKET_PORT=3001                  # Port for Socket.io server
 ```
 
+### WebSocket Deployment on Railway
+
+Since Vercel doesn't support WebSocket connections, the WebSocket server is deployed separately on Railway:
+
+#### Railway Deployment Steps
+
+1. **Install Railway CLI**
+   ```bash
+   brew install railway
+   # or
+   npm install -g @railway/cli
+   ```
+
+2. **Deploy WebSocket Server**
+   ```bash
+   # Login to Railway
+   railway login
+
+   # Create new project (first time only)
+   railway init
+
+   # Link to existing project (if already created)
+   railway link
+
+   # Deploy the server
+   railway up
+   ```
+
+3. **Configure Railway Environment Variables**
+   In Railway dashboard, set:
+   ```env
+   NODE_ENV=production
+   PORT=3000
+   HOSTNAME=0.0.0.0
+   CORS_ORIGIN=https://your-app.vercel.app,https://your-domain.com
+   DATABASE_URL=mongodb+srv://...  # Same as Vercel
+   NEXTAUTH_SECRET=...             # Same as Vercel
+   ```
+
+4. **Update Vercel Environment Variables**
+   In Vercel dashboard, add:
+   ```env
+   NEXT_PUBLIC_SOCKET_URL=https://your-app.up.railway.app
+   ```
+
+#### Railway Configuration Files
+
+- **railway.json** - Defines build and deployment settings
+- **nixpacks.toml** - Specifies Node.js environment and start command
+
+#### Testing WebSocket Connection
+
+```bash
+# Test locally with production socket server
+NEXT_PUBLIC_SOCKET_URL=https://your-app.up.railway.app npm run dev
+
+# Check socket server health
+curl https://your-app.up.railway.app/socket.io/
+```
+
 ### Critical Production Deployment Requirements
 
 ⚠️ **IMPORTANT**: The following environment variables are **CRITICAL** for production deployment:

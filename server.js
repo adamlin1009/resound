@@ -4,7 +4,7 @@ const next = require('next');
 const { Server } = require('socket.io');
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = 'localhost';
+const hostname = process.env.HOSTNAME || '0.0.0.0';
 const port = process.env.PORT || 3000;
 
 const app = next({ dev, hostname, port });
@@ -29,10 +29,11 @@ app.prepare().then(() => {
   // Initialize Socket.io
   const io = new Server(server, {
     cors: {
-      origin: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ["http://localhost:3000"],
       credentials: true
     },
     path: '/socket.io/',
+    transports: ['websocket', 'polling'],
   });
 
   // Authentication middleware
@@ -172,7 +173,8 @@ app.prepare().then(() => {
     process.exit(1);
   });
 
-  server.listen(port, () => {
+  server.listen(port, hostname, () => {
     console.log(`> Ready on http://${hostname}:${port}`);
+    console.log(`> Socket.io server running with CORS origin: ${process.env.CORS_ORIGIN || 'http://localhost:3000'}`);
   });
 });
