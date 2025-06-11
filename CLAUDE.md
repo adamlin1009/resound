@@ -55,6 +55,10 @@ node scripts/verifyUploadthingMigration.js # Verify Uploadthing migration status
 
 # Bundle Analysis
 npm run analyze                          # Analyze bundle size with Next.js Bundle Analyzer
+
+# Mobile Upload Testing
+node -e "console.log('Test QR Code URL:', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000')"  # Check QR code base URL
+curl http://localhost:3000/api/listings/[listingId]/upload-token -X POST  # Test upload token generation
 ```
 
 ## Architecture Overview
@@ -80,7 +84,7 @@ The application uses a custom Next.js server (`server.js`) to enable:
 - **Authentication**: NextAuth.js 4.20.1 with Prisma Adapter
 - **State Management**: Zustand 4.3.7
 - **Payment Processing**: Stripe 18.2.1 with webhook support
-- **Image Management**: Uploadthing 7.7.2 (migrated from Cloudinary)
+- **Image Management**: Uploadthing 7.7.2 (migrated from Cloudinary, V7 with resumable uploads)
 - **Image Processing**: Sharp 0.34.2, Plaiceholder 3.0.0
 - **Real-time Communication**: Socket.io 4.8.1 (server and client)
 - **Email Service**: Resend 4.5.2
@@ -150,7 +154,10 @@ The application uses a custom Next.js server (`server.js`) to enable:
 │   └── [listingId]/          # Single listing operations
 │       ├── route.ts          # GET, PATCH, DELETE listing
 │       ├── images/           # Image management
-│       └── upload-token/     # Generate upload token
+│       └── upload-token/     # Generate upload token (POST: create, GET: validate)
+├── upload/[listingId]/       # Mobile upload pages
+│   ├── page.tsx             # Server-side token validation and mobile interface
+│   └── MobileUploadClient.tsx # Client-side mobile upload component
 ├── reservations/             # Booking management
 │   └── [reservationId]/      
 │       ├── cancel/           # Cancel with reason
@@ -295,9 +302,8 @@ NEXTAUTH_URL=http://localhost:3000
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
-# Uploadthing (Image Upload Service)
-UPLOADTHING_SECRET=               # Uploadthing secret key
-UPLOADTHING_APP_ID=               # Uploadthing app ID
+# Uploadthing (Image Upload Service) - V7
+UPLOADTHING_TOKEN=                # Uploadthing v7 token (base64 encoded, contains app ID, region, API key)
 UPLOADTHING_URL=                  # Optional: Custom Uploadthing URL
 
 # Stripe
@@ -312,12 +318,52 @@ GOOGLE_GEOCODING_API_KEY=         # For geocoding
 # Email
 RESEND_API_KEY=                   # Email service
 
-# App Config
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+# App Config (CRITICAL for production)
+NEXT_PUBLIC_APP_URL=http://localhost:3000  # MUST be set to production domain for QR codes
+NEXTAUTH_URL=http://localhost:3000         # MUST match NEXT_PUBLIC_APP_URL
 
 # WebSocket (Optional)
 SOCKET_PORT=3001                  # Port for Socket.io server
 ```
+
+### Critical Production Deployment Requirements
+
+⚠️ **IMPORTANT**: The following environment variables are **CRITICAL** for production deployment:
+
+#### Required for Mobile Upload QR Codes
+- `NEXT_PUBLIC_APP_URL` - **MUST** be set to your production domain (e.g., `https://resound.app`)
+- Without this, QR codes will show `localhost:3000` instead of your production URL
+- Used in: Upload token generation, Stripe checkout URLs, Socket.io CORS
+
+#### Required for Authentication
+- `NEXTAUTH_URL` - Should match `NEXT_PUBLIC_APP_URL`
+- Required for OAuth callbacks and session management
+
+#### Required for Payment Processing
+- `STRIPE_WEBHOOK_SECRET` - Production webhook secret from Stripe Dashboard
+- Test webhooks will not work in production
+
+#### Required for Image Upload (Uploadthing V7)
+- `UPLOADTHING_TOKEN` - V7 token from UploadThing Dashboard → API Keys → V7 tab
+- Contains base64 encoded app ID, region, and API key
+- **NOT** the old `UPLOADTHING_SECRET` from v6
+- Update `next.config.js` with your actual APP_ID for secure image optimization
+
+#### Custom Server Deployment
+- The app uses a custom Next.js server (`server.js`) for Socket.io
+- Deploy the entire project, not just the Next.js build
+- Ensure the custom server can handle both HTTP and WebSocket connections
+
+#### Pre-Production Checklist
+- [ ] Set `NEXT_PUBLIC_APP_URL` to production domain
+- [ ] Update `NEXTAUTH_URL` to match production domain
+- [ ] **CRITICAL**: Get new `UPLOADTHING_TOKEN` from V7 dashboard (not old secret)
+- [ ] **CRITICAL**: Update Next.js config with your actual APP_ID: `<APP_ID>.ufs.sh`
+- [ ] Configure production Stripe webhook endpoint
+- [ ] Test QR code generation shows production URL
+- [ ] Verify mobile upload flow works end-to-end
+- [ ] Test Socket.io connections in production environment
+- [ ] Confirm upload token expiration works correctly
 
 ### Recent Major Updates (June 2025)
 
@@ -380,6 +426,14 @@ SOCKET_PORT=3001                  # Port for Socket.io server
    - Image processing with Sharp
    - Drag-and-drop functionality with @dnd-kit
 
+9. **Mobile Upload System**
+   - QR code-based mobile image upload
+   - Token-based security with 30-minute expiration
+   - Mobile-optimized upload interface
+   - Cross-device workflow (desktop → mobile)
+   - Real-time upload progress and feedback
+   - Automatic listing image synchronization
+
 ### Common Development Tasks
 
 #### Adding a New Feature
@@ -409,7 +463,7 @@ SOCKET_PORT=3001                  # Port for Socket.io server
 4. Copy webhook secret to `.env`
 5. Test with card: 4242 4242 4242 4242
 
-#### Working with Image Uploads (Uploadthing)
+#### Working with Image Uploads (Uploadthing V7)
 1. Generate upload token via API: `/api/listings/[listingId]/upload-token`
 2. Use `@uploadthing/react` components for UI
 3. Configure allowed file types in `app/api/uploadthing/core.ts`
@@ -418,6 +472,100 @@ SOCKET_PORT=3001                  # Port for Socket.io server
 6. Max file size: 4MB for images
 7. Supported formats: jpg, jpeg, png, webp
 8. Admin bulk operations via `/api/admin/images/`
+
+**V7 Migration Notes:**
+- Environment variable changed from `UPLOADTHING_SECRET` to `UPLOADTHING_TOKEN`
+- Token is base64 encoded JSON containing app ID, region, and API key
+- Get token from UploadThing Dashboard → API Keys → V7 tab
+- Resumable uploads now supported with `createUpload` function
+- 35% smaller client bundle size
+- Faster upload experience with fewer round-trips
+- Added `NextSSRPlugin` in layout for instant loading (no loading state)
+- Tailwind config wrapped with `withUt` helper for better styling
+- All components now use V7 patterns
+- Updated Next.js image optimization for secure V7 file URLs
+- Enhanced authentication security with `UploadThingError`
+- File URL patterns updated for V6/V7 compatibility
+
+#### Mobile Upload System (QR Code)
+1. Desktop: Click "Upload via Phone" on listing edit page
+2. QR code generated with secure 30-minute token
+3. Mobile: Scan QR code or use copy link
+4. Upload up to 5 images at once (4MB max each)
+5. Real-time progress tracking and auto-redirect
+6. Images automatically added to listing
+
+#### Troubleshooting Mobile Upload Issues
+1. **QR Code shows localhost instead of production URL**
+   - Check `NEXT_PUBLIC_APP_URL` environment variable
+   - Ensure it's set to your production domain
+   - Restart server after changing environment variables
+
+2. **Upload token validation fails**
+   - Verify token hasn't expired (30-minute limit)
+   - Check database connection for UploadToken model
+   - Ensure listing owner permissions are correct
+
+3. **Mobile upload interface doesn't load**
+   - Confirm `/upload/[listingId]` route is accessible
+   - Check browser console for JavaScript errors
+   - Verify Uploadthing configuration
+
+4. **Images not appearing after upload**
+   - Check Uploadthing webhook configuration
+   - Verify listing update logic in upload callback
+   - Monitor server logs for upload completion events
+
+#### UploadThing V7 File Handling & Security
+
+**File URL Patterns:**
+- **V7**: `https://<APP_ID>.ufs.sh/f/<FILE_KEY>` (recommended)
+- **V6 Legacy**: `https://utfs.io/f/<FILE_KEY>` (deprecated but supported)
+- **Never use**: Raw storage URLs (S3, etc.) as they may change
+
+**Next.js Image Optimization:**
+```javascript
+// next.config.js - Secure pattern configuration
+images: {
+  remotePatterns: [
+    {
+      protocol: 'https',
+      hostname: '*.ufs.sh',        // V7 pattern
+      pathname: '/f/*',
+    },
+    {
+      protocol: 'https', 
+      hostname: 'utfs.io',         // V6 legacy
+      pathname: '/f/*',
+    }
+  ]
+}
+```
+
+**Authentication Security:**
+- Use `UploadThingError` instead of generic `Error` for proper client-side error messages
+- Implement proper middleware authentication for each file route
+- Mobile uploads use token-based security (validated at page level)
+- Private files can use presigned URLs for access control
+
+**File Route Security Examples:**
+```typescript
+// Protected route
+protectedRoute: f({ image: {} })
+  .middleware(async ({ req }) => {
+    const user = await getCurrentUser();
+    if (!user) throw new UploadThingError("You need to be logged in");
+    return { userId: user.id };
+  })
+
+// Public route with rate limiting
+publicRoute: f({ image: {} })
+  .middleware(async ({ req }) => {
+    const limit = await ratelimiter.verify(req);
+    if (!limit.ok) throw new UploadThingError("Rate limit exceeded");
+    return {};
+  })
+```
 
 #### Managing Production Data
 1. Grant admin: `node scripts/makeAdmin.js email@example.com`

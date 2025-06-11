@@ -11,6 +11,9 @@ import Providers from "@/components/providers/Providers";
 import { Nunito } from "next/font/google";
 import "../styles/globals.css";
 import getCurrentUser from "./actions/getCurrentUser";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "./api/uploadthing/core";
 
 export const metadata = {
   title: "Resound - Classical Instrument Rentals",
@@ -34,6 +37,15 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={font.className}>
+        <NextSSRPlugin
+          /**
+           * The `extractRouterConfig` will extract **only** the route configs
+           * from the router to prevent additional information from being
+           * leaked to the client. The data passed to the client is the same
+           * as if you were to fetch `/api/uploadthing` directly.
+           */
+          routerConfig={extractRouterConfig(ourFileRouter)}
+        />
         <Providers currentUser={currentUser}>
           <div className="min-h-screen flex flex-col">
             <ClientOnly>

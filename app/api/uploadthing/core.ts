@@ -1,4 +1,4 @@
-import { createUploadthing, type FileRouter } from "uploadthing/next";
+import { createUploadthing, type FileRouter, UploadThingError } from "uploadthing/next";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
 const f = createUploadthing();
@@ -17,8 +17,8 @@ export const ourFileRouter = {
       // Get the current user from session
       const user = await getCurrentUser();
 
-      // If not authenticated, throw
-      if (!user) throw new Error("Unauthorized");
+      // If not authenticated, throw UploadThingError for proper client error handling
+      if (!user) throw new UploadThingError("You need to be logged in to upload files");
 
       // Pass metadata to onUploadComplete
       return { userId: user.id };
@@ -41,7 +41,7 @@ export const ourFileRouter = {
   })
     .middleware(async ({ req }) => {
       const user = await getCurrentUser();
-      if (!user) throw new Error("Unauthorized");
+      if (!user) throw new UploadThingError("You need to be logged in to upload profile images");
       return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {

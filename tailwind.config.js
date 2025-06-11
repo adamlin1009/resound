@@ -1,5 +1,7 @@
+import { withUt } from "uploadthing/tw";
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default withUt({
   content: [
     "./app/**/*.{js,ts,jsx,tsx}",
     "./pages/**/*.{js,ts,jsx,tsx}",
@@ -19,4 +21,4 @@ module.exports = {
     },
   },
   plugins: [require("tailwind-scrollbar")],
-};
+});

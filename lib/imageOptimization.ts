@@ -12,8 +12,8 @@ export interface BlurDataURL {
  */
 export async function getBlurDataURL(src: string): Promise<BlurDataURL | null> {
   try {
-    // For Uploadthing URLs, we can fetch the image
-    if (src.includes('uploadthing') || src.includes('utfs.io')) {
+    // For Uploadthing URLs (V6 and V7), we can fetch the image
+    if (src.includes('uploadthing') || src.includes('utfs.io') || src.includes('.ufs.sh')) {
       const response = await fetch(src);
       const buffer = Buffer.from(await response.arrayBuffer());
       
