@@ -2,8 +2,12 @@
 nixPkgs = ['nodejs_18']
 
 [phases.install]
-# Use minimal package.json for WebSocket server only
-cmds = ['cp package-websocket.json package.json', 'npm install']
+# Remove existing package files and use minimal WebSocket-only version
+cmds = [
+  'rm -f package.json package-lock.json',
+  'cp package-websocket.json package.json',
+  'npm install --production'
+]
 
 [phases.build]
 # Only generate Prisma client
