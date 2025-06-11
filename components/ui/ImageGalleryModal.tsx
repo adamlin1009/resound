@@ -211,7 +211,10 @@ export default function ImageGalleryModal({
         {/* Zoom controls */}
         <div className="flex items-center gap-2">
           <button
-            onClick={handleZoomOut}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleZoomOut();
+            }}
             disabled={zoom <= 1}
             className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Zoom out"
@@ -224,7 +227,10 @@ export default function ImageGalleryModal({
           </span>
           
           <button
-            onClick={handleZoomIn}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleZoomIn();
+            }}
             disabled={zoom >= 3}
             className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Zoom in"
@@ -233,7 +239,10 @@ export default function ImageGalleryModal({
           </button>
           
           <button
-            onClick={resetZoom}
+            onClick={(e) => {
+              e.stopPropagation();
+              resetZoom();
+            }}
             disabled={zoom === 1}
             className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Reset zoom"
@@ -244,7 +253,10 @@ export default function ImageGalleryModal({
 
         {/* Close button */}
         <button
-          onClick={onClose}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
           className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition backdrop-blur-sm"
           aria-label="Close gallery"
         >
@@ -309,7 +321,10 @@ export default function ImageGalleryModal({
       {images.length > 1 && (
         <>
           <button
-            onClick={handlePrevious}
+            onClick={(e) => {
+              e.stopPropagation();
+              handlePrevious();
+            }}
             className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition"
             aria-label="Previous image"
           >
@@ -317,7 +332,10 @@ export default function ImageGalleryModal({
           </button>
 
           <button
-            onClick={handleNext}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleNext();
+            }}
             className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition"
             aria-label="Next image"
           >

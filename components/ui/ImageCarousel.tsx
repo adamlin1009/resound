@@ -93,7 +93,11 @@ export default function ImageCarousel({
         />
         {onImageClick && (
           <button
-            onClick={() => onImageClick(0)}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onImageClick(0);
+            }}
             className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/20 transition-colors cursor-zoom-in"
           >
             <TbZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={40} />
@@ -148,12 +152,27 @@ export default function ImageCarousel({
             priority={currentIndex === 0}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
+          {onImageClick && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onImageClick(currentIndex);
+              }}
+              className="absolute inset-0 bg-transparent cursor-zoom-in"
+              aria-label="View full size image"
+            />
+          )}
         </motion.div>
       </AnimatePresence>
 
       {/* Navigation buttons */}
       <button
-        onClick={handlePrevious}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handlePrevious();
+        }}
         className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 text-neutral-800 opacity-0 group-hover:opacity-100 transition hover:bg-white"
         aria-label="Previous image"
       >
@@ -161,7 +180,11 @@ export default function ImageCarousel({
       </button>
 
       <button
-        onClick={handleNext}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleNext();
+        }}
         className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 text-neutral-800 opacity-0 group-hover:opacity-100 transition hover:bg-white"
         aria-label="Next image"
       >
@@ -171,7 +194,11 @@ export default function ImageCarousel({
       {/* Zoom button */}
       {onImageClick && (
         <button
-          onClick={() => onImageClick(currentIndex)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onImageClick(currentIndex);
+          }}
           className="absolute top-4 right-4 p-2 rounded-full bg-white/80 text-neutral-800 opacity-0 group-hover:opacity-100 transition hover:bg-white"
           aria-label="View full size"
         >
