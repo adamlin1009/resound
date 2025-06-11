@@ -2,10 +2,12 @@
 nixPkgs = ['nodejs_18']
 
 [phases.install]
-cmds = ['npm ci']
+# Install only production dependencies needed for WebSocket server
+cmds = ['npm ci --omit=dev']
 
 [phases.build]
-cmds = ['npx prisma generate', 'npm run build']
+# Only generate Prisma client, skip Next.js build
+cmds = ['npx prisma generate']
 
 [start]
-cmd = 'node server.js'
+cmd = 'node websocket-server.js'

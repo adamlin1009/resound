@@ -1,0 +1,41 @@
+# Ignore Next.js specific files for WebSocket-only deployment
+.next/
+app/
+components/
+pages/
+public/
+styles/
+__tests__/
+__mocks__/
+
+# Development files
+*.md
+.git/
+.gitignore
+.env.local
+.env.development
+.env.test
+
+# Build artifacts
+tsconfig.tsbuildinfo
+.turbo/
+
+# Scripts not needed for WebSocket server
+scripts/
+
+# Config files not needed
+jest.config.js
+jest.setup.js
+next.config.js
+next-env.d.ts
+postcss.config.js
+tailwind.config.js
+
+# Only keep essential files:
+# - websocket-server.js
+# - node_modules/ (handled by npm ci)
+# - package.json
+# - package-lock.json
+# - prisma/
+# - nixpacks.toml
+# - railway.json
