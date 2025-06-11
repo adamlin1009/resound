@@ -114,11 +114,12 @@ export default function MobileUploadClient({
     setIsUploading(true);
 
     try {
-      // Add the new images to the listing
+      // Add the new images to the listing using token-based endpoint
       const updatedImageSrc = [...listing.currentImages, ...uploadedImages];
       
-      await axios.patch(`/api/listings/${listing.id}`, {
+      await axios.patch(`/api/listings/${listing.id}/images`, {
         imageSrc: updatedImageSrc,
+        token: token,
       });
 
       toast.success("Images added to listing successfully!");
@@ -134,7 +135,7 @@ export default function MobileUploadClient({
     } finally {
       setIsUploading(false);
     }
-  }, [uploadedImages, listing.currentImages, listing.id, router]);
+  }, [uploadedImages, listing.currentImages, listing.id, router, token]);
 
   const totalImages = listing.currentImages.length + uploadedImages.length;
   const remainingSlots = 10 - totalImages;

@@ -2,6 +2,99 @@ import { NextRequest, NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
 
+// PATCH endpoint to add images using upload token (for mobile uploads)
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ listingId: string }> }
+) {
+  const { listingId } = await params;
+
+  if (!listingId) {
+    return NextResponse.json({ error: "Invalid listing ID" }, { status: 400 });
+  }
+
+  try {
+    const body = await request.json();
+    const { imageSrc, token } = body;
+
+    if (!token) {
+      return NextResponse.json({ error: "Upload token required" }, { status: 401 });
+    }
+
+    if (!imageSrc || !Array.isArray(imageSrc)) {
+      return NextResponse.json({ error: "imageSrc must be an array" }, { status: 400 });
+    }
+
+    // Validate the upload token
+    const uploadToken = await prisma.uploadToken.findFirst({
+      where: {
+        token,
+        listingId,
+        expiresAt: {
+          gt: new Date(), // Not expired
+        },
+      },
+      include: {
+        listing: {
+          select: {
+            id: true,
+            imageSrc: true,
+          },
+        },
+      },
+    });
+
+    if (!uploadToken) {
+      return NextResponse.json(
+        { error: "Invalid or expired upload token" },
+        { status: 401 }
+      );
+    }
+
+    // Validate max 10 images total
+    if (imageSrc.length > 10) {
+      return NextResponse.json(
+        { error: "Maximum 10 images allowed per listing" },
+        { status: 400 }
+      );
+    }
+
+    // Validate each image is a string
+    if (!imageSrc.every((img: any) => typeof img === "string")) {
+      return NextResponse.json(
+        { error: "All images must be strings" },
+        { status: 400 }
+      );
+    }
+
+    // Update the listing with new images
+    const updatedListing = await prisma.listing.update({
+      where: { id: listingId },
+      data: {
+        imageSrc: imageSrc,
+      },
+    });
+
+    // Clean up the upload token after successful update
+    await prisma.uploadToken.delete({
+      where: { id: uploadToken.id },
+    });
+
+    return NextResponse.json({
+      success: true,
+      listing: {
+        id: updatedListing.id,
+        imageSrc: updatedListing.imageSrc,
+      },
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Failed to update listing images" },
+      { status: 500 }
+    );
+  }
+}
+
 // PUT endpoint for reordering images
 export async function PUT(
   request: NextRequest,
