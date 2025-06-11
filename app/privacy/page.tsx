@@ -66,7 +66,7 @@ const PrivacyPage = () => {
             <p className="mb-3 text-gray-700">We may share your information with:</p>
             <ul className="list-disc pl-6 mb-6 text-gray-700 space-y-2">
               <li><strong>Other Users:</strong> Your profile, listings, and reviews are visible to other users</li>
-              <li><strong>Service Providers:</strong> Third parties who help us operate our Service (e.g., Stripe for payments, Cloudinary for image hosting)</li>
+              <li><strong>Service Providers:</strong> Third parties who help us operate our Service (e.g., Stripe for payments, Uploadthing for image hosting)</li>
               <li><strong>Legal Requirements:</strong> When required by law or to protect rights and safety</li>
               <li><strong>Business Transfers:</strong> In connection with mergers, acquisitions, or asset sales</li>
               <li><strong>Consent:</strong> With your explicit consent for other purposes</li>

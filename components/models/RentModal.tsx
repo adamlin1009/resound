@@ -27,7 +27,7 @@ interface ListingFormValues {
   zipCode: string;
   exactAddress: string;
   experienceLevel: number;
-  imageSrc: string;
+  imageSrc: string[];
   price: number;
   title: string;
   description: string;
@@ -72,7 +72,7 @@ function RentModal() {
       zipCode: "",
       exactAddress: "",
       experienceLevel: 1,
-      imageSrc: "",
+      imageSrc: [],
       price: 1,
       title: "",
       description: "",
@@ -377,6 +377,7 @@ function RentModal() {
         <ImageUpload
           onChange={(value) => setCustomValue("imageSrc", value)}
           value={imageSrc}
+          maxImages={10}
         />
       </div>
     );

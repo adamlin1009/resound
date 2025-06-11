@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
             product_data: {
               name: listing.title,
               description: `Rental from ${new Date(startDate).toLocaleDateString()} to ${new Date(endDate).toLocaleDateString()}`,
-              images: listing.imageSrc ? [listing.imageSrc] : undefined,
+              images: listing.imageSrc && listing.imageSrc.length > 0 ? listing.imageSrc : undefined,
             },
             unit_amount: formatAmountForStripe(totalPrice),
           },

@@ -104,7 +104,7 @@ function LoginModal({}: Props) {
             onClick={toggle}
             className="text-neutral-800 cursor-pointer hover:underline"
           >
-            Create an Account
+            Create an account
           </span>
         </div>
       </div>

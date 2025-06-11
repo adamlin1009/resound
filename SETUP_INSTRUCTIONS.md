@@ -22,10 +22,10 @@ GITHUB_SECRET=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
-# Cloudinary Configuration (for image uploads)
-# Get these from your Cloudinary dashboard
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
-NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=
+# Uploadthing Configuration (for image uploads)
+# Get these from your Uploadthing dashboard
+UPLOADTHING_SECRET=
+UPLOADTHING_APP_ID=
 ```
 
 ## Database Setup
@@ -78,7 +78,7 @@ For social login functionality:
 
 ## Image Upload Setup
 
-For Cloudinary (image uploads):
-1. Sign up at [Cloudinary](https://cloudinary.com/)
-2. Get your cloud name from the dashboard
-3. Create an unsigned upload preset in Settings > Upload 
+For Uploadthing (image uploads):
+1. Sign up at [Uploadthing](https://uploadthing.com/)
+2. Create a new app in the dashboard
+3. Get your app ID and secret from the API Keys section 

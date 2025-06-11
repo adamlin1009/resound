@@ -6,15 +6,17 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Heading from "../Heading";
 import HeartButton from "../HeartButton";
+import ImageCarousel from "../ui/ImageCarousel";
 
 type Props = {
   title: string;
   city: string | null;
   state: string;
   zipCode: string | null;
-  imageSrc: string;
+  imageSrc: string | string[];
   id: string;
   currentUser?: SafeUser | null;
+  onImageClick?: (index: number) => void;
 };
 
 function ListingHead({
@@ -25,6 +27,7 @@ function ListingHead({
   imageSrc,
   id,
   currentUser,
+  onImageClick,
 }: Props) {
   const { formatLocation } = useUSLocations();
   
@@ -42,6 +45,9 @@ function ListingHead({
 
   const MotionDiv = motion.div as any;
 
+  // Convert imageSrc to array for consistency
+  const imageArray = Array.isArray(imageSrc) ? imageSrc : imageSrc ? [imageSrc] : [];
+
   return (
     <>
       <Heading
@@ -56,19 +62,14 @@ function ListingHead({
           delay: 0.5,
           ease: [0, 0.71, 0.2, 1.01],
         }}
-        className="w-full h-[60vh] overflow-hidden rounded-xl relative"
+        className="relative"
       >
-        {imageSrc && (
-          <Image
-            src={imageSrc}
-            alt="image"
-            fill
-            className="object-cover w-full"
-            priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
-          />
-        )}
-        <div className="absolute top-5 right-5">
+        <ImageCarousel 
+          images={imageArray}
+          title={title}
+          onImageClick={onImageClick}
+        />
+        <div className="absolute top-5 right-5 z-10">
           <HeartButton listingId={id} currentUser={currentUser} />
         </div>
       </MotionDiv>

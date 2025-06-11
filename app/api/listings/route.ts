@@ -49,6 +49,32 @@ export async function POST(request: Request) {
     }, { status: 400 });
   }
 
+  // Validate image array
+  if (imageSrc !== undefined) {
+    if (!Array.isArray(imageSrc)) {
+      return NextResponse.json(
+        { error: "imageSrc must be an array" },
+        { status: 400 }
+      );
+    }
+
+    // Validate max 10 images
+    if (imageSrc.length > 10) {
+      return NextResponse.json(
+        { error: "Maximum 10 images allowed per listing" },
+        { status: 400 }
+      );
+    }
+
+    // Validate each image is a string
+    if (!imageSrc.every((img: any) => typeof img === "string")) {
+      return NextResponse.json(
+        { error: "All images must be strings" },
+        { status: 400 }
+      );
+    }
+  }
+
   // Validate price
   const priceNum = parseInt(price, 10);
   if (!price || isNaN(priceNum) || priceNum <= 0) {
@@ -79,7 +105,7 @@ export async function POST(request: Request) {
     data: {
       title,
       description,
-      imageSrc: imageSrc || '',
+      imageSrc: imageSrc || [],
       category,
       instrumentType: instrumentType || null,
       experienceLevel,

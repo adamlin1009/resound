@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
 
-export async function PATCH(
+// PUT endpoint for reordering images
+export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ listingId: string }> }
 ) {
@@ -35,49 +36,47 @@ export async function PATCH(
     const body = await request.json();
     const { imageSrc } = body;
 
-    // Validate image array
-    if (imageSrc !== undefined) {
-      if (!Array.isArray(imageSrc)) {
-        return NextResponse.json(
-          { error: "imageSrc must be an array" },
-          { status: 400 }
-        );
-      }
-
-      // Validate max 10 images
-      if (imageSrc.length > 10) {
-        return NextResponse.json(
-          { error: "Maximum 10 images allowed per listing" },
-          { status: 400 }
-        );
-      }
-
-      // Validate each image is a string
-      if (!imageSrc.every((img: any) => typeof img === "string")) {
-        return NextResponse.json(
-          { error: "All images must be strings" },
-          { status: 400 }
-        );
-      }
+    // Validate reordered array
+    if (!imageSrc || !Array.isArray(imageSrc)) {
+      return NextResponse.json(
+        { error: "imageSrc must be an array" },
+        { status: 400 }
+      );
     }
 
-    // Update the listing
+    // Check that it has the same images (just reordered)
+    const existingSet = new Set(listing.imageSrc);
+    const newSet = new Set(imageSrc);
+    
+    if (existingSet.size !== newSet.size || 
+        !imageSrc.every((img: string) => existingSet.has(img))) {
+      return NextResponse.json(
+        { error: "Cannot add or remove images with this endpoint. Use PATCH for updates." },
+        { status: 400 }
+      );
+    }
+
+    // Update with reordered images
     const updatedListing = await prisma.listing.update({
       where: { id: listingId },
       data: {
-        ...(imageSrc !== undefined && { imageSrc }),
+        imageSrc,
       },
     });
 
-    return NextResponse.json(updatedListing);
+    return NextResponse.json({
+      message: "Images reordered successfully",
+      imageSrc: updatedListing.imageSrc,
+    });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to update listing" },
+      { error: error instanceof Error ? error.message : "Failed to reorder images" },
       { status: 500 }
     );
   }
 }
 
+// DELETE endpoint for removing specific images
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ listingId: string }> }
@@ -98,18 +97,6 @@ export async function DELETE(
     // Check if the listing belongs to the current user
     const listing = await prisma.listing.findUnique({
       where: { id: listingId },
-      include: {
-        reservations: {
-          where: {
-            status: {
-              in: ["ACTIVE", "PENDING"]
-            },
-            endDate: {
-              gte: new Date() // Future or ongoing reservations
-            }
-          }
-        }
-      }
     });
 
     if (!listing) {
@@ -120,35 +107,49 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    // Check for active or future reservations
-    if (listing.reservations.length > 0) {
+    const body = await request.json();
+    const { imageUrl } = body;
+
+    if (!imageUrl || typeof imageUrl !== "string") {
       return NextResponse.json(
-        { 
-          error: "Cannot delete listing with active or future reservations",
-          activeReservations: listing.reservations.length
-        }, 
-        { status: 409 }
+        { error: "imageUrl must be provided as a string" },
+        { status: 400 }
       );
     }
 
-    // Use a transaction to ensure all related data is cleaned up properly
-    const deletedListing = await prisma.$transaction(async (tx) => {
-      // Delete the listing (cascading deletes will handle related records)
-      return await tx.listing.delete({
-        where: {
-          id: listingId,
-        },
-      });
+    // Check if image exists in the listing
+    if (!listing.imageSrc.includes(imageUrl)) {
+      return NextResponse.json(
+        { error: "Image not found in listing" },
+        { status: 404 }
+      );
+    }
+
+    // Prevent deleting the last image
+    if (listing.imageSrc.length === 1) {
+      return NextResponse.json(
+        { error: "Cannot delete the last image. Listings must have at least one image." },
+        { status: 400 }
+      );
+    }
+
+    // Remove the image
+    const updatedImages = listing.imageSrc.filter((img) => img !== imageUrl);
+
+    const updatedListing = await prisma.listing.update({
+      where: { id: listingId },
+      data: {
+        imageSrc: updatedImages,
+      },
     });
 
-    return NextResponse.json({ 
-      message: "Listing deleted successfully",
-      listing: deletedListing 
+    return NextResponse.json({
+      message: "Image deleted successfully",
+      imageSrc: updatedListing.imageSrc,
     });
   } catch (error) {
-    // Error handled internally
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to delete listing" },
+      { error: error instanceof Error ? error.message : "Failed to delete image" },
       { status: 500 }
     );
   }

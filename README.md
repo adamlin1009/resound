@@ -40,7 +40,7 @@ Resound is a specialized marketplace that connects classical musicians with inst
 - **MongoDB** - Document database with Prisma ORM
 - **NextAuth.js** - Authentication with Google OAuth
 - **Stripe** - Payment processing and webhooks
-- **Cloudinary** - Image uploads and management
+- **Uploadthing** - Image uploads and management
 
 ### Additional Tools
 - **Leaflet** - Interactive maps
@@ -55,7 +55,7 @@ Resound is a specialized marketplace that connects classical musicians with inst
 - Node.js 18+ installed
 - MongoDB database (local or cloud)
 - Stripe account for payments
-- Cloudinary account for image uploads
+- Uploadthing account for image uploads
 - Google Cloud Platform for OAuth
 
 ### Environment Variables
@@ -73,7 +73,8 @@ GOOGLE_CLIENT_ID="your-google-client-id"
 GOOGLE_CLIENT_SECRET="your-google-client-secret"
 
 # Image Upload
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your-cloudinary-name"
+UPLOADTHING_SECRET="your-uploadthing-secret"
+UPLOADTHING_APP_ID="your-uploadthing-app-id"
 
 # Payments
 STRIPE_SECRET_KEY="sk_test_..."

@@ -28,8 +28,6 @@ jest.mock('next-auth/react', () => ({
 }))
 
 // Mock environment variables
-process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME = 'test-cloud-name'
-process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET = 'test-upload-preset'
 process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = 'pk_test_mock'
 process.env.NEXT_PUBLIC_APP_URL = 'http://localhost:3000'
 

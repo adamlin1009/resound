@@ -14,6 +14,8 @@ import ListingHead from "./listing/ListingHead";
 import ListingInfo from "./listing/ListingInfo";
 import ListingReservation from "./listing/ListingReservation";
 import { categories } from "./navbar/Categories";
+import ImageGalleryModal from "./ui/ImageGalleryModal";
+import QRCodeUpload from "./listing/QRCodeUpload";
 
 const initialDateRange = {
   startDate: new Date(),
@@ -55,6 +57,8 @@ function ListingClient({ reservations = [], listing, currentUser, hasPaidReserva
   const [dateRange, setDateRange] = useState<Range>(initialDateRange);
   const [selectedPickupTime, setSelectedPickupTime] = useState("");
   const [selectedReturnTime, setSelectedReturnTime] = useState("");
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryStartIndex, setGalleryStartIndex] = useState(0);
 
   const onCreateReservation = useCallback(() => {
     if (!currentUser) {
@@ -113,6 +117,11 @@ function ListingClient({ reservations = [], listing, currentUser, hasPaidReserva
     return categories.find((item) => item.label === listing.category);
   }, [listing.category]);
 
+  const handleImageClick = useCallback((index: number) => {
+    setGalleryStartIndex(index);
+    setGalleryOpen(true);
+  }, []);
+
   return (
     <Container>
       <div className="max-w-screen-lg mx-auto">
@@ -125,6 +134,7 @@ function ListingClient({ reservations = [], listing, currentUser, hasPaidReserva
             zipCode={listing.zipCode}
             id={listing.id}
             currentUser={currentUser}
+            onImageClick={handleImageClick}
           />
           <div className="grid grid-cols-1 md:grid-cols-7 md:gap-10 mt-6">
             <ListingInfo
@@ -145,7 +155,24 @@ function ListingClient({ reservations = [], listing, currentUser, hasPaidReserva
               {currentUser && currentUser.id === listing.user.id ? (
                 <div className="bg-white rounded-xl border-[1px] border-neutral-200 p-6">
                   <p className="text-lg font-semibold mb-2">This is your listing</p>
-                  <p className="text-neutral-500">You cannot rent your own instrument.</p>
+                  <p className="text-neutral-500 mb-4">You cannot rent your own instrument.</p>
+                  
+                  <div className="border-t pt-4">
+                    <h3 className="font-semibold mb-3">Manage Images</h3>
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600 mb-3">
+                        Current images: {listing.imageSrc.length} / 10
+                      </p>
+                      <QRCodeUpload
+                        listingId={listing.id}
+                        listingTitle={listing.title}
+                        onImagesAdded={() => router.refresh()}
+                      />
+                      <p className="text-xs text-gray-500 mt-2">
+                        Share a QR code to let others upload images to your listing
+                      </p>
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <ListingReservation
@@ -171,6 +198,15 @@ function ListingClient({ reservations = [], listing, currentUser, hasPaidReserva
           </div>
         </div>
       </div>
+      
+      {galleryOpen && listing.imageSrc && listing.imageSrc.length > 0 && (
+        <ImageGalleryModal
+          images={listing.imageSrc}
+          initialIndex={galleryStartIndex}
+          onClose={() => setGalleryOpen(false)}
+          title={listing.title}
+        />
+      )}
     </Container>
   );
 }

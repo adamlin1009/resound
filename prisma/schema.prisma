@@ -34,6 +34,7 @@ model User {
   ownerConversations  Conversation[] @relation("OwnerConversations")
   renterConversations Conversation[] @relation("RenterConversations")
   sentMessages   Message[]
+  uploadTokens   UploadToken[]
 }
 
 model Account {
@@ -58,7 +59,7 @@ model Listing {
   id               String        @id @default(auto()) @map("_id") @db.ObjectId
   title            String
   description      String
-  imageSrc         String
+  imageSrc         String[]      @default([])
   createdAt        DateTime      @default(now())
   category         String
   instrumentType   String?       // Specific instrument from the category
@@ -83,6 +84,7 @@ model Listing {
   reservations     Reservation[]
   payments         Payment[]
   conversations    Conversation[]
+  uploadTokens     UploadToken[]
   
   // Indexes for performance
   @@index([userId])
@@ -223,6 +225,21 @@ model Message {
   // Indexes for performance
   @@index([conversationId])
   @@index([createdAt])
+}
+
+model UploadToken {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  token     String   @unique
+  listingId String   @db.ObjectId
+  userId    String   @db.ObjectId
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Indexes for performance
+  @@index([expiresAt])
 }
 
 // This tells Prisma where to find the seed script

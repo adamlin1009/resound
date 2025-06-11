@@ -154,7 +154,7 @@ export default async function getListings(params: IListingsParams): Promise<ILis
       id: string;
       title: string;
       description: string;
-      imageSrc: string;
+      imageSrc: string[];
       category: string;
       instrumentType: string | null;
       experienceLevel: number;

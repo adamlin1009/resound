@@ -4,7 +4,14 @@
       "Bash(find:*)",
       "Bash(true)",
       "Bash(mkdir:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(grep:*)",
+      "Bash(npm install:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npm run build:*)",
+      "Bash(mv:*)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": []
   }

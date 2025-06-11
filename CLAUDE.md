@@ -59,7 +59,7 @@ npm run analyze                          # Analyze bundle size with Next.js Bund
 - **Authentication**: NextAuth.js 4.20.1 with Prisma Adapter
 - **State Management**: Zustand 4.3.7
 - **Payment Processing**: Stripe 18.2.1 with webhook support
-- **Image Management**: Cloudinary (next-cloudinary 6.16.0)
+- **Image Management**: Uploadthing 7.7.2
 - **Email Service**: Resend 4.5.2
 - **Form Handling**: React Hook Form 7.43.9
 - **Date Handling**: date-fns 2.29.3 and react-date-range 1.4.0
@@ -225,9 +225,9 @@ NEXTAUTH_URL=http://localhost:3000
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
-# Cloudinary
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
-NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=
+# Uploadthing
+UPLOADTHING_SECRET=
+UPLOADTHING_APP_ID=
 
 # Stripe
 STRIPE_SECRET_KEY=sk_test_...

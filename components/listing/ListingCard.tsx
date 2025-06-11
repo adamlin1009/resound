@@ -4,11 +4,11 @@ import useUSLocations from "@/hook/useUSLocations";
 import { SafeReservation, SafeUser, safeListing } from "@/types";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useMemo } from "react";
 import Button from "../Button";
 import HeartButton from "../HeartButton";
+import OptimizedImage from "../ui/OptimizedImage";
 
 type Props = {
   data: safeListing;
@@ -103,14 +103,13 @@ function ListingCard({
       >
         <div className="flex flex-col gap-2 w-full">
           <div className="aspect-square w-full relative overflow-hidden rounded-xl">
-            {data.imageSrc ? (
-              <Image
+            {data.imageSrc && data.imageSrc.length > 0 && data.imageSrc[0] ? (
+              <OptimizedImage
                 fill
                 className="object-cover h-full w-full group-hover:scale-110 transition"
-                src={data.imageSrc}
+                src={data.imageSrc[0]}
                 alt="listing"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                loading="lazy"
               />
             ) : (
               <div className="aspect-square w-full h-full bg-neutral-100 flex items-center justify-center rounded-xl">
@@ -120,6 +119,14 @@ function ListingCard({
             <div className="absolute top-3 right-3">
               <HeartButton listingId={data.id} currentUser={currentUser} />
             </div>
+            {data.imageSrc && data.imageSrc.length > 1 && (
+              <div className="absolute bottom-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                {data.imageSrc.length}
+              </div>
+            )}
           </div>
           <div className="font-semibold text-lg">
             {data.title}

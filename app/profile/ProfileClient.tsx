@@ -3,7 +3,7 @@
 import Container from "@/components/Container";
 import Heading from "@/components/Heading";
 import { categories } from "@/components/navbar/Categories";
-import ImageUpload from "@/components/inputs/ImageUpload";
+import ProfileImageUpload from "@/components/inputs/ProfileImageUpload";
 import Avatar from "@/components/Avatar";
 import { SafeUser } from "@/types";
 import axios from "axios";
@@ -129,7 +129,7 @@ const ProfileClient: React.FC<ProfileClientProps> = ({ currentUser }) => {
             <div className="flex flex-col items-center gap-4">
               <Avatar src={image} userName={name || currentUser.name} size={120} />
               <div className="hidden">
-                <ImageUpload
+                <ProfileImageUpload
                   onChange={handleImageChange}
                   value={image}
                 />
@@ -137,9 +137,9 @@ const ProfileClient: React.FC<ProfileClientProps> = ({ currentUser }) => {
               <button
                 type="button"
                 onClick={() => {
-                  const uploadElement = document.querySelector('.hidden .cursor-pointer');
+                  const uploadElement = document.getElementById('profile-image-upload');
                   if (uploadElement) {
-                    (uploadElement as HTMLElement).click();
+                    uploadElement.click();
                   }
                 }}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-500"
