@@ -18,7 +18,7 @@ To make exceptional musical instruments accessible to all musicians, regardless 
 
 ### For Renters
 - **Advanced Search** - Find instruments by type, location, experience level, and availability
-- **Secure Transactions** - All payments processed through Stripe with buyer protection
+- **Secure Transactions** - All payments processed through Stripe Checkout
 - **Real-time Messaging** - Communicate directly with instrument owners
 - **Mobile Upload** - Easy photo uploads via QR code for listing verification
 - **Detailed Listings** - High-resolution images, condition ratings, and specifications
@@ -27,6 +27,7 @@ To make exceptional musical instruments accessible to all musicians, regardless 
 - **Easy Listing Creation** - Streamlined process with smart categorization
 - **Flexible Scheduling** - Set custom availability and pickup/return windows
 - **Owner Dashboard** - Manage listings, reservations, and communication
+- **Direct Payments** - Receive rental payments directly from Resound
 
 ### Platform Features
 - **Location Services** - Radius-based search with geocoding
@@ -48,7 +49,7 @@ We support a wide range of classical and modern instruments:
 ## 🔐 Security & Trust
 
 - **Secure Messaging** - All communication logged and monitored
-- **Payment Protection** - Secure payment processing through Stripe
+- **Payment Protection** - Secure payment processing through Stripe Checkout
 
 ## 🛠️ Technology
 
@@ -57,7 +58,7 @@ Built with modern, scalable technologies:
 - **Frontend**: Next.js 15, React 18, TypeScript, Tailwind CSS
 - **Backend**: Next.js API Routes, Prisma ORM, MongoDB
 - **Authentication**: NextAuth.js with Google OAuth
-- **Payments**: Stripe for secure transactions
+- **Payments**: Stripe Checkout for secure transactions
 - **Real-time**: Socket.io for instant messaging
 - **Media**: Uploadthing for secure image management
 - **Maps**: Leaflet with geocoding services
@@ -71,12 +72,10 @@ Built with modern, scalable technologies:
 ## 🚀 Future Vision & Roadmap
 
 ### Coming Soon
-- **Secure Payments** - Automatic payouts after successful rentals
 - **Trust & Safety Enhancements**
   - Identity verification for enhanced trust
   - Escrow-style payment protection
 - **Insurance Options** - Optional damage protection for high-value instruments
-- **Stripe Connect** - Full marketplace payment infrastructure
 - **Review System** - Build reputation through successful rentals
 
 ### Long-term Vision
