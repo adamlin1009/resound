@@ -69,11 +69,12 @@ export default async function Home({ searchParams }: HomeProps) {
     <ClientOnly>
       <Container>
         <div className="pt-24 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-8 overflow-x-hidden">
-          {response.listings.map((listing) => (
+          {response.listings.map((listing, index) => (
             <ListingCard
               key={listing.id}
               data={listing}
               currentUser={currentUser}
+              priority={index < 8}
             />
           ))}
         </div>

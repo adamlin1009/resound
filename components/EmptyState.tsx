@@ -10,14 +10,24 @@ type Props = {
   title?: string;
   subtitle?: string;
   showReset?: boolean;
+  onReset?: () => void;
 };
 
 function EmptyState({
   title = "No instruments found",
   subtitle = "Try adjusting your search filters or location.",
   showReset,
+  onReset,
 }: Props) {
   const router = useRouter();
+
+  const handleReset = () => {
+    if (onReset) {
+      onReset();
+    } else {
+      router.push("/");
+    }
+  };
 
   return (
     <div className="h-[60vh] flex flex-col gap-2 justify-center items-center">
@@ -31,8 +41,8 @@ function EmptyState({
           {showReset && (
             <Button
               outline
-              label="Remove all filters"
-              onClick={() => router.push("/")}
+              label={onReset ? "Try again" : "Remove all filters"}
+              onClick={handleReset}
             />
           )}
         </div>

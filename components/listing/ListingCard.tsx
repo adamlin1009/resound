@@ -20,6 +20,7 @@ type Props = {
   currentUser?: SafeUser | null;
   showManageButton?: boolean;
   onManage?: () => void;
+  priority?: boolean;
 };
 
 function ListingCard({
@@ -32,6 +33,7 @@ function ListingCard({
   currentUser,
   showManageButton,
   onManage,
+  priority = false,
 }: Props) {
   const router = useRouter();
   const { formatLocationShort } = useUSLocations();
@@ -114,6 +116,7 @@ function ListingCard({
                 src={data.imageSrc[0]}
                 alt="listing"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                priority={priority}
               />
             ) : (
               <div className="aspect-square w-full h-full bg-neutral-100 flex items-center justify-center rounded-xl">
