@@ -27,10 +27,8 @@ To make exceptional musical instruments accessible to all musicians, regardless 
 - **Easy Listing Creation** - Streamlined process with smart categorization
 - **Flexible Scheduling** - Set custom availability and pickup/return windows
 - **Owner Dashboard** - Manage listings, reservations, and communication
-- **Secure Payments** - Automatic payouts after successful rentals
 
 ### Platform Features
-- **Trust & Safety** - Verified users, secure messaging, and transaction protection
 - **Location Services** - Radius-based search with geocoding
 - **Favorites System** - Save instruments for future consideration
 - **Responsive Design** - Optimized for desktop and mobile devices
@@ -49,11 +47,8 @@ We support a wide range of classical and modern instruments:
 
 ## 🔐 Security & Trust
 
-- **Identity Verification** - Optional verification for enhanced trust
 - **Secure Messaging** - All communication logged and monitored
-- **Payment Protection** - Escrow-style payments released after successful rental
-- **Insurance Options** - Optional damage protection for high-value instruments
-- **Review System** - Build reputation through successful rentals
+- **Payment Protection** - Secure payment processing through Stripe
 
 ## 🛠️ Technology
 
@@ -62,37 +57,42 @@ Built with modern, scalable technologies:
 - **Frontend**: Next.js 15, React 18, TypeScript, Tailwind CSS
 - **Backend**: Next.js API Routes, Prisma ORM, MongoDB
 - **Authentication**: NextAuth.js with Google OAuth
-- **Payments**: Stripe Connect for marketplace transactions
+- **Payments**: Stripe for secure transactions
 - **Real-time**: Socket.io for instant messaging
 - **Media**: Uploadthing for secure image management
 - **Maps**: Leaflet with geocoding services
 
 ## 📱 Mobile Experience
 
-- Progressive Web App capabilities
 - QR code integration for mobile uploads
 - Touch-optimized interfaces
-- Offline-capable favorites and messaging
+- Responsive design for all screen sizes
+
+## 🚀 Future Vision & Roadmap
+
+### Coming Soon
+- **Secure Payments** - Automatic payouts after successful rentals
+- **Trust & Safety Enhancements**
+  - Identity verification for enhanced trust
+  - Escrow-style payment protection
+- **Insurance Options** - Optional damage protection for high-value instruments
+- **Stripe Connect** - Full marketplace payment infrastructure
+- **Review System** - Build reputation through successful rentals
+
+### Long-term Vision
+- **International Expansion** - Serve musicians globally
+- **AI-Powered Matching** - Smart recommendations based on playing style and preferences
+- **Virtual Try-outs** - Audio/video samples for remote instrument evaluation
+- **Community Features** - Forums, events, and masterclasses
+- **Professional Services** - Maintenance, repairs, and appraisals network
 
 ## 🌍 Service Areas
 
-Currently serving musicians across the United States with plans to expand internationally.
-
-## 📞 Contact & Support
-
-- **Support Email**: support@resound.app
-- **Help Center**: [resound.app/help](https://resound.app/help)
-- **Business Inquiries**: business@resound.app
+Currently serving musicians across the United States.
 
 ## 🏢 Company
 
 Resound is a privately-owned platform dedicated to serving the classical music community. Founded by musicians, for musicians.
-
-### Legal
-- [Terms of Service](https://resound.app/terms)
-- [Privacy Policy](https://resound.app/privacy)
-- [Rental Agreement](https://resound.app/rental-agreement)
-- [Safety Guidelines](https://resound.app/safety)
 
 ---
 
