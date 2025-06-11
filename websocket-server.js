@@ -1,6 +1,5 @@
 const { createServer } = require('http');
 const { Server } = require('socket.io');
-const { getSession } = require('next-auth/react');
 
 const port = process.env.PORT || 3001;
 const hostname = process.env.HOSTNAME || '0.0.0.0';

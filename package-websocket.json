@@ -1,0 +1,16 @@
+{
+  "name": "resound-websocket-server",
+  "version": "1.0.0",
+  "description": "WebSocket server for Resound real-time messaging",
+  "main": "websocket-server.js",
+  "scripts": {
+    "start": "node websocket-server.js"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.1",
+    "@prisma/client": "^4.12.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
