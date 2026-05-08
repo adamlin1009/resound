@@ -1,3 +1,12 @@
+// Node 25 can expose a partial localStorage global unless a storage file is
+// configured. Some browser-targeted dependencies see it during SSR and crash.
+if (
+  typeof globalThis.localStorage !== 'undefined' &&
+  typeof globalThis.localStorage.getItem !== 'function'
+) {
+  delete globalThis.localStorage;
+}
+
 const { createServer } = require('http');
 const { parse } = require('url');
 

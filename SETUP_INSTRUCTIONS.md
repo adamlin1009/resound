@@ -94,4 +94,4 @@ For social login functionality:
 For Uploadthing (image uploads):
 1. Sign up at [Uploadthing](https://uploadthing.com/)
 2. Create a new app in the dashboard
-3. Get your app ID and secret from the API Keys section 
+3. Get your app ID and secret from the API Keys section

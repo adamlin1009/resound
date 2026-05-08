@@ -136,7 +136,7 @@ function ListingReservation({
       <div className="p-4">
         <Button 
           disabled={disabled || !selectedPickupTime || !selectedReturnTime} 
-          label={isDemoMode ? "Simulate Booking" : "Proceed to Payment"} 
+          label={isDemoMode ? "Simulate Booking" : "Proceed to Payment"}
           onClick={onSubmit} 
         />
         {isDemoMode && (

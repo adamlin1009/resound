@@ -31,11 +31,23 @@ function UserMenu({ currentUser }: Props) {
 
   const onRent = useCallback(() => {
     if (!currentUser) {
+      setIsOpen(false);
       return loginModel.onOpen();
     }
 
+    setIsOpen(false);
     rentModel.onOpen();
   }, [currentUser, loginModel, rentModel]);
+
+  const openLogin = useCallback(() => {
+    setIsOpen(false);
+    loginModel.onOpen();
+  }, [loginModel]);
+
+  const openRegister = useCallback(() => {
+    setIsOpen(false);
+    registerModel.onOpen();
+  }, [registerModel]);
 
   return (
     <div className="relative">
@@ -115,8 +127,8 @@ function UserMenu({ currentUser }: Props) {
               </>
             ) : (
               <>
-                <MenuItem onClick={loginModel.onOpen} label="Login" />
-                <MenuItem onClick={registerModel.onOpen} label="Sign up" />
+                <MenuItem onClick={openLogin} label="Login" />
+                <MenuItem onClick={openRegister} label="Sign up" />
               </>
             )}
           </div>

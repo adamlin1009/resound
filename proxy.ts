@@ -1,12 +1,18 @@
-import nextAuthMiddleware from "next-auth/middleware";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequestWithAuth, withAuth } from "next-auth/middleware";
+import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 
-export default function proxy(request: NextRequest) {
+const authMiddleware = withAuth({
+  pages: {
+    signIn: "/",
+  },
+});
+
+export default function proxy(request: NextRequest, event: NextFetchEvent) {
   if (process.env.NEXT_PUBLIC_RESOUND_DEMO === "true") {
     return NextResponse.next();
   }
 
-  return nextAuthMiddleware(request as never);
+  return authMiddleware(request as NextRequestWithAuth, event);
 }
 
 export const config = {
