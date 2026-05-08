@@ -1,10 +1,15 @@
 import prisma from "@/lib/prismadb";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import { getServerSession } from "next-auth/next";
-import { Session } from "next-auth";
+import type { Session } from "next-auth";
 import { SafeUser } from "@/types";
 
 export async function getSession(): Promise<Session | null> {
+  const { getServerSession } = await import("next-auth/next");
+
+  if (process.env.NODE_ENV === "test") {
+    return await getServerSession();
+  }
+
+  const { authOptions } = await import("@/pages/api/auth/[...nextauth]");
   return await getServerSession(authOptions);
 }
 
