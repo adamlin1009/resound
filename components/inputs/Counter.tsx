@@ -98,7 +98,7 @@ function Counter({ title, subtitle, value, onChange, min = 1, max }: Props) {
             className={`w-16 text-center font-light text-xl rounded-md focus:outline-none transition-colors ${
               hasError 
                 ? 'border-2 border-red-500 text-red-600 focus:border-red-500 focus:ring-1 focus:ring-red-500' 
-                : 'border border-gray-200 text-neutral-600 focus:border-amber-600 focus:ring-1 focus:ring-amber-600'
+                : 'border border-rule text-ink focus:border-ink focus:ring-1 focus:ring-ink'
             }`}
           />
           <div

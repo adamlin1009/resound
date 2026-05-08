@@ -13,10 +13,26 @@ type Props = {
 
 function Navbar({ currentUser }: Props) {
   return (
-    <div className="fixed w-full bg-white z-50 shadow-sm">
-      <div className="py-4 border-b-[1px]">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-rule bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/80">
+      <div
+        aria-hidden
+        className="hidden border-b border-rule/70 bg-paper-warm/50 md:block"
+      >
         <Container>
-          <div className="grid grid-cols-3 items-center gap-3 md:gap-0">
+          <div className="flex items-center justify-between py-1.5 font-mono text-[10px] uppercase tracking-archive text-ink-muted">
+            <span>The Resound Archive · A Catalogue of Lent Instruments</span>
+            <span className="flex items-center gap-4">
+              <span className="hidden md:inline">
+                Curated from private studios &amp; conservatories
+              </span>
+              <span className="text-ink">№ MMXXVI</span>
+            </span>
+          </div>
+        </Container>
+      </div>
+      <div className="py-3">
+        <Container>
+          <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 md:gap-8">
             <div className="flex justify-start">
               <Logo />
             </div>
@@ -30,7 +46,7 @@ function Navbar({ currentUser }: Props) {
         </Container>
       </div>
       <Categories />
-    </div>
+    </header>
   );
 }
 

@@ -9,7 +9,12 @@ import RentModal from "@/components/models/RentModal";
 import SearchModal from "@/components/models/SearchModal";
 import Navbar from "@/components/navbar/Navbar";
 import Providers from "@/components/providers/Providers";
-import { Nunito } from "next/font/google";
+import {
+  Fraunces,
+  Inter,
+  Instrument_Serif,
+  JetBrains_Mono,
+} from "next/font/google";
 import "../styles/globals.css";
 import getCurrentUser from "./actions/getCurrentUser";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
@@ -17,15 +22,37 @@ import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
 
 export const metadata = {
-  title: "Resound - Classical Instrument Rentals",
-  description: "Rent premium musical instruments from trusted lenders in your area",
+  title: "Resound — A Catalogue of Performance-Ready Instruments",
+  description:
+    "An archive marketplace for classical musicians to lend and borrow rare, performance-ready instruments.",
   icons: "/assets/harp-icon.svg",
 };
 
-const font = Nunito({
+const fraunces = Fraunces({
   subsets: ["latin"],
   display: "swap",
-  fallback: ["system-ui", "arial", "sans-serif"],
+  variable: "--font-fraunces",
+  axes: ["SOFT", "WONK", "opsz"],
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-instrument-serif",
+  weight: "400",
+  style: ["normal", "italic"],
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-jetbrains-mono",
 });
 
 export default async function RootLayout({
@@ -36,15 +63,12 @@ export default async function RootLayout({
   const currentUser = await getCurrentUser();
 
   return (
-    <html lang="en">
-      <body className={font.className}>
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${instrumentSerif.variable} ${inter.variable} ${jetbrains.variable}`}
+    >
+      <body className="font-sans">
         <NextSSRPlugin
-          /**
-           * The `extractRouterConfig` will extract **only** the route configs
-           * from the router to prevent additional information from being
-           * leaked to the client. The data passed to the client is the same
-           * as if you were to fetch `/api/uploadthing` directly.
-           */
           routerConfig={extractRouterConfig(ourFileRouter)}
         />
         <Providers currentUser={currentUser}>
@@ -58,7 +82,7 @@ export default async function RootLayout({
               <ConfirmModal />
               <Navbar currentUser={currentUser} />
             </ClientOnly>
-            <div className="flex-1 pt-28">
+            <div className="flex-1 pt-[140px] md:pt-[152px]">
               <DemoBanner />
               {children}
             </div>

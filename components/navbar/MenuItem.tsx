@@ -9,12 +9,18 @@ type Props = {
 
 function MenuItem({ onClick, label }: Props) {
   return (
-    <div
-      className=" px-4 py-3 hover:bg-neutral-100 transition font-semibold"
+    <button
       onClick={onClick}
+      className="group flex w-full items-center justify-between px-5 py-3 text-left transition hover:bg-paper-warm"
     >
-      {label}
-    </div>
+      <span className="font-display text-[15px] text-ink">{label}</span>
+      <span
+        aria-hidden
+        className="font-mono text-[10px] uppercase tracking-archive text-ink-faint opacity-0 transition group-hover:opacity-100"
+      >
+        →
+      </span>
+    </button>
   );
 }
 

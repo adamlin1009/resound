@@ -3,24 +3,138 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --paper: #f4efe6;
+    --paper-ivory: #fbf7f0;
+    --paper-warm: #ede5d3;
+    --ink: #1a1813;
+    --ink-soft: #2b2823;
+    --ink-muted: #6b6258;
+    --rule: #d9cfb8;
+    --lacquer: #8b1f2a;
+    --brass: #a68a4f;
+  }
+
+  html,
+  body,
+  :root {
+    height: 100%;
+  }
+
   body {
-    @apply !scrollbar-thin !scrollbar-track-transparent !scrollbar-thumb-amber-600;
+    @apply bg-paper text-ink antialiased;
+    font-family: var(--font-inter), system-ui, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+    background-image:
+      radial-gradient(
+        circle at 12% 10%,
+        rgba(166, 138, 79, 0.08) 0,
+        transparent 38%
+      ),
+      radial-gradient(
+        circle at 88% 14%,
+        rgba(139, 31, 42, 0.06) 0,
+        transparent 42%
+      ),
+      radial-gradient(
+        circle at 50% 92%,
+        rgba(61, 74, 42, 0.05) 0,
+        transparent 50%
+      );
+    background-attachment: fixed;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.10 0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0.10 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  body > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  ::selection {
+    background-color: #1a1813;
+    color: #f4efe6;
+  }
+
+  /* Tailwind scrollbar plug-in classes — apply on body */
+  body {
+    @apply !scrollbar-thin !scrollbar-track-transparent !scrollbar-thumb-ink/30;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-fraunces), Georgia, serif;
+    font-feature-settings: "ss01", "ss03", "lnum";
+    letter-spacing: -0.01em;
+  }
+
+  hr {
+    @apply border-rule;
   }
 }
 
-/* Override react-date-range default pink colors */
+@layer components {
+  .archive-label {
+    @apply font-mono uppercase text-[10px] tracking-archive text-ink-muted;
+  }
+
+  .archive-rule {
+    @apply h-px w-full bg-rule/80;
+  }
+
+  .editorial-italic {
+    font-family: var(--font-instrument-serif), Georgia, serif;
+    font-style: italic;
+    font-feature-settings: "ss01";
+  }
+
+  .pill-archive {
+    @apply inline-flex items-center gap-2 rounded-full border border-ink/20 bg-paper-ivory px-3 py-1 font-mono text-[10px] uppercase tracking-archive text-ink-soft;
+  }
+
+  .btn-ink {
+    @apply inline-flex items-center justify-center gap-2 rounded-none border border-ink bg-ink px-6 py-3 font-mono text-[11px] uppercase tracking-archive text-paper transition;
+  }
+
+  .btn-ink:hover:not(:disabled) {
+    @apply bg-paper text-ink;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-none border border-ink/30 bg-transparent px-6 py-3 font-mono text-[11px] uppercase tracking-archive text-ink transition;
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    @apply border-ink bg-ink text-paper;
+  }
+}
+
+/* === third-party overrides === */
+
+/* react-date-range — match parchment palette */
 .rdrDefinedRangesWrapper .rdrStaticRange {
   border: none;
   background: transparent;
 }
 
 .rdrDefinedRangesWrapper .rdrStaticRange:hover {
-  background: #fef3c7 !important; /* Light amber */
+  background: #ede5d3 !important;
 }
 
 .rdrDefinedRangesWrapper .rdrStaticRangeSelected {
-  background: #d97706 !important; /* Amber-600 */
-  color: white !important;
+  background: #1a1813 !important;
+  color: #f4efe6 !important;
 }
 
 .rdrDateRangeWrapper .rdrDateInput {
@@ -31,111 +145,114 @@
 .rdrDay:not(.rdrDayPassive) .rdrStartEdge ~ .rdrDayNumber span,
 .rdrDay:not(.rdrDayPassive) .rdrEndEdge ~ .rdrDayNumber span,
 .rdrDay:not(.rdrDayPassive) .rdrSelected ~ .rdrDayNumber span {
-  color: white !important;
+  color: #f4efe6 !important;
 }
 
 .rdrDayStartEdge,
 .rdrDayEndEdge,
 .rdrDayInRange {
-  background: #d97706 !important; /* Amber-600 */
+  background: #2b2823 !important;
 }
 
 .rdrDayStartEdge:not(.rdrDayPassive),
 .rdrDayEndEdge:not(.rdrDayPassive) {
-  background: #92400e !important; /* Amber-800 */
+  background: #1a1813 !important;
 }
 
-/* Override react-toastify colors */
+/* react-toastify — editorial palette */
+.Toastify__toast {
+  border-radius: 0 !important;
+  font-family: var(--font-inter), system-ui, sans-serif !important;
+  border: 1px solid rgba(26, 24, 19, 0.18) !important;
+}
+
 .Toastify__toast--success {
-  background: #065f46 !important; /* Emerald-800 */
+  background: #1a1813 !important;
+  color: #f4efe6 !important;
 }
 
 .Toastify__toast--error {
-  background: #dc2626 !important; /* Red-600 */
+  background: #6e1820 !important;
+  color: #f4efe6 !important;
 }
 
 .Toastify__toast--info {
-  background: #1e40af !important; /* Blue-700 */
+  background: #2b2823 !important;
+  color: #f4efe6 !important;
 }
 
-.__toast--warning {
-  background: #d97706 !important; /* Amber-600 */
+.Toastify__toast--warning {
+  background: #7e6633 !important;
+  color: #f4efe6 !important;
 }
 
-/* Override any remaining pink colors from libraries */
-*[style*="#FF5A5F"], 
+/* Re-route any old amber/pink leakage from third parties to ink */
+*[style*="#FF5A5F"],
 *[style*="#f56565"],
 *[style*="#ed64a6"],
 *[style*="rgb(255, 90, 95)"] {
-  background-color: #d97706 !important; /* Amber-600 */
-  border-color: #d97706 !important;
-  color: white !important;
+  background-color: #1a1813 !important;
+  border-color: #1a1813 !important;
+  color: #f4efe6 !important;
 }
 
-/* Force override any pink background */
-.pink, .rose, [class*="pink"], [class*="rose"] {
-  background-color: #d97706 !important;
-  border-color: #d97706 !important;
+.pink,
+.rose,
+[class*="pink"],
+[class*="rose"] {
+  background-color: #1a1813 !important;
+  border-color: #1a1813 !important;
 }
 
-/* Override Next.js loading states */
 .__next-route-announcer,
 [data-nextjs-scroll-focus-boundary] {
-  color: #374151 !important; /* Gray-700 */
+  color: #1a1813 !important;
 }
 
-/* Override any progress bars or loading indicators */
 progress {
-  accent-color: #d97706 !important; /* Amber-600 */
+  accent-color: #1a1813 !important;
 }
 
-/* Override browser default loading states */
 ::-webkit-progress-bar {
-  background-color: #f3f4f6 !important; /* Gray-100 */
+  background-color: #ede5d3 !important;
 }
 
 ::-webkit-progress-value {
-  background-color: #d97706 !important; /* Amber-600 */
-}
-
-html,
-body,
-:root{
-    height: 100%;
+  background-color: #1a1813 !important;
 }
 
 .leaflet-bottom,
 .leaflet-control,
 .leaflet-pane,
 .leaflet-top {
-    z-index: 0 !important;
+  z-index: 0 !important;
 }
 
 .rdrMonth {
-    width: 100% !important;
+  width: 100% !important;
 }
 
 .rdrCalendarWrapper {
-    font-size: 16px !important;
-    width: 100% !important;
+  font-size: 16px !important;
+  width: 100% !important;
 }
 
-/* Force ALL select elements to have white background */
+/* Force select elements to inherit our palette */
 select {
-    background-color: #ffffff !important;
-    background-image: none !important;
+  background-color: #fbf7f0 !important;
+  background-image: none !important;
+  color: #1a1813 !important;
 }
 
-/* Override any hover or focus states */
 select:hover,
 select:focus,
 select:active,
 select:focus-visible {
-    background-color: #ffffff !important;
-    background-image: none !important;
+  background-color: #fbf7f0 !important;
+  background-image: none !important;
+  color: #1a1813 !important;
 }
 
-/* Override any styling that might be making selects orange/amber */
 select[class*="amber"],
 select[class*="orange"],
 select[style*="amber"],
@@ -143,6 +260,6 @@ select[style*="orange"],
 select[style*="#d97706"],
 select[style*="#f59e0b"],
 select[style*="#fb923c"] {
-    background-color: #ffffff !important;
-    background-image: none !important;
+  background-color: #fbf7f0 !important;
+  background-image: none !important;
 }

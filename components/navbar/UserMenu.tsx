@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 import { SafeUser } from "@/types";
 import { signOut } from "next-auth/react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import Avatar from "../Avatar";
 import MenuItem from "./MenuItem";
@@ -23,18 +23,29 @@ function UserMenu({ currentUser }: Props) {
   const loginModel = useLoginModel();
   const rentModel = useRentModal();
   const [isOpen, setIsOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const isDemoMode = process.env.NEXT_PUBLIC_RESOUND_DEMO === "true";
 
   const toggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener("mousedown", onClick);
+    return () => window.removeEventListener("mousedown", onClick);
+  }, [isOpen]);
+
   const onRent = useCallback(() => {
     if (!currentUser) {
       setIsOpen(false);
       return loginModel.onOpen();
     }
-
     setIsOpen(false);
     rentModel.onOpen();
   }, [currentUser, loginModel, rentModel]);
@@ -50,85 +61,73 @@ function UserMenu({ currentUser }: Props) {
   }, [registerModel]);
 
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapRef}>
       <div className="flex flex-row items-center gap-3">
-        <div
-          className="hidden md:block text-sm font-semibold py-3 px-4 rounded-full hover:bg-neutral-100 transition cursor-pointer"
+        <button
           onClick={onRent}
+          className="hidden font-mono text-[11px] uppercase tracking-archive text-ink-soft transition hover:text-lacquer md:block"
         >
-          Lend your instrument
-        </div>
-        <div
+          <span className="editorial-italic text-[14px] not-italic tracking-normal">→</span>{" "}
+          Lend an instrument
+        </button>
+        <button
           onClick={toggleOpen}
-          className="p-4 md:py-1 md:px-2 border-[1px] flex flex-row items-center gap-3 rounded-full cursor-pointer hover:shadow-md transition"
+          className="flex items-center gap-3 border border-ink/20 bg-paper-ivory px-3 py-2 transition hover:border-ink"
         >
-          <AiOutlineMenu />
-          <div className="hidden md:block">
+          <AiOutlineMenu className="text-ink" />
+          <span className="hidden md:block">
             {currentUser ? (
               <Avatar src={currentUser?.image} userName={currentUser?.name} />
             ) : (
               <Image
                 className="rounded-full"
-                height="30"
-                width="30"
+                height="28"
+                width="28"
                 alt="Avatar"
                 src="/assets/avatar.png"
               />
             )}
-          </div>
-        </div>
+          </span>
+        </button>
       </div>
       {isOpen && (
-        <div className="absolute rounded-xl shadow-md w-[40vw] md:w-3/4 bg-white overflow-hidden right-0 top-12 text-sm">
-          <div className="flex flex-col cursor-pointer">
+        <div className="absolute right-0 top-12 w-[260px] origin-top-right border border-ink/15 bg-paper-ivory shadow-lift animate-fade-in">
+          <div className="flex items-center justify-between border-b border-rule px-5 py-3">
+            <span className="archive-label">Reader's Folio</span>
+            {currentUser && (
+              <span className="font-mono text-[10px] uppercase tracking-archive text-ink-faint">
+                Signed in
+              </span>
+            )}
+          </div>
+          <div className="flex flex-col">
             {currentUser ? (
               <>
-                <MenuItem
-                  onClick={() => router.push("/rentals")}
-                  label="My rentals"
-                />
-                <MenuItem
-                  onClick={() => router.push("/reservations")}
-                  label="Incoming rentals"
-                />
-                <MenuItem
-                  onClick={() => router.push("/favorites")}
-                  label="My favorites"
-                />
-                <MenuItem
-                  onClick={() => router.push("/messages")}
-                  label="Messages"
-                />
-                <MenuItem
-                  onClick={() => router.push("/instruments")}
-                  label="My instruments"
-                />
+                <MenuItem onClick={() => router.push("/rentals")} label="My rentals" />
+                <MenuItem onClick={() => router.push("/reservations")} label="Incoming rentals" />
+                <MenuItem onClick={() => router.push("/favorites")} label="My favourites" />
+                <MenuItem onClick={() => router.push("/messages")} label="Messages" />
+                <MenuItem onClick={() => router.push("/instruments")} label="My instruments" />
                 <MenuItem onClick={onRent} label="Lend your instrument" />
-                <hr />
-                <MenuItem
-                  onClick={() => router.push("/profile")}
-                  label="My profile"
-                />
+                <hr className="border-rule" />
+                <MenuItem onClick={() => router.push("/profile")} label="My profile" />
                 {currentUser?.isAdmin && (
                   <>
-                    <hr />
-                    <MenuItem
-                      onClick={() => router.push("/admin")}
-                      label="Admin Panel"
-                    />
+                    <hr className="border-rule" />
+                    <MenuItem onClick={() => router.push("/admin")} label="Admin panel" />
                   </>
                 )}
-                <hr />
+                <hr className="border-rule" />
                 {isDemoMode ? (
                   <MenuItem onClick={() => {}} label="Demo session active" />
                 ) : (
-                  <MenuItem onClick={() => signOut()} label="Logout" />
+                  <MenuItem onClick={() => signOut()} label="Sign out" />
                 )}
               </>
             ) : (
               <>
-                <MenuItem onClick={openLogin} label="Login" />
-                <MenuItem onClick={openRegister} label="Sign up" />
+                <MenuItem onClick={openLogin} label="Sign in" />
+                <MenuItem onClick={openRegister} label="Open an account" />
               </>
             )}
           </div>

@@ -164,7 +164,7 @@ export default function ImageUpload({
           relative cursor-pointer hover:opacity-70 transition
           border-2 border-dashed p-8 rounded-lg
           flex flex-col justify-center items-center gap-4
-          ${isDragActive ? 'border-amber-500 bg-amber-50' : 'border-neutral-300'}
+          ${isDragActive ? 'border-ink bg-paper-warm' : 'border-rule'}
           ${value.length >= maxImages ? 'opacity-50 cursor-not-allowed' : ''}
           ${isUploading ? 'pointer-events-none' : ''}
         `}
