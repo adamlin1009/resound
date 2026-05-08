@@ -1,7 +1,7 @@
 import nextAuthMiddleware from "next-auth/middleware";
 import { NextRequest, NextResponse } from "next/server";
 
-export default function middleware(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   if (process.env.NEXT_PUBLIC_RESOUND_DEMO === "true") {
     return NextResponse.next();
   }
