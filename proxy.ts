@@ -1,5 +1,5 @@
-import { withAuth } from "next-auth/middleware";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequestWithAuth, withAuth } from "next-auth/middleware";
+import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 
 const authMiddleware = withAuth({
   pages: {
@@ -7,12 +7,12 @@ const authMiddleware = withAuth({
   },
 });
 
-export default function proxy(request: NextRequest) {
+export default function proxy(request: NextRequest, event: NextFetchEvent) {
   if (process.env.NEXT_PUBLIC_RESOUND_DEMO === "true") {
     return NextResponse.next();
   }
 
-  return authMiddleware(request as never);
+  return authMiddleware(request as NextRequestWithAuth, event);
 }
 
 export const config = {
