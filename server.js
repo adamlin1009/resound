@@ -9,6 +9,18 @@ if (
 
 const { createServer } = require('http');
 const { parse } = require('url');
+
+if (
+  typeof globalThis.localStorage !== 'undefined' &&
+  typeof globalThis.localStorage.getItem !== 'function'
+) {
+  try {
+    delete globalThis.localStorage;
+  } catch {
+    globalThis.localStorage = undefined;
+  }
+}
+
 const next = require('next');
 const { Server } = require('socket.io');
 

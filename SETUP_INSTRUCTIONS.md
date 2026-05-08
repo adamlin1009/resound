@@ -1,5 +1,11 @@
 # Resound Setup Instructions
 
+## Deployed Portfolio Demo
+
+The archived portfolio demo is available at [https://resound-nu.vercel.app/](https://resound-nu.vercel.app/).
+
+The hosted demo uses curated data and simulated side effects so visitors can safely explore browsing, booking, messaging, uploads, and rental management flows.
+
 ## Environment Variables
 
 Create a `.env` file in the root directory with the following variables:
@@ -53,12 +59,19 @@ UPLOADTHING_APP_ID=
    npm install
    ```
 
-2. Run the development server:
+2. For the archived portfolio demo, run with demo mode enabled:
+   ```bash
+   NEXT_PUBLIC_RESOUND_DEMO=true npm run dev
+   ```
+
+   This uses curated demo data and simulates payments, messages, uploads, and rental actions without external services or database writes.
+
+3. For the real marketplace path, configure the services above and run the development server:
    ```bash
    npm run dev
    ```
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## Optional: OAuth Setup
 
@@ -81,4 +94,4 @@ For social login functionality:
 For Uploadthing (image uploads):
 1. Sign up at [Uploadthing](https://uploadthing.com/)
 2. Create a new app in the dashboard
-3. Get your app ID and secret from the API Keys section 
+3. Get your app ID and secret from the API Keys section

@@ -4,12 +4,22 @@ import prisma from "@/lib/prismadb";
 import { sendEmail, emailTemplates } from "@/lib/email";
 import { format } from "date-fns";
 import { Prisma } from "@prisma/client";
+import { getDemoReservationById, isDemoMode } from "@/lib/demoData";
 
 async function handleSetup(
   request: Request,
   { params }: { params: Promise<{ reservationId: string }> }
 ) {
   try {
+    if (isDemoMode()) {
+      const { reservationId } = await params;
+      const reservation = getDemoReservationById(reservationId);
+      return NextResponse.json({
+        reservation: reservation ? { ...reservation, rentalStatus: "READY_FOR_PICKUP" } : null,
+        message: "Rental details updated in demo mode",
+      });
+    }
+
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {

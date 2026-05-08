@@ -39,6 +39,7 @@ function ListingReservation({
 }: Props) {
   const [selectedPickupTime, setSelectedPickupTime] = useState("");
   const [selectedReturnTime, setSelectedReturnTime] = useState("");
+  const isDemoMode = process.env.NEXT_PUBLIC_RESOUND_DEMO === "true";
 
   // Generate time options based on owner's availability
   const generateTimeOptions = (startTime: string, endTime: string) => {
@@ -72,7 +73,7 @@ function ListingReservation({
     }
   };
   return (
-    <div className="bg-white rounded-xl border-[1px] border-neutral-200 overflow-hidden">
+    <div className="bg-white rounded-lg border-[1px] border-neutral-200 overflow-hidden shadow-sm">
       <div className="flex flex-row items-center gap-1 p-4">
         <p className="flex gap-1 text-2xl font-semibold">
           $ {price} <span className="font-light text-neutral-600">per day</span>
@@ -135,9 +136,14 @@ function ListingReservation({
       <div className="p-4">
         <Button 
           disabled={disabled || !selectedPickupTime || !selectedReturnTime} 
-          label="Proceed to Payment" 
+          label={isDemoMode ? "Simulate Booking" : "Proceed to Payment"}
           onClick={onSubmit} 
         />
+        {isDemoMode && (
+          <p className="mt-3 text-xs text-neutral-500">
+            Demo checkout redirects to a mock success state. No card or account is charged.
+          </p>
+        )}
       </div>
       <hr />
       <div className="p-4 flex flex-row items-center justify-between font-semibold text-lg">

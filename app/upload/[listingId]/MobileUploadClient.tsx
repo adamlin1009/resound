@@ -34,6 +34,7 @@ export default function MobileUploadClient({
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState("");
+  const isDemoMode = process.env.NEXT_PUBLIC_RESOUND_DEMO === "true";
 
   // Calculate remaining time
   useEffect(() => {
@@ -76,6 +77,13 @@ export default function MobileUploadClient({
       setIsUploading(true);
 
       try {
+        if (isDemoMode) {
+          const newImageUrls = filesToUpload.map((file) => URL.createObjectURL(file));
+          setUploadedImages((prev) => [...prev, ...newImageUrls]);
+          toast.success(`${newImageUrls.length} demo image${newImageUrls.length > 1 ? "s" : ""} staged`);
+          return;
+        }
+
         const uploadResults = await startUpload(filesToUpload);
         
         if (uploadResults) {
@@ -90,7 +98,7 @@ export default function MobileUploadClient({
         setIsUploading(false);
       }
     },
-    [listing.currentImages.length, uploadedImages.length, startUpload]
+    [isDemoMode, listing.currentImages.length, uploadedImages.length, startUpload]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -162,6 +170,12 @@ export default function MobileUploadClient({
               Time remaining: <strong>{timeRemaining}</strong>
             </span>
           </div>
+
+          {isDemoMode && (
+            <div className="mb-6 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
+              Demo uploads are previewed locally and are not sent to Uploadthing.
+            </div>
+          )}
 
           {/* Image Count */}
           <div className="mb-6 text-center">

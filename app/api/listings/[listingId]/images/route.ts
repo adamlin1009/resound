@@ -1,12 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
+import { getDemoListingById, isDemoMode } from "@/lib/demoData";
 
 // PATCH endpoint to add images using upload token (for mobile uploads)
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ listingId: string }> }
 ) {
+  if (isDemoMode()) {
+    const { listingId } = await params;
+    const body = await request.json();
+    return NextResponse.json({
+      success: true,
+      listing: {
+        id: listingId,
+        imageSrc: Array.isArray(body.imageSrc) ? body.imageSrc : getDemoListingById(listingId)?.imageSrc || [],
+      },
+    });
+  }
+
   const { listingId } = await params;
 
   if (!listingId) {
@@ -100,6 +113,15 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ listingId: string }> }
 ) {
+  if (isDemoMode()) {
+    const { listingId } = await params;
+    const body = await request.json();
+    return NextResponse.json({
+      message: "Demo images reordered",
+      imageSrc: Array.isArray(body.imageSrc) ? body.imageSrc : getDemoListingById(listingId)?.imageSrc || [],
+    });
+  }
+
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -174,6 +196,16 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ listingId: string }> }
 ) {
+  if (isDemoMode()) {
+    const { listingId } = await params;
+    const body = await request.json();
+    const images = getDemoListingById(listingId)?.imageSrc || [];
+    return NextResponse.json({
+      message: "Demo image deleted",
+      imageSrc: images.filter((image) => image !== body.imageUrl),
+    });
+  }
+
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {

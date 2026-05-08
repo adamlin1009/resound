@@ -1,6 +1,7 @@
 import prisma from "@/lib/prismadb";
 import getCurrentUser from "./getCurrentUser";
 import { SafeReservation } from "@/types";
+import { getDemoOwnerReservations, isDemoMode } from "@/lib/demoData";
 
 interface IOwnerReservationsResponse {
   reservations: SafeReservation[];
@@ -9,6 +10,10 @@ interface IOwnerReservationsResponse {
 
 export default async function getOwnerReservations(): Promise<IOwnerReservationsResponse> {
   try {
+    if (isDemoMode()) {
+      return getDemoOwnerReservations();
+    }
+
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {

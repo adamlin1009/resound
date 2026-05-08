@@ -1,11 +1,16 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
+import { isDemoMode } from "@/lib/demoData";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ reservationId: string }> }
 ) {
+  if (isDemoMode()) {
+    return NextResponse.json({ count: 1, message: "Demo reservation cancelled" });
+  }
+
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {

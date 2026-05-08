@@ -1,6 +1,7 @@
 import prisma from "@/lib/prismadb";
 import type { Session } from "next-auth";
 import { SafeUser } from "@/types";
+import { getDemoCurrentUser, isDemoMode } from "@/lib/demoData";
 
 export async function getSession(): Promise<Session | null> {
   const { getServerSession } = await import("next-auth/next");
@@ -15,6 +16,10 @@ export async function getSession(): Promise<Session | null> {
 
 export default async function getCurrentUser(): Promise<SafeUser | null> {
   try {
+    if (isDemoMode()) {
+      return getDemoCurrentUser();
+    }
+
     const session = await getSession();
 
     if (!session?.user?.email) {
