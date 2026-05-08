@@ -2,12 +2,22 @@ import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
 import { Prisma } from "@prisma/client";
+import { getDemoReservationById, isDemoMode } from "@/lib/demoData";
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ reservationId: string }> }
 ) {
   try {
+    if (isDemoMode()) {
+      const { reservationId } = await params;
+      const reservation = getDemoReservationById(reservationId);
+      return NextResponse.json({
+        message: "Return confirmed in demo mode",
+        reservation: reservation ? { ...reservation, returnConfirmedByRenter: true } : null,
+      });
+    }
+
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {

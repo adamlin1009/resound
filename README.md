@@ -6,9 +6,25 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0.3-blue)](https://www.typescriptlang.org)
 [![License](https://img.shields.io/badge/License-Proprietary-red)](LICENSE)
 
+## Live Demo
+
+Visit the archived portfolio demo: [https://resound-nu.vercel.app/](https://resound-nu.vercel.app/)
+
 ## About
 
 Resound is a specialized rental marketplace designed exclusively for the classical music community. We facilitate secure, convenient rentals of high-quality instruments between musicians, from students seeking practice instruments to professionals requiring specific instruments for performances.
+
+## Portfolio Demo Mode
+
+Resound is now archived as an inactive product, but the app can run as a safe live portfolio demo. Set `NEXT_PUBLIC_RESOUND_DEMO=true` to use curated demo listings, a simulated logged-in user, fake checkout success, mocked messaging, local-only uploads, and non-persistent rental management actions.
+
+The public portfolio build is available at [https://resound-nu.vercel.app/](https://resound-nu.vercel.app/).
+
+```bash
+NEXT_PUBLIC_RESOUND_DEMO=true npm run dev
+```
+
+In demo mode, no Stripe payments, Uploadthing uploads, emails, or database writes are performed for the primary showcase flows.
 
 ### 🎯 Our Mission
 

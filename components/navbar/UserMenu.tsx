@@ -23,6 +23,7 @@ function UserMenu({ currentUser }: Props) {
   const loginModel = useLoginModel();
   const rentModel = useRentModal();
   const [isOpen, setIsOpen] = useState(false);
+  const isDemoMode = process.env.NEXT_PUBLIC_RESOUND_DEMO === "true";
 
   const toggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
@@ -106,7 +107,11 @@ function UserMenu({ currentUser }: Props) {
                   </>
                 )}
                 <hr />
-                <MenuItem onClick={() => signOut()} label="Logout" />
+                {isDemoMode ? (
+                  <MenuItem onClick={() => {}} label="Demo session active" />
+                ) : (
+                  <MenuItem onClick={() => signOut()} label="Logout" />
+                )}
               </>
             ) : (
               <>

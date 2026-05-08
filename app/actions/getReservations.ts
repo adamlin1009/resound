@@ -2,6 +2,7 @@ import prisma from "@/lib/prismadb";
 import getCurrentUser from "./getCurrentUser";
 import { SafeReservation, safeListing, SafeUser } from "@/types";
 import { Prisma } from "@prisma/client";
+import { getDemoReservations, isDemoMode } from "@/lib/demoData";
 
 interface IParams {
   listingId?: string;
@@ -21,6 +22,10 @@ export interface IReservationsResponse {
 
 export default async function getReservations(params: IParams): Promise<IReservationsResponse> {
   try {
+    if (isDemoMode()) {
+      return getDemoReservations(params);
+    }
+
     // Pagination defaults
     const page = Math.max(1, params.page || 1);
     const limit = Math.min(100, Math.max(1, params.limit || 50)); // Default 50, max 100

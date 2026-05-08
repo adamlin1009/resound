@@ -97,7 +97,7 @@ function Search({}: Props) {
               e.stopPropagation();
               searchModel.onOpen();
             }}
-            className="p-2 bg-amber-700 rounded-full text-white hover:bg-amber-800 transition"
+            className="p-2 bg-emerald-700 rounded-full text-white hover:bg-emerald-800 transition"
           >
             <BiSearch size={18} />
           </button>

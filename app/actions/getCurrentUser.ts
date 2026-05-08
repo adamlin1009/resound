@@ -3,6 +3,7 @@ import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth/next";
 import { Session } from "next-auth";
 import { SafeUser } from "@/types";
+import { getDemoCurrentUser, isDemoMode } from "@/lib/demoData";
 
 export async function getSession(): Promise<Session | null> {
   return await getServerSession(authOptions);
@@ -10,6 +11,10 @@ export async function getSession(): Promise<Session | null> {
 
 export default async function getCurrentUser(): Promise<SafeUser | null> {
   try {
+    if (isDemoMode()) {
+      return getDemoCurrentUser();
+    }
+
     const session = await getSession();
 
     if (!session?.user?.email) {
