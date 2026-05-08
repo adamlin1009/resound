@@ -4,8 +4,19 @@ import { stripe, formatAmountForStripe } from "@/lib/stripe";
 import { createReservationHold } from "@/lib/reservationUtils";
 import { NextRequest, NextResponse } from "next/server";
 import { withRateLimit, rateLimiters } from "@/lib/rateLimiter";
+import { isDemoMode } from "@/lib/demoData";
 
 export async function POST(request: NextRequest) {
+  if (isDemoMode()) {
+    const body = await request.json().catch(() => ({}));
+    const sessionId = `demo-checkout-${body.listingId || "session"}`;
+
+    return NextResponse.json({
+      sessionId,
+      url: `/payment/success?session_id=${sessionId}`,
+    });
+  }
+
   return withRateLimit(request, rateLimiters.checkout, async () => {
   try {
     const currentUser = await getCurrentUser();

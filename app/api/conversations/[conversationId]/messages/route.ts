@@ -3,6 +3,7 @@ import prisma from "@/lib/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { TIME_CONSTANTS } from "@/constants";
 import { withRateLimit, rateLimiters } from "@/lib/rateLimiter";
+import { createDemoMessage, getDemoConversation, isDemoMode } from "@/lib/demoData";
 
 interface IParams {
   conversationId: string;
@@ -13,6 +14,11 @@ export async function GET(
   { params }: { params: Promise<IParams> }
 ) {
   try {
+    if (isDemoMode()) {
+      const { conversationId } = await params;
+      return NextResponse.json(getDemoConversation(conversationId).messages);
+    }
+
     const currentUser = await getCurrentUser();
     if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -53,6 +59,12 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<IParams> }
 ) {
+  if (isDemoMode()) {
+    const { conversationId } = await params;
+    const body = await request.json();
+    return NextResponse.json(createDemoMessage(conversationId, body.content || ""));
+  }
+
   return withRateLimit(request, rateLimiters.api, async () => {
   try {
     const currentUser = await getCurrentUser();

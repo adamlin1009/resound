@@ -1,6 +1,7 @@
 import prisma from "@/lib/prismadb";
 import getCurrentUser from "./getCurrentUser";
 import { SafeReservation } from "@/types";
+import { getDemoReservationById, isDemoMode } from "@/lib/demoData";
 
 interface IParams {
   reservationId?: string;
@@ -14,6 +15,11 @@ type ReservationWithAuthInfo = SafeReservation & {
 export default async function getReservationById(params: IParams): Promise<ReservationWithAuthInfo | null> {
   try {
     const { reservationId } = params;
+
+    if (isDemoMode()) {
+      return getDemoReservationById(reservationId);
+    }
+
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {

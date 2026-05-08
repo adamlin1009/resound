@@ -1,4 +1,5 @@
 import ClientOnly from "@/components/ClientOnly";
+import DemoBanner from "@/components/DemoBanner";
 import Footer from "@/components/Footer";
 import Toast from "@/components/Toast";
 import ConfirmModal from "@/components/models/ConfirmModal";
@@ -57,7 +58,10 @@ export default async function RootLayout({
               <ConfirmModal />
               <Navbar currentUser={currentUser} />
             </ClientOnly>
-            <div className="flex-1 pt-28">{children}</div>
+            <div className="flex-1 pt-28">
+              <DemoBanner />
+              {children}
+            </div>
             <Footer />
           </div>
         </Providers>

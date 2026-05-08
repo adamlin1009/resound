@@ -21,7 +21,7 @@ function Footer({}: Props) {
   return (
     <ClientOnly>
       <footer className="mt-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-y-10 px-8 md:px-32 py-14 bg-amber-50 text-amber-900">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-y-10 px-8 md:px-32 py-14 bg-neutral-950 text-neutral-100">
           {footerColumns}
         </div>
       </footer>

@@ -2,6 +2,7 @@ import ClientOnly from "@/components/ClientOnly";
 import Container from "@/components/Container";
 import EmptyState from "@/components/EmptyState";
 import ListingCard from "@/components/listing/ListingCard";
+import { isDemoMode } from "@/lib/demoData";
 import getCurrentUser from "./actions/getCurrentUser";
 import getListings, { IListingsParams } from "./actions/getListings";
 
@@ -56,6 +57,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
   const response = await getListings(params);
   const currentUser = await getCurrentUser();
+  const demoMode = isDemoMode();
 
   if (response.listings.length === 0) {
     return (
@@ -68,7 +70,38 @@ export default async function Home({ searchParams }: HomeProps) {
   return (
     <ClientOnly>
       <Container>
-        <div className="pt-24 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-8 overflow-x-hidden">
+        <section className="pt-8 pb-8">
+          <div className="grid gap-6 lg:grid-cols-[1.4fr_0.8fr] lg:items-end">
+            <div>
+              <p className="text-sm font-semibold uppercase text-emerald-700">
+                Classical instrument marketplace
+              </p>
+              <h1 className="mt-3 max-w-3xl text-4xl font-bold leading-tight text-neutral-950 md:text-5xl">
+                Resound helps musicians rent performance-ready instruments with confidence.
+              </h1>
+              <p className="mt-4 max-w-2xl text-base leading-7 text-neutral-600">
+                Browse a curated demo inventory, inspect real marketplace flows, and try the simulated checkout,
+                messaging, and rental management experience.
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-3 rounded-lg border border-neutral-200 bg-white p-4 shadow-sm">
+              <div>
+                <p className="text-2xl font-bold text-neutral-950">{response.totalCount}</p>
+                <p className="text-xs text-neutral-500">instruments</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-neutral-950">8</p>
+                <p className="text-xs text-neutral-500">categories</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-neutral-950">{demoMode ? "Demo" : "Live"}</p>
+                <p className="text-xs text-neutral-500">mode</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="pb-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-8 overflow-x-hidden">
           {response.listings.map((listing, index) => (
             <ListingCard
               key={listing.id}
