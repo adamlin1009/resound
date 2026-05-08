@@ -36,6 +36,7 @@ type Props = {
 function ListingClient({ reservations = [], listing, currentUser, hasPaidReservation = false, exactAddress }: Props) {
   const router = useRouter();
   const loginModal = useLoginModel();
+  const isDemoMode = process.env.NEXT_PUBLIC_RESOUND_DEMO === "true";
 
   const disableDates = useMemo(() => {
     let dates: Date[] = [];
@@ -153,9 +154,13 @@ function ListingClient({ reservations = [], listing, currentUser, hasPaidReserva
             />
             <div className="order-first mb-10 md:order-last md:col-span-3">
               {currentUser && currentUser.id === listing.user.id ? (
-                <div className="bg-white rounded-xl border-[1px] border-neutral-200 p-6">
+                <div className="bg-white rounded-lg border-[1px] border-neutral-200 p-6 shadow-sm">
                   <p className="text-lg font-semibold mb-2">This is your listing</p>
-                  <p className="text-neutral-500 mb-4">You cannot rent your own instrument.</p>
+                  <p className="text-neutral-500 mb-4">
+                    {isDemoMode
+                      ? "Demo mode is showing the owner-side tools for this instrument."
+                      : "You cannot rent your own instrument."}
+                  </p>
                   
                   <div className="border-t pt-4">
                     <h3 className="font-semibold mb-3">Manage Images</h3>

@@ -2,12 +2,26 @@ import { NextRequest, NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
 import crypto from "crypto";
+import { getDemoListingById, isDemoMode } from "@/lib/demoData";
 
 // POST endpoint to generate upload token
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ listingId: string }> }
 ) {
+  if (isDemoMode()) {
+    const { listingId } = await params;
+    const listing = getDemoListingById(listingId);
+    const token = "demo-upload-token";
+
+    return NextResponse.json({
+      token,
+      uploadUrl: `/upload/${listingId}?token=${token}`,
+      expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+      listingTitle: listing?.title || "Demo instrument",
+    });
+  }
+
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -72,6 +86,21 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ listingId: string }> }
 ) {
+  if (isDemoMode()) {
+    const { listingId } = await params;
+    const listing = getDemoListingById(listingId);
+    return NextResponse.json({
+      valid: true,
+      listing: {
+        id: listingId,
+        title: listing?.title || "Demo instrument",
+        currentImages: listing?.imageSrc || [],
+        ownerName: listing?.user.name || "Demo owner",
+      },
+      expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+    });
+  }
+
   const { searchParams } = new URL(request.url);
   const token = searchParams.get("token");
   const { listingId } = await params;

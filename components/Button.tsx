@@ -27,9 +27,9 @@ function Button({
       disabled={disabled}
       onClick={onClick}
       className={`relative disabled:opacity-70 disabled:cursor-not-allowed rounded-lg hover:opacity-80 transition w-full ${
-        outline ? "bg-white" : "bg-amber-700"
-      } ${outline ? "border-amber-900" : "border-amber-700"} ${
-        outline ? "text-amber-900" : "text-white"
+        outline ? "bg-white" : "bg-neutral-950"
+      } ${outline ? "border-neutral-300" : "border-neutral-950"} ${
+        outline ? "text-neutral-900" : "text-white"
       } ${small ? "text-sm" : "text-md"} ${small ? "py-1" : "py-3"} ${
         small ? "font-light" : "font-semibold"
       } ${small ? "border-[1px]" : "border-2"}`}
@@ -37,7 +37,7 @@ function Button({
       {Icon && (
         <Icon
           size={small ? 16 : 24}
-          className={`absolute left-4 ${small ? "top-1/2 -translate-y-1/2" : "top-3"} ${isColor && "text-amber-600"}`}
+          className={`absolute left-4 ${small ? "top-1/2 -translate-y-1/2" : "top-3"} ${isColor && "text-emerald-600"}`}
         />
       )}
       {label}

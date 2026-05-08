@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prismadb";
 import MobileUploadClient from "./MobileUploadClient";
+import { getDemoListingById, isDemoMode } from "@/lib/demoData";
 
 interface MobileUploadPageProps {
   params: Promise<{
@@ -20,6 +21,27 @@ export default async function MobileUploadPage({
 
   if (!token) {
     redirect("/");
+  }
+
+  if (isDemoMode()) {
+    const listing = getDemoListingById(listingId);
+
+    if (!listing) {
+      redirect("/");
+    }
+
+    return (
+      <MobileUploadClient
+        listing={{
+          id: listing.id,
+          title: listing.title,
+          currentImages: listing.imageSrc,
+          ownerName: listing.user.name || "Demo owner",
+        }}
+        token={token}
+        expiresAt={new Date(Date.now() + 30 * 60 * 1000)}
+      />
+    );
   }
 
   // Validate the token

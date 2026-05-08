@@ -1,8 +1,13 @@
 import prisma from "@/lib/prismadb";
 import { safeListingWithAddress } from "@/types";
+import { getDemoListingWithAddress, isDemoMode } from "@/lib/demoData";
 
 export default async function getListingWithAddress(listingId: string): Promise<safeListingWithAddress | null> {
   try {
+    if (isDemoMode()) {
+      return getDemoListingWithAddress(listingId);
+    }
+
     const listing = await prisma.listing.findUnique({
       where: {
         id: listingId,

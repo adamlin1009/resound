@@ -84,6 +84,39 @@ export interface SocketData {
   conversationIds: string[];
 }
 
+interface SocketReservedEvents {
+  connect: () => void;
+  connect_error: (error: Error) => void;
+  disconnect: (reason: string) => void;
+}
+
+type SocketListenEvents = ServerToClientEvents & SocketReservedEvents;
+type SocketEventHandler<Events, Event extends keyof Events> =
+  Events[Event] extends (...args: infer Args) => infer Result
+    ? (...args: Args) => Result
+    : never;
+
 // Socket instance type
-import { Socket } from "socket.io-client/build/esm/socket.js";
-export type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
+export interface TypedSocket {
+  id?: string;
+  auth?: Record<string, unknown> | ((callback: (data: object) => void) => void);
+  connected: boolean;
+  connect: () => TypedSocket;
+  disconnect: () => TypedSocket;
+  on: <Event extends keyof SocketListenEvents>(
+    event: Event,
+    listener: SocketEventHandler<SocketListenEvents, Event>
+  ) => TypedSocket;
+  once: <Event extends keyof SocketListenEvents>(
+    event: Event,
+    listener: SocketEventHandler<SocketListenEvents, Event>
+  ) => TypedSocket;
+  off: <Event extends keyof SocketListenEvents>(
+    event: Event,
+    listener?: SocketEventHandler<SocketListenEvents, Event>
+  ) => TypedSocket;
+  emit: <Event extends keyof ClientToServerEvents>(
+    event: Event,
+    ...args: Parameters<ClientToServerEvents[Event]>
+  ) => TypedSocket;
+}

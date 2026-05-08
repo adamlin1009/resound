@@ -1,11 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
+import { getDemoListingById, isDemoMode } from "@/lib/demoData";
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ listingId: string }> }
 ) {
+  if (isDemoMode()) {
+    const { listingId } = await params;
+    const body = await request.json();
+    return NextResponse.json({
+      ...getDemoListingById(listingId),
+      ...body,
+      message: "Demo listing updated. Changes are not persisted.",
+    });
+  }
+
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -144,6 +155,12 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ listingId: string }> }
 ) {
+  if (isDemoMode()) {
+    return NextResponse.json({
+      message: "Demo listing deleted. No real listing was changed.",
+    });
+  }
+
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {

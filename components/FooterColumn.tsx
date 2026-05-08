@@ -32,10 +32,10 @@ function FooterColumn({ index, data }: Props) {
         const link = linkMap[item];
         if (link) {
             return (
-                <Link 
+                <Link
                     key={itemIndex} 
                     href={link}
-                    className="block hover:underline cursor-pointer"
+                    className="block cursor-pointer text-neutral-300 hover:text-white hover:underline"
                 >
                     {item}
                 </Link>
@@ -46,7 +46,7 @@ function FooterColumn({ index, data }: Props) {
     });
 
     return (
-      <div className="space-y-4 text-xs text-gray-800">
+      <div className="space-y-4 text-xs text-neutral-300">
         <div>
           {columnItems}
         </div>

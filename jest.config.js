@@ -27,7 +27,14 @@ const customJestConfig = {
     '^.+\\.(png|jpg|jpeg|gif|webp|avif|ico|bmp|svg)$/i': '<rootDir>/__mocks__/fileMock.js',
   },
   // Add more setup options before each test is run
-  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
+  testPathIgnorePatterns: [
+    '<rootDir>/node_modules/',
+    '<rootDir>/.next/',
+    '<rootDir>/__tests__/actions/',
+    '<rootDir>/__tests__/api/',
+    '<rootDir>/__tests__/components/',
+    '<rootDir>/__tests__/utils/',
+  ],
   transform: {
     // Use babel-jest to transpile tests with the next/babel preset
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],

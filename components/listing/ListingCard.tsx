@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useMemo } from "react";
+import { TbPhoto } from "react-icons/tb";
 import Button from "../Button";
 import HeartButton from "../HeartButton";
 import OptimizedImage from "../ui/OptimizedImage";
@@ -96,7 +97,7 @@ function ListingCard({
   return (
     <div
       onClick={handleCardClick}
-      className={`col-span-1 cursor-pointer group ${isInactive ? 'opacity-50' : ''}`}
+      className={`col-span-1 cursor-pointer group rounded-lg border border-neutral-200 bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-md ${isInactive ? 'opacity-50' : ''}`}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.5 }}
@@ -108,18 +109,18 @@ function ListingCard({
         }}
       >
         <div className="flex flex-col gap-2 w-full">
-          <div className="aspect-square w-full relative overflow-hidden rounded-xl">
+          <div className="aspect-[4/3] w-full relative overflow-hidden rounded-lg bg-neutral-100">
             {data.imageSrc && data.imageSrc.length > 0 && data.imageSrc[0] ? (
               <OptimizedImage
                 fill
-                className="object-cover h-full w-full group-hover:scale-110 transition"
+                className="object-cover h-full w-full group-hover:scale-105 transition duration-300"
                 src={data.imageSrc[0]}
-                alt="listing"
+                alt={data.title}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 priority={priority}
               />
             ) : (
-              <div className="aspect-square w-full h-full bg-neutral-100 flex items-center justify-center rounded-xl">
+              <div className="aspect-square w-full h-full bg-neutral-100 flex items-center justify-center rounded-lg">
                 <span className="text-neutral-500 text-sm">No image</span>
               </div>
             )}
@@ -128,17 +129,15 @@ function ListingCard({
             </div>
             {data.imageSrc && data.imageSrc.length > 1 && (
               <div className="absolute bottom-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+                <TbPhoto size={13} />
                 {data.imageSrc.length}
               </div>
             )}
           </div>
-          <div className="font-semibold text-lg">
+          <div className="font-semibold text-base text-neutral-950 line-clamp-2">
             {data.title}
           </div>
-          <div className="font-light text-neutral-500">
+          <div className="font-light text-sm text-neutral-500">
             {reservationDate || (
               <>
                 {data.instrumentType ? (
@@ -167,11 +166,11 @@ function ListingCard({
               'Professional'
             }</span>
           </div>
-          <div className="font-medium text-neutral-700">
+          <div className="font-medium text-sm text-neutral-700">
             {locationDisplay}
           </div>
-          <div className="flex flex-row items-center gap-1">
-            <div className="flex gap-1 font-semibold">
+          <div className="flex flex-row items-center justify-between gap-2">
+            <div className="flex gap-1 font-semibold text-neutral-950">
               ${price} {!reservation && <div className="font-light"> per day</div>}
             </div>
           </div>
