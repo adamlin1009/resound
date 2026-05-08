@@ -81,7 +81,7 @@ export default async function Home({ searchParams }: HomeProps) {
                 <span className="archive-label">Issue 026</span>
               </div>
               <p className="mt-6 font-mono text-[10px] uppercase tracking-archive text-ink-muted">
-                Editor's Note
+                Editor&apos;s Note
               </p>
               <p className="mt-3 font-display text-[15px] leading-relaxed text-ink-soft">
                 A working <span className="editorial-italic">archive</span> of

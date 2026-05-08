@@ -93,7 +93,7 @@ function UserMenu({ currentUser }: Props) {
       {isOpen && (
         <div className="absolute right-0 top-12 w-[260px] origin-top-right border border-ink/15 bg-paper-ivory shadow-lift animate-fade-in">
           <div className="flex items-center justify-between border-b border-rule px-5 py-3">
-            <span className="archive-label">Reader's Folio</span>
+            <span className="archive-label">Reader&apos;s Folio</span>
             {currentUser && (
               <span className="font-mono text-[10px] uppercase tracking-archive text-ink-faint">
                 Signed in
