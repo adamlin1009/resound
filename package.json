@@ -1,7 +1,38 @@
 {
   "name": "resound",
   "version": "0.1.0",
+  "description": "Portfolio demo of a full-stack classical instrument rental marketplace with test bookings and Stripe test payments, built with Next.js, TypeScript, MongoDB, Socket.io, Uploadthing, and Tailwind CSS.",
   "private": true,
+  "license": "UNLICENSED",
+  "homepage": "https://resound-nu.vercel.app/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adamlin1009/resound.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adamlin1009/resound/issues"
+  },
+  "keywords": [
+    "nextjs",
+    "react",
+    "typescript",
+    "mongodb",
+    "prisma",
+    "stripe",
+    "socket.io",
+    "tailwindcss",
+    "nextauth",
+    "uploadthing",
+    "marketplace",
+    "websockets",
+    "payments",
+    "realtime",
+    "image-upload",
+    "full-stack",
+    "classical-music",
+    "jest",
+    "testing-library"
+  ],
   "scripts": {
     "dev": "node server.js",
     "build": "prisma generate && next build",

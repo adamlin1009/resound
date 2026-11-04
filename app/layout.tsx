@@ -14,10 +14,13 @@ import getCurrentUser from "./actions/getCurrentUser";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
+import { isDemoMode } from "@/lib/demo";
 
 export const metadata = {
-  title: "Resound - Classical Instrument Rentals",
-  description: "Rent premium musical instruments from trusted lenders in your area",
+  title: isDemoMode ? "Resound Demo - Classical Instrument Rentals" : "Resound - Classical Instrument Rentals",
+  description: isDemoMode
+    ? "Explore the Resound instrument rental marketplace demo. Test bookings and payments only; no real rentals or charges."
+    : "Rent premium musical instruments from trusted lenders in your area",
   icons: "/assets/harp-icon.svg",
 };
 
@@ -57,7 +60,7 @@ export default async function RootLayout({
               <ConfirmModal />
               <Navbar currentUser={currentUser} />
             </ClientOnly>
-            <div className="flex-1 pt-28">{children}</div>
+            <div className={isDemoMode ? "flex-1 pt-48 sm:pt-40" : "flex-1 pt-28"}>{children}</div>
             <Footer />
           </div>
         </Providers>

@@ -5,6 +5,7 @@ import { Range } from "react-date-range";
 import { format } from "date-fns";
 import Calendar from "../inputs/Calendar";
 import Button from "../Button";
+import { isDemoMode } from "@/lib/demo";
 
 type Props = {
   price: number;
@@ -135,9 +136,14 @@ function ListingReservation({
       <div className="p-4">
         <Button 
           disabled={disabled || !selectedPickupTime || !selectedReturnTime} 
-          label="Proceed to Payment" 
+          label={isDemoMode ? "Try demo checkout" : "Proceed to Payment"}
           onClick={onSubmit} 
         />
+        {isDemoMode && (
+          <p className="mt-3 text-center text-sm text-amber-900">
+            Demo only. Use a Stripe test card; no real payment is collected and no instrument rental is arranged.
+          </p>
+        )}
       </div>
       <hr />
       <div className="p-4 flex flex-row items-center justify-between font-semibold text-lg">
