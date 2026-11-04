@@ -2,9 +2,14 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { TIME_CONSTANTS } from "@/constants";
+import { getDemoConversation, getDemoConversations, isDemoMode } from "@/lib/demoData";
 
 export async function GET(request: Request) {
   try {
+    if (isDemoMode()) {
+      return NextResponse.json(getDemoConversations());
+    }
+
     const currentUser = await getCurrentUser();
     if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -130,6 +135,15 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    if (isDemoMode()) {
+      const body = await request.json().catch(() => ({}));
+      const conversation = body.listingId === "demo-listing-violin"
+        ? getDemoConversation("demo-conversation-violin")
+        : getDemoConversation("demo-conversation-cello");
+
+      return NextResponse.json(conversation);
+    }
+
     const currentUser = await getCurrentUser();
     if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -60,14 +60,36 @@ interface MessagesStore {
 const STORAGE_KEY = 'resound_message_read_timestamps';
 
 const getStoredTimestamps = (): Record<string, string> => {
-  if (typeof window === 'undefined') return {};
-  const stored = localStorage.getItem(STORAGE_KEY);
-  return stored ? JSON.parse(stored) : {};
+  if (
+    typeof window === 'undefined' ||
+    !window.localStorage ||
+    typeof window.localStorage.getItem !== 'function'
+  ) {
+    return {};
+  }
+
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch {
+    return {};
+  }
 };
 
 const saveTimestamps = (timestamps: Record<string, string>) => {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(timestamps));
+  if (
+    typeof window === 'undefined' ||
+    !window.localStorage ||
+    typeof window.localStorage.setItem !== 'function'
+  ) {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(timestamps));
+  } catch {
+    // Ignore storage errors in private browsing and SSR-like runtimes.
+  }
 };
 
 const useMessages = create<MessagesStore>((set, get) => ({

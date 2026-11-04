@@ -2,6 +2,7 @@ import prisma from "@/lib/prismadb";
 import { safeListing } from "@/types";
 import { geocodeLocation, buildLocationString, calculateDistance, Coordinates } from "@/lib/geocoding";
 import { Prisma } from "@prisma/client";
+import { getDemoListings, isDemoMode } from "@/lib/demoData";
 
 export interface IListingsParams {
   userId?: string;
@@ -29,6 +30,10 @@ export interface IListingsResponse {
 
 export default async function getListings(params: IListingsParams): Promise<IListingsResponse> {
   try {
+    if (isDemoMode()) {
+      return getDemoListings(params);
+    }
+
     // Pagination defaults
     const page = Math.max(1, params.page || 1);
     const limit = Math.min(100, Math.max(1, params.limit || 20)); // Default 20, max 100

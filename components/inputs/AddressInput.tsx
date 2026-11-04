@@ -228,13 +228,13 @@ export default function AddressInput({ value, onChange, placeholder = "Enter cit
             }
           }}
           placeholder={placeholder}
-          className="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 transition-colors"
+          className="w-full pl-10 pr-10 py-3 border border-rule bg-paper-ivory text-sm text-ink focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink transition-colors"
           autoComplete="off"
         />
         
         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
           {isLoading ? (
-            <div className="w-4 h-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-4 h-4 border border-ink border-t-transparent rounded-full animate-spin"></div>
           ) : input ? (
             <button
               type="button"
@@ -263,8 +263,8 @@ export default function AddressInput({ value, onChange, placeholder = "Enter cit
             <button
               key={prediction.placeId}
               type="button"
-              className={`w-full px-4 py-3 text-left hover:bg-amber-50 transition-colors border-b border-gray-100 last:border-b-0 ${
-                index === selectedIndex ? 'bg-amber-50 border-amber-200' : ''
+              className={`w-full px-4 py-3 text-left hover:bg-paper-warm transition-colors border-b border-rule last:border-b-0 ${
+                index === selectedIndex ? 'bg-paper-warm border-rule' : ''
               }`}
               onMouseDown={(e) => {
                 e.preventDefault(); // Prevent input from losing/gaining focus

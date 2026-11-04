@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { getDemoReservationById, isDemoMode } from "@/lib/demoData";
 
 interface IParams {
   reservationId: string;
@@ -11,6 +12,15 @@ export async function POST(
   { params }: { params: Promise<IParams> }
 ) {
   try {
+    if (isDemoMode()) {
+      const { reservationId } = await params;
+      return NextResponse.json({
+        success: true,
+        reservation: getDemoReservationById(reservationId),
+        message: "Demo rental cancelled. No real reservation or refund was changed.",
+      });
+    }
+
     const currentUser = await getCurrentUser();
     
     if (!currentUser) {

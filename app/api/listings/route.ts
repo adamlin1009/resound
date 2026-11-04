@@ -2,8 +2,21 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
 import { geocodeLocation, buildLocationString } from "@/lib/geocoding";
 import { NextResponse } from "next/server";
+import { getDemoCurrentUser, isDemoMode } from "@/lib/demoData";
 
 export async function POST(request: Request) {
+  if (isDemoMode()) {
+    const body = await request.json();
+    return NextResponse.json({
+      id: "demo-listing-created",
+      ...body,
+      userId: getDemoCurrentUser().id,
+      createdAt: new Date().toISOString(),
+      imageSrc: Array.isArray(body.imageSrc) ? body.imageSrc : [],
+      message: "Demo listing created. It will reset when the page refreshes.",
+    });
+  }
+
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {

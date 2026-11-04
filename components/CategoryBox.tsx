@@ -17,41 +17,42 @@ function CategoryBox({ icon: Icon, label, selected }: Props) {
 
   const handleClick = useCallback(() => {
     let currentQuery = {};
+    if (params) currentQuery = qs.parse(params.toString());
 
-    if (params) {
-      currentQuery = qs.parse(params.toString());
-    }
-
-    const updatedQuery: any = {
-      ...currentQuery,
-      category: label,
-    };
-
-    if (params?.get("category") === label) {
-      delete updatedQuery.category;
-    }
+    const updatedQuery: any = { ...currentQuery, category: label };
+    if (params?.get("category") === label) delete updatedQuery.category;
 
     const url = qs.stringifyUrl(
-      {
-        url: "/",
-        query: updatedQuery,
-      },
-      { skipNull: true }
+      { url: "/", query: updatedQuery },
+      { skipNull: true },
     );
 
     router.push(url);
   }, [label, params, router]);
 
   return (
-    <div
+    <button
       onClick={handleClick}
-      className={`flex flex-col items-center justify-center gap-2 p-3 border-b-2 hover:text-amber-800 transition cursor-pointer ${
-        selected ? "border-b-amber-700" : "border-transparent"
-      } ${selected ? "text-amber-800" : "text-neutral-500"}`}
+      className={`group flex shrink-0 items-center gap-2 border-b py-1 transition ${
+        selected
+          ? "border-ink text-ink"
+          : "border-transparent text-ink-muted hover:text-ink"
+      }`}
     >
-      <Icon size={26} />
-      <div className="font-medium text-xs">{label}</div>
-    </div>
+      <Icon size={16} className="opacity-70 group-hover:opacity-100" />
+      <span
+        className={`font-mono text-[11px] uppercase tracking-archive transition ${
+          selected ? "text-ink" : ""
+        }`}
+      >
+        {label}
+      </span>
+      {selected && (
+        <span className="editorial-italic text-[14px] leading-none text-lacquer">
+          ✦
+        </span>
+      )}
+    </button>
   );
 }
 

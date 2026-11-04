@@ -2,10 +2,10 @@
 
 Portfolio demo of a full-stack marketplace for classical instrument rentals, built with Next.js, TypeScript, MongoDB, Stripe, Socket.io, Uploadthing, and Tailwind CSS.
 
-> **Demo mode:** Resound is a portfolio demonstration. Bookings and payments are for testing only; no real instrument rentals are arranged. Use Stripe test cards only.
+> **Demo mode:** Resound is a portfolio demonstration. Bookings and payments are simulated; no real instrument rentals are arranged and no payment details are needed.
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.3.3-black)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0.3-blue)](https://www.typescriptlang.org)
+[![Next.js](https://img.shields.io/badge/Next.js-16.2.6-black)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue)](https://www.typescriptlang.org)
 [![Prisma](https://img.shields.io/badge/Prisma-4.12.0-2D3748)](https://www.prisma.io)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248)](https://www.mongodb.com)
 [![Stripe](https://img.shields.io/badge/Stripe-Payments-635BFF)](https://stripe.com)
@@ -17,7 +17,11 @@ Portfolio demo of a full-stack marketplace for classical instrument rentals, bui
 
 Resound is an Airbnb-style rental marketplace for musicians who need access to high-quality classical instruments. Renters can search by instrument family, location, skill level, availability, and condition. Owners can publish listings, manage reservation logistics, upload instrument photos, and communicate with renters in real time.
 
-The demo showcases full-stack marketplace workflows: authentication, test payment-backed reservations, image upload authorization, real-time messaging, geocoded search, admin tooling, rate limiting, and automated tests.
+The demo showcases full-stack marketplace workflows: authentication, simulated payment-backed reservations, image upload authorization, real-time messaging, geocoded search, admin tooling, rate limiting, and automated tests.
+
+## Portfolio Demo Mode
+
+Resound is archived as an inactive product and opens in demo mode by default. The demo includes curated instrument listings, a simulated signed-in user, simulated checkout success, mocked messaging, local-only uploads, and non-persistent rental management actions. No Stripe payments, Uploadthing uploads, emails, or database writes are performed for the primary showcase flows.
 
 ## Project Highlights
 
@@ -35,7 +39,7 @@ The demo showcases full-stack marketplace workflows: authentication, test paymen
 
 - Search by instrument category, instrument type, location, radius, condition, dates, and experience level.
 - View detailed listings with image galleries, pricing, owner context, availability, and pickup/return windows.
-- Save favorites, try demo reservations and Stripe test checkout, and explore rental status tracking.
+- Save favorites, try demo reservations and simulated checkout, and explore rental status tracking.
 - Message listing owners after authorized booking flows.
 
 ### Listing Management
@@ -55,7 +59,7 @@ The demo showcases full-stack marketplace workflows: authentication, test paymen
 
 | Area | Tools |
 | --- | --- |
-| App framework | Next.js 15 App Router, React 18, TypeScript |
+| App framework | Next.js 16 App Router, React 18, TypeScript |
 | UI | Tailwind CSS, Framer Motion, React Icons, React Hook Form |
 | Data | MongoDB, Prisma ORM |
 | Auth | NextAuth.js, Prisma Adapter, Google OAuth, credentials auth |
@@ -86,7 +90,7 @@ The demo showcases full-stack marketplace workflows: authentication, test paymen
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 22.x
 - npm
 - MongoDB database
 - Stripe account for checkout and webhook testing
@@ -126,7 +130,7 @@ npm run db:reset
 
 The main required variables are documented in `.env.example`.
 
-- `NEXT_PUBLIC_DEMO_MODE` defaults to `true`. Demo mode displays a persistent notice and rejects live Stripe secret keys. Keep it enabled for the portfolio demo; changing it requires a rebuild to keep server and browser behavior in sync.
+- `NEXT_PUBLIC_RESOUND_DEMO` defaults to `true`. Demo mode uses curated sample data and simulated showcase actions, displays a persistent notice, and rejects live Stripe secret keys. Keep it enabled for the portfolio demo; changing it requires a rebuild to keep server and browser behavior in sync.
 - `DATABASE_URL` for MongoDB.
 - `NEXTAUTH_SECRET` and `NEXTAUTH_URL` for authentication.
 - `NEXT_PUBLIC_APP_URL` for absolute URLs, QR-code upload links, and checkout redirects.
@@ -155,7 +159,7 @@ The suite uses Jest and Testing Library with mocks for external services where a
 
 ## Status
 
-Portfolio demo with core marketplace workflows and integrations for Stripe test payments, images, authentication, messaging, and location services. Demo mode is enabled by default; the app is not offered as an operational rental service.
+Portfolio demo with core marketplace workflows and integrations for simulated payments, images, authentication, messaging, and location services. Demo mode is enabled by default; the app is not offered as an operational rental service.
 
 ## License
 

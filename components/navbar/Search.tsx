@@ -9,6 +9,23 @@ import { BiSearch } from "react-icons/bi";
 
 type Props = {};
 
+interface SearchFieldProps {
+  label: string;
+  value: string;
+  className?: string;
+}
+
+function SearchField({ label, value, className = "" }: SearchFieldProps) {
+  return (
+    <div className={`flex flex-col px-5 py-2 text-left ${className}`}>
+      <span className="archive-label leading-none">{label}</span>
+      <span className="mt-1 truncate font-display text-[15px] leading-tight text-ink">
+        {value}
+      </span>
+    </div>
+  );
+}
+
 function Search({}: Props) {
   const searchModel = useSearchModal();
   const params = useSearchParams();
@@ -22,88 +39,56 @@ function Search({}: Props) {
   const radius = params?.get("radius");
 
   const locationLabel = useMemo(() => {
-    if (nationwide === "true") {
-      return "Nationwide";
-    }
-    
+    if (nationwide === "true") return "Nationwide";
     if (city && state) {
       const location = formatLocationShort({ city, state });
-      return radius ? `${location} (${radius}mi)` : location;
+      return radius ? `${location} · ${radius}mi` : location;
     }
-    if (city) {
-      return radius ? `${city} (${radius}mi)` : city;
-    }
-    if (state) {
-      return state;
-    }
-
-    return "Location";
+    if (city) return radius ? `${city} · ${radius}mi` : city;
+    if (state) return state;
+    return "Anywhere";
   }, [formatLocationShort, city, state, nationwide, radius]);
 
   const durationLabel = useMemo(() => {
     if (startDate && endDate) {
       const start = new Date(startDate as string);
       const end = new Date(endDate as string);
-      let diff = differenceInDays(end, start) + 1; // Make it inclusive
-
-      if (diff === 1) {
-        return "1 Day";
-      }
-      
+      const diff = differenceInDays(end, start) + 1;
+      if (diff === 1) return "1 Day";
       if (diff >= 30) {
         const months = Math.floor(diff / 30);
-        if (months === 1) {
-          return "1 Month";
-        }
-        return `${months} Months`;
+        return months === 1 ? "1 Month" : `${months} Months`;
       }
-
       return `${diff} Days`;
     }
-
-    return "Dates";
+    return "Any dates";
   }, [startDate, endDate]);
 
   const instrumentLabel = useMemo(() => {
     const instrumentType = params?.get("instrumentType");
     const category = params?.get("category");
-    
-    if (instrumentType) {
-      return instrumentType;
-    }
-    if (category) {
-      return category;
-    }
-    return "Instrument";
+    if (instrumentType) return instrumentType;
+    if (category) return category;
+    return "All instruments";
   }, [params]);
 
   return (
-    <div
+    <button
       onClick={searchModel.onOpen}
-      className="border-[1px] w-full md:w-auto py-2 rounded-full shadow-sm hover:shadow-md transition cursor-pointer min-w-fit"
+      className="group relative flex h-12 items-stretch overflow-hidden border border-ink/20 bg-paper-ivory text-ink transition hover:border-ink/60"
     >
-      <div className="flex flex-row items-center justify-between">
-        <div className="text-sm font-semibold px-6">{instrumentLabel}</div>
-        <div className="hidden sm:block text-sm font-semibold px-6 border-l-[1px] border-gray-200 flex-1 text-center">
-          {locationLabel}
-        </div>
-        <div className="hidden md:block text-sm font-semibold px-6 border-l-[1px] border-gray-200 flex-1 text-center whitespace-nowrap">
-          {durationLabel}
-        </div>
-        <div className="text-sm pl-6 pr-2 text-gray-600 flex items-center gap-3 border-l-[1px] border-gray-200">
-          <div className="hidden sm:block">Search</div>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              searchModel.onOpen();
-            }}
-            className="p-2 bg-amber-700 rounded-full text-white hover:bg-amber-800 transition"
-          >
-            <BiSearch size={18} />
-          </button>
-        </div>
-      </div>
-    </div>
+      <SearchField label="Instrument" value={instrumentLabel} className="min-w-[140px]" />
+      <span className="my-2 hidden w-px bg-rule sm:block" />
+      <SearchField label="Location" value={locationLabel} className="hidden sm:flex min-w-[150px]" />
+      <span className="my-2 hidden w-px bg-rule md:block" />
+      <SearchField label="Window" value={durationLabel} className="hidden md:flex min-w-[120px]" />
+      <span
+        aria-hidden
+        className="flex items-center justify-center bg-ink px-4 text-paper transition group-hover:bg-lacquer"
+      >
+        <BiSearch size={18} />
+      </span>
+    </button>
   );
 }
 

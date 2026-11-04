@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import React from "react";
 import Button from "./Button";
-import Heading from "./Heading";
 
 type Props = {
   title?: string;
@@ -22,30 +21,39 @@ function EmptyState({
   const router = useRouter();
 
   const handleReset = () => {
-    if (onReset) {
-      onReset();
-    } else {
-      router.push("/");
-    }
+    if (onReset) onReset();
+    else router.push("/");
   };
 
   return (
-    <div className="h-[60vh] flex flex-col gap-2 justify-center items-center">
+    <div className="flex min-h-[60vh] items-center justify-center px-6">
       <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
+        initial={{ opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="max-w-lg text-center"
       >
-        <Heading center title={title} subtitle={subtitle} />
-        <div className="w-48 mt-4 mx-auto">
-          {showReset && (
+        <p className="archive-label">No record found</p>
+        <h2 className="mt-4 font-display text-[40px] leading-[0.98] tracking-[-0.01em] text-ink md:text-[52px]">
+          The catalogue is{" "}
+          <span className="editorial-italic font-normal text-lacquer">
+            quiet
+          </span>{" "}
+          here.
+        </h2>
+        <p className="mt-5 font-display text-[15px] leading-relaxed text-ink-muted">
+          {subtitle || title}
+        </p>
+        {showReset && (
+          <div className="mx-auto mt-8 w-56">
             <Button
               outline
-              label={onReset ? "Try again" : "Remove all filters"}
+              label={onReset ? "Try again" : "Clear all filters"}
               onClick={handleReset}
             />
-          )}
-        </div>
+          </div>
+        )}
       </motion.div>
     </div>
   );

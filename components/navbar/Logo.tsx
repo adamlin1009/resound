@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import React from "react";
-import { GiHarp } from "react-icons/gi";
 
 type Props = {};
 
@@ -10,15 +9,19 @@ function Logo({}: Props) {
   const router = useRouter();
 
   return (
-    <div 
+    <button
       onClick={() => router.push("/")}
-      className="hidden md:flex items-center gap-2 cursor-pointer"
+      aria-label="Resound — return home"
+      className="group flex items-baseline gap-3 text-left"
     >
-      <GiHarp className="text-amber-700" size={32} />
-      <span className="font-serif font-bold text-2xl text-amber-900">
-        Resound
+      <span className="font-display text-[28px] leading-none font-medium tracking-[-0.02em] text-ink md:text-[32px]">
+        R<span className="editorial-italic text-lacquer">é</span>sound
       </span>
-    </div>
+      <span className="hidden flex-col leading-tight md:flex">
+        <span className="archive-label">Vol. III</span>
+        <span className="archive-label opacity-70">Spring Archive</span>
+      </span>
+    </button>
   );
 }
 

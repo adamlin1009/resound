@@ -1,11 +1,15 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import { FaGuitar, FaDrum, FaMusic } from "react-icons/fa";
-import { GiPianoKeys, GiSaxophone, GiViolin, GiTrumpet, GiFlute, GiMicrophone, GiSoundWaves } from "react-icons/gi";
-import { TbMusic } from "react-icons/tb";
-import { MdPiano } from "react-icons/md";
-import { BsMusicNote, BsSpeaker } from "react-icons/bs";
+import { FaDrum, FaMusic } from "react-icons/fa";
+import {
+  GiPianoKeys,
+  GiSaxophone,
+  GiViolin,
+  GiTrumpet,
+  GiMicrophone,
+  GiSoundWaves,
+} from "react-icons/gi";
 import CategoryBox from "../CategoryBox";
 import Container from "../Container";
 
@@ -59,25 +63,26 @@ function Categories({}: Props) {
   const category = params?.get("category");
   const pathname = usePathname();
 
-  const isMainPage = pathname === "/";
-
-  if (!isMainPage) {
-    return null;
-  }
+  if (pathname !== "/") return null;
 
   return (
-    <Container>
-      <div className="pt-4 flex flex-row items-center justify-between overflow-x-auto">
-        {categories.map((items, index) => (
-          <CategoryBox
-            key={index}
-            icon={items.icon}
-            label={items.label}
-            selected={category === items.label}
-          />
-        ))}
-      </div>
-    </Container>
+    <div className="border-t border-rule/70 bg-paper">
+      <Container>
+        <div className="flex items-center gap-6 overflow-x-auto py-3 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-ink/20">
+          <span className="archive-label hidden shrink-0 pr-3 sm:inline">
+            Index ·
+          </span>
+          {categories.map((items, index) => (
+            <CategoryBox
+              key={index}
+              icon={items.icon}
+              label={items.label}
+              selected={category === items.label}
+            />
+          ))}
+        </div>
+      </Container>
+    </div>
   );
 }
 

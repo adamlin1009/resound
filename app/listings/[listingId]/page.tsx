@@ -5,6 +5,7 @@ import getReservations from "@/app/actions/getReservations";
 import ClientOnly from "@/components/ClientOnly";
 import EmptyState from "@/components/EmptyState";
 import ListingClient from "@/components/ListingClient";
+import { demoReservations, getDemoListingWithAddress, isDemoMode } from "@/lib/demoData";
 import prisma from "@/lib/prismadb";
 
 interface IParams {
@@ -30,7 +31,15 @@ const ListingPage = async ({ params }: { params: Promise<IParams> }) => {
   let hasPaidReservation = false;
   let listingWithAddress = null;
   
-  if (currentUser && listingId) {
+  if (isDemoMode() && currentUser && listingId) {
+    hasPaidReservation = demoReservations.some(
+      (reservation) => reservation.listingId === listingId && reservation.userId === currentUser.id
+    );
+
+    if (hasPaidReservation || currentUser.id === listing.userId) {
+      listingWithAddress = getDemoListingWithAddress(listingId);
+    }
+  } else if (currentUser && listingId) {
     const userReservation = await prisma.reservation.findFirst({
       where: {
         listingId: listingId,

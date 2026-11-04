@@ -18,16 +18,27 @@ function HeartButton({ listingId, currentUser }: Props) {
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       onClick={toggleFavorite}
-      className=" relative hover:opacity-80 transition cursor-pointer"
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggleFavorite(e as any);
+        }
+      }}
+      aria-label={hasFavorite ? "Remove from archive" : "Save to archive"}
+      className="group relative grid h-9 w-9 place-items-center border border-paper/40 bg-paper-ivory/85 backdrop-blur transition hover:border-ink hover:bg-paper-ivory cursor-pointer"
     >
       <AiOutlineHeart
-        size={28}
-        className="fill-white absolute -top-[2px] -right-[2px]"
+        size={18}
+        className="absolute text-ink/40 transition group-hover:text-ink"
       />
       <AiFillHeart
-        size={24}
-        className={hasFavorite ? "fill-amber-600" : "fill-neutral-500/70"}
+        size={14}
+        className={`relative transition ${
+          hasFavorite ? "text-lacquer" : "text-transparent"
+        }`}
       />
     </div>
   );

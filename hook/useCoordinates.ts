@@ -1,7 +1,17 @@
+import { isDemoMode } from "@/lib/demo";
 import { useCallback, useEffect, useState, useMemo } from 'react';
 import { USLocationValue } from './useUSLocations';
 
 type Coordinates = [number, number] | null;
+
+const demoCoordinatesByLocation: Record<string, Coordinates> = {
+  "Boston, MA": [42.3429, -71.0857],
+  "New York, NY": [40.7736, -73.9835],
+  "San Francisco, CA": [37.7786, -122.4073],
+  "New Orleans, LA": [29.9641, -90.057],
+  "Chicago, IL": [41.9454, -87.6553],
+  "Austin, TX": [30.2501, -97.7493],
+};
 
 export function useCoordinates(location: USLocationValue | null) {
   const [coordinates, setCoordinates] = useState<Coordinates>(null);
@@ -41,6 +51,13 @@ export function useCoordinates(location: USLocationValue | null) {
   }, []);
 
   useEffect(() => {
+    if (isDemoMode && addressString) {
+      const demoCoordinates = demoCoordinatesByLocation[addressString] || null;
+      setCoordinates(demoCoordinates);
+      setIsLoading(false);
+      return;
+    }
+
     if (addressString && addressString.length >= 2) {
       fetchCoordinates(addressString);
     } else {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TbChevronLeft, TbChevronRight, TbZoomIn } from "react-icons/tb";
 import OptimizedImage from "./OptimizedImage";
@@ -42,10 +42,10 @@ export default function ImageCarousel({
   }, [handlePrevious, handleNext]);
 
   // Add keyboard listener
-  useState(() => {
+  useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  });
+  }, [handleKeyDown]);
 
   // Touch handlers
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
@@ -73,7 +73,7 @@ export default function ImageCarousel({
 
   if (!images || images.length === 0) {
     return (
-      <div className="w-full h-[60vh] overflow-hidden rounded-xl relative bg-neutral-100 flex items-center justify-center">
+      <div className="w-full h-[60vh] overflow-hidden rounded-lg relative bg-neutral-100 flex items-center justify-center">
         <span className="text-neutral-500">No images available</span>
       </div>
     );
@@ -82,7 +82,7 @@ export default function ImageCarousel({
   // Single image - no carousel needed
   if (images.length === 1) {
     return (
-      <div className="w-full h-[60vh] overflow-hidden rounded-xl relative group">
+      <div className="w-full h-[60vh] overflow-hidden rounded-lg relative group">
         <OptimizedImage
           src={images[0]}
           fill
@@ -135,7 +135,7 @@ export default function ImageCarousel({
 
   return (
     <div 
-      className="w-full h-[60vh] overflow-hidden rounded-xl relative group"
+      className="w-full h-[60vh] overflow-hidden rounded-lg relative group"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >

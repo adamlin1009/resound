@@ -9,7 +9,7 @@ describe('Demo mode payments', () => {
   beforeEach(() => {
     jest.resetModules();
     process.env = { ...originalEnv, STRIPE_SECRET_KEY: 'sk_test_demo' };
-    delete process.env.NEXT_PUBLIC_DEMO_MODE;
+    delete process.env.NEXT_PUBLIC_RESOUND_DEMO;
   });
 
   afterEach(() => {
@@ -18,11 +18,13 @@ describe('Demo mode payments', () => {
 
   it('defaults to demo mode without configuration', () => {
     expect(require('@/lib/demo').isDemoMode).toBe(true);
+    expect(require('@/lib/demoData').isDemoMode()).toBe(true);
   });
 
   it.each(['true', '', 'FALSE', '0'])('keeps demo mode on for %j', (value) => {
-    process.env.NEXT_PUBLIC_DEMO_MODE = value;
+    process.env.NEXT_PUBLIC_RESOUND_DEMO = value;
     expect(require('@/lib/demo').isDemoMode).toBe(true);
+    expect(require('@/lib/demoData').isDemoMode()).toBe(true);
   });
 
   it.each(['sk_test_demo', 'rk_test_demo'])('allows a test key: %s', (key) => {
@@ -40,10 +42,11 @@ describe('Demo mode payments', () => {
   });
 
   it('requires an explicit opt-out to allow live payments', () => {
-    process.env.NEXT_PUBLIC_DEMO_MODE = 'false';
+    process.env.NEXT_PUBLIC_RESOUND_DEMO = 'false';
     process.env.STRIPE_SECRET_KEY = 'sk_live_demo';
 
     expect(require('@/lib/demo').isDemoMode).toBe(false);
+    expect(require('@/lib/demoData').isDemoMode()).toBe(false);
     expect(() => require('@/lib/stripe')).not.toThrow();
     expect(require('stripe').default).toHaveBeenCalledWith('sk_live_demo', expect.any(Object));
   });

@@ -1,12 +1,18 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
 import { NextResponse } from "next/server";
+import { getDemoPaymentStatus, isDemoMode } from "@/lib/demoData";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
+    if (isDemoMode()) {
+      const { sessionId } = await params;
+      return NextResponse.json(getDemoPaymentStatus(sessionId));
+    }
+
     const currentUser = await getCurrentUser();
     if (!currentUser) {
       return NextResponse.json(

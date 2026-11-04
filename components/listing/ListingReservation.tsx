@@ -73,7 +73,7 @@ function ListingReservation({
     }
   };
   return (
-    <div className="bg-white rounded-xl border-[1px] border-neutral-200 overflow-hidden">
+    <div className="bg-white rounded-lg border-[1px] border-neutral-200 overflow-hidden shadow-sm">
       <div className="flex flex-row items-center gap-1 p-4">
         <p className="flex gap-1 text-2xl font-semibold">
           $ {price} <span className="font-light text-neutral-600">per day</span>
@@ -140,8 +140,8 @@ function ListingReservation({
           onClick={onSubmit} 
         />
         {isDemoMode && (
-          <p className="mt-3 text-center text-sm text-amber-900">
-            Demo only. Use a Stripe test card; no real payment is collected and no instrument rental is arranged.
+          <p className="mt-3 text-xs text-neutral-500">
+            Demo booking only. No payment details are needed, no charge is made, and no real rental is arranged.
           </p>
         )}
       </div>

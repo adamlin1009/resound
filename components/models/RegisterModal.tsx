@@ -2,54 +2,30 @@
 
 import useLoginModel from "@/hook/useLoginModal";
 import useRegisterModal from "@/hook/useRegisterModal";
-import axios from "axios";
 import { useCallback, useState } from "react";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { AiFillFacebook } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";
 
 import { signIn } from "next-auth/react";
 import Button from "../Button";
 import Heading from "../Heading";
-import Input from "../inputs/Input";
 import Modal from "./Modal";
 
-type Props = {};
-
-function RegisterModal({}: Props) {
+function RegisterModal() {
   const registerModel = useRegisterModal();
   const loginModel = useLoginModel();
   const [isLoading, setIsLoading] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FieldValues>({
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-    },
-  });
-
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const handleGoogleSignIn = useCallback(() => {
     setIsLoading(true);
 
-    axios
-      .post("/api/register", data)
-      .then(() => {
-        toast.success("Success!");
-        loginModel.onOpen();
-        registerModel.onClose();
-      })
-      .catch((err: any) => toast.error("Something Went Wrong"))
-      .finally(() => {
-        setIsLoading(false);
-        toast.success("Register Successfully");
-      });
-  };
+    signIn("google", {
+      callbackUrl: window.location.href,
+    }).catch(() => {
+      setIsLoading(false);
+      toast.error("Unable to start Google login");
+    });
+  }, []);
 
   const toggle = useCallback(() => {
     loginModel.onOpen();
@@ -68,45 +44,15 @@ function RegisterModal({}: Props) {
           outline
           label="Continue with Google"
           icon={FcGoogle}
-          onClick={() => signIn("google")}
+          disabled={isLoading}
+          onClick={handleGoogleSignIn}
         />
       </div>
-      {/* <Input
-        id="email"
-        label="Email Address"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-        required
-      />
-      <Input
-        id="name"
-        label="User Name"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-        required
-      />
-      <Input
-        id="password"
-        label="Password"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-        required
-      /> */}
     </div>
   );
 
   const footerContent = (
     <div className="flex flex-col gap-4">
-      {/* <Button
-        outline
-        label="Continue with Facebook"
-        icon={AiFillFacebook}
-        onClick={() => signIn("facebook")}
-        isColor
-      /> */}
       <div className="text-neutral-500 text-center font-light">
         <div>
           Already have an account?{" "}
@@ -128,7 +74,7 @@ function RegisterModal({}: Props) {
       title="Register"
       actionLabel=""
       onClose={registerModel.onClose}
-      onSubmit={() => {}}
+      onSubmit={handleGoogleSignIn}
       body={bodyContent}
       footer={footerContent}
     />

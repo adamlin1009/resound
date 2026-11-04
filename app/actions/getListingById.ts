@@ -1,5 +1,6 @@
 import prisma from "@/lib/prismadb";
 import { safeListing, SafeUser } from "@/types";
+import { getDemoListingById, isDemoMode } from "@/lib/demoData";
 
 interface IParams {
   listingId?: string;
@@ -11,6 +12,10 @@ export default async function getListingById(params: IParams): Promise<(safeList
 
     if (!listingId) {
       return null;
+    }
+
+    if (isDemoMode()) {
+      return getDemoListingById(listingId);
     }
 
     const listing = await prisma.listing.findUnique({

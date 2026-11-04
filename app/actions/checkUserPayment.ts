@@ -1,5 +1,6 @@
 import prisma from "@/lib/prismadb";
 import getCurrentUser from "./getCurrentUser";
+import { demoReservations, isDemoMode } from "@/lib/demoData";
 
 interface IParams {
   listingId: string;
@@ -12,6 +13,18 @@ export default async function checkUserPayment(params: IParams): Promise<{
 }> {
   try {
     const { listingId } = params;
+
+    if (isDemoMode()) {
+      const hasReservation = demoReservations.some(
+        (reservation) => reservation.listingId === listingId && reservation.userId === "demo-user-adam"
+      );
+
+      return {
+        hasReservation,
+        hasSuccessfulPayment: hasReservation,
+        canContact: hasReservation,
+      };
+    }
     
     // Get authenticated user
     const currentUser = await getCurrentUser();

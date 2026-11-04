@@ -160,14 +160,14 @@ function ListingInfo({
       )}
       <hr />
       {/* <div className="flex flex-col">
-        <p className="text-4xl font-serif font-bold text-amber-700">
-          resound<span className="text-amber-900">protect</span>
+        <p className="font-display text-4xl font-medium text-ink">
+          resound<span className="editorial-italic text-lacquer">protect</span>
         </p>
-        <p className="text-neutral-500 pt-3">
+        <p className="text-ink-muted pt-3">
           Every rental includes protection from lender cancellations,
           instrument inaccuracies, and instrument damage coverage.
         </p>
-        <p className="text-amber-900 font-bold underline pt-3 cursor-pointer">
+        <p className="text-ink font-bold underline pt-3 cursor-pointer">
           Learn more
         </p>
       </div>

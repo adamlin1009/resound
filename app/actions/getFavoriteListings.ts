@@ -2,9 +2,14 @@ import prisma from "@/lib/prismadb";
 import getCurrentUser from "./getCurrentUser";
 import { safeListing } from "@/types";
 import { Listing } from "@prisma/client";
+import { getDemoFavoriteListings, isDemoMode } from "@/lib/demoData";
 
 export default async function getFavoriteListings(): Promise<safeListing[]> {
   try {
+    if (isDemoMode()) {
+      return getDemoFavoriteListings();
+    }
+
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {

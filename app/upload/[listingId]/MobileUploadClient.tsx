@@ -1,5 +1,7 @@
 "use client";
 
+import { isDemoMode } from "@/lib/demo";
+
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUploadThing } from "@/lib/uploadthing";
@@ -76,6 +78,13 @@ export default function MobileUploadClient({
       setIsUploading(true);
 
       try {
+        if (isDemoMode) {
+          const newImageUrls = filesToUpload.map((file) => URL.createObjectURL(file));
+          setUploadedImages((prev) => [...prev, ...newImageUrls]);
+          toast.success(`${newImageUrls.length} demo image${newImageUrls.length > 1 ? "s" : ""} staged`);
+          return;
+        }
+
         const uploadResults = await startUpload(filesToUpload);
         
         if (uploadResults) {
@@ -162,6 +171,12 @@ export default function MobileUploadClient({
               Time remaining: <strong>{timeRemaining}</strong>
             </span>
           </div>
+
+          {isDemoMode && (
+            <div className="mb-6 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
+              Demo uploads are previewed locally and are not sent to Uploadthing.
+            </div>
+          )}
 
           {/* Image Count */}
           <div className="mb-6 text-center">
