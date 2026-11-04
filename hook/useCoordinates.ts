@@ -1,3 +1,4 @@
+import { isDemoMode } from "@/lib/demo";
 import { useCallback, useEffect, useState, useMemo } from 'react';
 import { USLocationValue } from './useUSLocations';
 
@@ -50,7 +51,7 @@ export function useCoordinates(location: USLocationValue | null) {
   }, []);
 
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_RESOUND_DEMO === 'true' && addressString) {
+    if (isDemoMode && addressString) {
       const demoCoordinates = demoCoordinatesByLocation[addressString] || null;
       setCoordinates(demoCoordinates);
       setIsLoading(false);

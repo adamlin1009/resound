@@ -1,6 +1,7 @@
 "use client";
 
 import { SafeUser } from "@/types";
+import { isDemoMode } from "@/lib/demo";
 import Container from "../Container";
 import Logo from "./Logo";
 import Search from "./Search";
@@ -33,8 +34,13 @@ function Navbar({ currentUser }: Props) {
       <div className="py-3">
         <Container>
           <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 md:gap-8">
-            <div className="flex justify-start">
+            <div className="flex flex-col items-start gap-1">
               <Logo />
+              {isDemoMode && (
+                <span className="font-mono text-[9px] leading-none uppercase tracking-archive text-lacquer">
+                  Demo mode
+                </span>
+              )}
             </div>
             <div className="flex justify-center">
               <Search />

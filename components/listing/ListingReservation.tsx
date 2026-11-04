@@ -5,6 +5,7 @@ import { Range } from "react-date-range";
 import { format } from "date-fns";
 import Calendar from "../inputs/Calendar";
 import Button from "../Button";
+import { isDemoMode } from "@/lib/demo";
 
 type Props = {
   price: number;
@@ -39,7 +40,6 @@ function ListingReservation({
 }: Props) {
   const [selectedPickupTime, setSelectedPickupTime] = useState("");
   const [selectedReturnTime, setSelectedReturnTime] = useState("");
-  const isDemoMode = process.env.NEXT_PUBLIC_RESOUND_DEMO === "true";
 
   // Generate time options based on owner's availability
   const generateTimeOptions = (startTime: string, endTime: string) => {
@@ -136,12 +136,12 @@ function ListingReservation({
       <div className="p-4">
         <Button 
           disabled={disabled || !selectedPickupTime || !selectedReturnTime} 
-          label={isDemoMode ? "Simulate Booking" : "Proceed to Payment"}
+          label={isDemoMode ? "Try demo checkout" : "Proceed to Payment"}
           onClick={onSubmit} 
         />
         {isDemoMode && (
           <p className="mt-3 text-xs text-neutral-500">
-            Demo checkout redirects to a mock success state. No card or account is charged.
+            Demo booking only. No payment details are needed, no charge is made, and no real rental is arranged.
           </p>
         )}
       </div>

@@ -1,5 +1,6 @@
 import ClientOnly from "@/components/ClientOnly";
 import DemoBanner from "@/components/DemoBanner";
+import { isDemoMode } from "@/lib/demo";
 import Footer from "@/components/Footer";
 import Toast from "@/components/Toast";
 import ConfirmModal from "@/components/models/ConfirmModal";
@@ -22,9 +23,12 @@ import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
 
 export const metadata = {
-  title: "Resound — A Catalogue of Performance-Ready Instruments",
-  description:
-    "An archive marketplace for classical musicians to lend and borrow rare, performance-ready instruments.",
+  title: isDemoMode
+    ? "Resound Demo — A Catalogue of Performance-Ready Instruments"
+    : "Resound — A Catalogue of Performance-Ready Instruments",
+  description: isDemoMode
+    ? "Explore the Resound portfolio demo. Bookings and payments are simulated; no real rentals or charges."
+    : "An archive marketplace for classical musicians to lend and borrow rare, performance-ready instruments.",
   icons: "/assets/harp-icon.svg",
 };
 

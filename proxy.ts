@@ -1,3 +1,4 @@
+import { isDemoMode } from "@/lib/demo";
 import { type NextRequestWithAuth, withAuth } from "next-auth/middleware";
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 
@@ -8,7 +9,7 @@ const authMiddleware = withAuth({
 });
 
 export default function proxy(request: NextRequest, event: NextFetchEvent) {
-  if (process.env.NEXT_PUBLIC_RESOUND_DEMO === "true") {
+  if (isDemoMode) {
     return NextResponse.next();
   }
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { isDemoMode } from "@/lib/demo";
+
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUploadThing } from "@/lib/uploadthing";
@@ -34,7 +36,6 @@ export default function MobileUploadClient({
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState("");
-  const isDemoMode = process.env.NEXT_PUBLIC_RESOUND_DEMO === "true";
 
   // Calculate remaining time
   useEffect(() => {
@@ -98,7 +99,7 @@ export default function MobileUploadClient({
         setIsUploading(false);
       }
     },
-    [isDemoMode, listing.currentImages.length, uploadedImages.length, startUpload]
+    [listing.currentImages.length, uploadedImages.length, startUpload]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

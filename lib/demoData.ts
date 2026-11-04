@@ -1,6 +1,7 @@
+import { isDemoMode as demoMode } from "./demo";
 import { SafeReservation, SafeUser, safeListing, safeListingWithAddress } from "@/types";
 
-export const isDemoMode = () => process.env.NEXT_PUBLIC_RESOUND_DEMO === "true";
+export const isDemoMode = () => demoMode;
 
 type DemoListingParams = {
   userId?: string;

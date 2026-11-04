@@ -1,5 +1,7 @@
 "use client";
 
+import { isDemoMode } from "@/lib/demo";
+
 import useLoginModel from "@/hook/useLoginModal";
 import useRegisterModal from "@/hook/useRegisterModal";
 import useRentModal from "@/hook/useRentModal";
@@ -24,7 +26,6 @@ function UserMenu({ currentUser }: Props) {
   const rentModel = useRentModal();
   const [isOpen, setIsOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
-  const isDemoMode = process.env.NEXT_PUBLIC_RESOUND_DEMO === "true";
 
   const toggleOpen = useCallback(() => {
     setIsOpen((value) => !value);

@@ -1,5 +1,7 @@
 "use client";
 
+import { isDemoMode } from "@/lib/demo";
+
 import useLoginModel from "@/hook/useLoginModal";
 import { SafeReservation, SafeUser, safeListing } from "@/types";
 import axios from "axios";
@@ -36,7 +38,6 @@ type Props = {
 function ListingClient({ reservations = [], listing, currentUser, hasPaidReservation = false, exactAddress }: Props) {
   const router = useRouter();
   const loginModal = useLoginModel();
-  const isDemoMode = process.env.NEXT_PUBLIC_RESOUND_DEMO === "true";
 
   const disableDates = useMemo(() => {
     let dates: Date[] = [];

@@ -1,116 +1,166 @@
-# 🎼 Resound
+# Resound
 
-> A premium marketplace connecting classical musicians with high-quality instrument rentals
+Portfolio demo of a full-stack marketplace for classical instrument rentals, built with Next.js, TypeScript, MongoDB, Stripe, Socket.io, Uploadthing, and Tailwind CSS.
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.3.3-black)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0.3-blue)](https://www.typescriptlang.org)
-[![License](https://img.shields.io/badge/License-Proprietary-red)](LICENSE)
+> **Demo mode:** Resound is a portfolio demonstration. Bookings and payments are simulated; no real instrument rentals are arranged and no payment details are needed.
 
-## Live Demo
+[![Next.js](https://img.shields.io/badge/Next.js-16.2.6-black)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue)](https://www.typescriptlang.org)
+[![Prisma](https://img.shields.io/badge/Prisma-4.12.0-2D3748)](https://www.prisma.io)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248)](https://www.mongodb.com)
+[![Stripe](https://img.shields.io/badge/Stripe-Payments-635BFF)](https://stripe.com)
+[![License](https://img.shields.io/badge/License-Proprietary-red)](#license)
 
-Visit the archived portfolio demo: [https://resound-nu.vercel.app/](https://resound-nu.vercel.app/)
+[Demo site](https://resound-nu.vercel.app/) | [Setup](#getting-started) | [Architecture](#architecture)
 
-## About
+## Overview
 
-Resound is a specialized rental marketplace designed exclusively for the classical music community. We facilitate secure, convenient rentals of high-quality instruments between musicians, from students seeking practice instruments to professionals requiring specific instruments for performances.
+Resound is an Airbnb-style rental marketplace for musicians who need access to high-quality classical instruments. Renters can search by instrument family, location, skill level, availability, and condition. Owners can publish listings, manage reservation logistics, upload instrument photos, and communicate with renters in real time.
+
+The demo showcases full-stack marketplace workflows: authentication, simulated payment-backed reservations, image upload authorization, real-time messaging, geocoded search, admin tooling, rate limiting, and automated tests.
 
 ## Portfolio Demo Mode
 
-Resound is now archived as an inactive product, but the app can run as a safe live portfolio demo. Set `NEXT_PUBLIC_RESOUND_DEMO=true` to use curated demo listings, a simulated logged-in user, fake checkout success, mocked messaging, local-only uploads, and non-persistent rental management actions.
+Resound is archived as an inactive product and opens in demo mode by default. The demo includes curated instrument listings, a simulated signed-in user, simulated checkout success, mocked messaging, local-only uploads, and non-persistent rental management actions. No Stripe payments, Uploadthing uploads, emails, or database writes are performed for the primary showcase flows.
 
-The public portfolio build is available at [https://resound-nu.vercel.app/](https://resound-nu.vercel.app/).
+## Project Highlights
+
+- Marketplace workflows covering listings, favorites, reservations, payments, owner tools, renter tools, and admin moderation.
+- Secure checkout flow with Stripe Checkout, webhook verification, pending reservation holds, and expiration cleanup.
+- Real-time messaging with Socket.io on a custom Next.js server.
+- Mobile QR-code upload flow using scoped, expiring upload tokens and Uploadthing V7.
+- Location-aware search with Google geocoding, normalized city/state/ZIP data, and radius filtering.
+- Role-aware authorization for renters, listing owners, and admins.
+- Test coverage across API routes, components, and critical data access paths.
+
+## Core Features
+
+### Renting
+
+- Search by instrument category, instrument type, location, radius, condition, dates, and experience level.
+- View detailed listings with image galleries, pricing, owner context, availability, and pickup/return windows.
+- Save favorites, try demo reservations and simulated checkout, and explore rental status tracking.
+- Message listing owners after authorized booking flows.
+
+### Listing Management
+
+- Create and edit instrument listings with category-specific metadata.
+- Manage pricing, availability days, pickup windows, return windows, and listing images.
+- Generate QR-code upload links so owners can add photos from a phone.
+- Track reservations and renter communication from owner dashboards.
+
+### Platform Operations
+
+- Admin dashboard for user management, listing moderation, platform stats, and image operations.
+- Cron endpoints for reservation expiration and upload-token cleanup.
+- In-memory rate limiting for sensitive endpoints such as registration, checkout, geocoding, favorites, and general API traffic.
+
+## Tech Stack
+
+| Area | Tools |
+| --- | --- |
+| App framework | Next.js 16 App Router, React 18, TypeScript |
+| UI | Tailwind CSS, Framer Motion, React Icons, React Hook Form |
+| Data | MongoDB, Prisma ORM |
+| Auth | NextAuth.js, Prisma Adapter, Google OAuth, credentials auth |
+| Payments | Stripe Checkout, Stripe webhooks |
+| Realtime | Socket.io, custom Next.js server |
+| Media | Uploadthing V7, Sharp, Plaiceholder |
+| Location | Google Places, Google Geocoding, Leaflet, React-Leaflet |
+| State | Zustand, React hooks, Server Components |
+| Testing | Jest, Testing Library, API and database test suites |
+| Deployment | Vercel for the app, Railway-compatible custom server/WebSocket deployment |
+
+## Architecture
+
+- `app/` contains App Router pages, layouts, server actions, and API route handlers.
+- `components/` contains reusable UI and feature components.
+- `hook/` contains client hooks for favorites, messages, modals, socket state, and listing workflows.
+- `lib/` contains shared infrastructure such as Prisma, rate limiting, socket helpers, and auth utilities.
+- `prisma/` contains the MongoDB Prisma schema and seed script.
+- `server.js` runs the custom Next.js server with Socket.io support.
+- `scripts/` contains operational scripts for geocoding, data maintenance, image migration, admin setup, and diagnostics.
+- `__tests__/` contains Jest suites for components, APIs, database behavior, and user flows.
+
+## Repository Topics
+
+`nextjs` `react` `typescript` `mongodb` `prisma` `stripe` `socket-io` `tailwindcss` `nextauth` `uploadthing` `marketplace` `websockets` `payments` `realtime` `image-upload` `full-stack` `classical-music` `jest` `testing-library`
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 22.x
+- npm
+- MongoDB database
+- Stripe account for checkout and webhook testing
+- Uploadthing V7 token for image uploads
+- Google OAuth credentials for social login
+- Optional Google Places/Geocoding API keys for location search
+
+### Install
 
 ```bash
-NEXT_PUBLIC_RESOUND_DEMO=true npm run dev
+npm install
+cp .env.example .env.local
+npx prisma generate
 ```
 
-In demo mode, no Stripe payments, Uploadthing uploads, emails, or database writes are performed for the primary showcase flows.
+Fill in the required values in `.env.local`, especially `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `NEXT_PUBLIC_APP_URL`, `UPLOADTHING_TOKEN`, and Stripe keys.
 
-### 🎯 Our Mission
+### Run Locally
 
-To make exceptional musical instruments accessible to all musicians, regardless of their location or budget, while providing instrument owners a trusted platform to share their collections.
+```bash
+npm run dev
+```
 
-## 🌟 Core Features
+The custom server starts the app at `http://localhost:3000`.
 
-### For Renters
-- **Advanced Search** - Find instruments by type, location, experience level, and availability
-- **Secure Transactions** - All payments processed through Stripe Checkout
-- **Real-time Messaging** - Communicate directly with instrument owners
-- **Mobile Upload** - Easy photo uploads via QR code for listing verification
-- **Detailed Listings** - High-resolution images, condition ratings, and specifications
+### Common Commands
 
-### For Instrument Owners
-- **Easy Listing Creation** - Streamlined process with smart categorization
-- **Flexible Scheduling** - Set custom availability and pickup/return windows
-- **Owner Dashboard** - Manage listings, reservations, and communication
-- **Direct Payments** - Receive rental payments directly from Resound
+```bash
+npm run lint
+npm test
+npm run build
+npm run seed
+npm run db:reset
+```
 
-### Platform Features
-- **Location Services** - Radius-based search with geocoding
-- **Favorites System** - Save instruments for future consideration
-- **Responsive Design** - Optimized for desktop and mobile devices
-- **Admin Tools** - Comprehensive moderation and analytics dashboard
+## Environment Variables
 
-## 🏛️ Instrument Categories
+The main required variables are documented in `.env.example`.
 
-We support a wide range of classical and modern instruments:
+- `NEXT_PUBLIC_RESOUND_DEMO` defaults to `true`. Demo mode uses curated sample data and simulated showcase actions, displays a persistent notice, and rejects live Stripe secret keys. Keep it enabled for the portfolio demo; changing it requires a rebuild to keep server and browser behavior in sync.
+- `DATABASE_URL` for MongoDB.
+- `NEXTAUTH_SECRET` and `NEXTAUTH_URL` for authentication.
+- `NEXT_PUBLIC_APP_URL` for absolute URLs, QR-code upload links, and checkout redirects.
+- `UPLOADTHING_TOKEN` for Uploadthing V7.
+- `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, and `STRIPE_WEBHOOK_SECRET` for payments.
+- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_PLACES_API_KEY`, and `GOOGLE_GEOCODING_API_KEY` for OAuth and location services.
 
-- **Strings**: Violin, Viola, Cello, Double Bass, Harp, Classical Guitar
-- **Woodwinds**: Flute, Oboe, Clarinet, Bassoon, Saxophone
-- **Brass**: Trumpet, French Horn, Trombone, Tuba
-- **Percussion**: Timpani, Xylophone, Marimba, Drum Kit
-- **Keyboards**: Grand Piano, Upright Piano, Digital Piano, Harpsichord
-- **Other**: Voice/Vocal Equipment, Early Music Instruments
+## Testing
 
-## 🔐 Security & Trust
+```bash
+npm test
+npm test -- --coverage
+npm run test:api
+npm run test:db
+npm run test:e2e
+```
 
-- **Secure Messaging** - All communication logged and monitored
-- **Payment Protection** - Secure payment processing through Stripe Checkout
+The suite uses Jest and Testing Library with mocks for external services where appropriate.
 
-## 🛠️ Technology
+## Deployment Notes
 
-Built with modern, scalable technologies:
+- The app uses a custom server (`server.js`) so Socket.io can run alongside Next.js routes.
+- `NEXT_PUBLIC_APP_URL` and `NEXTAUTH_URL` must match the deployed domain for auth redirects, Stripe redirects, and mobile upload QR codes.
+- Uploadthing V7 requires `UPLOADTHING_TOKEN`; legacy Uploadthing secrets are not used.
+- WebSocket hosting is Railway-compatible for environments that do not support persistent WebSocket connections.
 
-- **Frontend**: Next.js 15, React 18, TypeScript, Tailwind CSS
-- **Backend**: Next.js API Routes, Prisma ORM, MongoDB
-- **Authentication**: NextAuth.js with Google OAuth
-- **Payments**: Stripe Checkout for secure transactions
-- **Real-time**: Socket.io for instant messaging
-- **Media**: Uploadthing for secure image management
-- **Maps**: Leaflet with geocoding services
+## Status
 
-## 📱 Mobile Experience
+Portfolio demo with core marketplace workflows and integrations for simulated payments, images, authentication, messaging, and location services. Demo mode is enabled by default; the app is not offered as an operational rental service.
 
-- QR code integration for mobile uploads
-- Touch-optimized interfaces
-- Responsive design for all screen sizes
+## License
 
-## 🚀 Future Vision & Roadmap
-
-### Coming Soon
-- **Trust & Safety Enhancements**
-  - Identity verification for enhanced trust
-  - Escrow-style payment protection
-- **Insurance Options** - Optional damage protection for high-value instruments
-- **Review System** - Build reputation through successful rentals
-
-### Long-term Vision
-- **International Expansion** - Serve musicians globally
-- **AI-Powered Matching** - Smart recommendations based on playing style and preferences
-- **Virtual Try-outs** - Audio/video samples for remote instrument evaluation
-- **Community Features** - Forums, events, and masterclasses
-- **Professional Services** - Maintenance, repairs, and appraisals network
-
-## 🌍 Service Areas
-
-Currently serving musicians across the United States.
-
-## 🏢 Company
-
-Resound is a privately-owned platform dedicated to serving the classical music community. Founded by musicians, for musicians.
-
----
-
-© 2025 Resound. All rights reserved.
-
-*This is a proprietary platform. The source code is not available for public use or distribution.*
+Proprietary. All rights reserved.

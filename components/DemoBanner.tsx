@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { isDemoMode } from "@/lib/demo";
 import { TbArchive, TbExternalLink } from "react-icons/tb";
 
 export default function DemoBanner() {
-  if (process.env.NEXT_PUBLIC_RESOUND_DEMO !== "true") {
+  if (!isDemoMode) {
     return null;
   }
 
@@ -16,12 +17,12 @@ export default function DemoBanner() {
             aria-hidden
           />
           <p className="font-mono text-[11px] uppercase tracking-archive text-ink-soft">
-            Portfolio demo · checkout, messages, uploads &amp; account actions
+            Demo mode · bookings, payments, messages, uploads &amp; account actions
             are{" "}
             <span className="editorial-italic text-[14px] not-italic tracking-normal text-lacquer">
               simulated
             </span>
-            .
+            . No real rentals or charges.
           </p>
         </div>
         <Link
